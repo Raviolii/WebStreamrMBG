@@ -18,4 +18,6 @@ COPY --from=builder /app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 
+ENV PORT=7860
+EXPOSE 7860
 CMD ["node", "dist/index.js"]
