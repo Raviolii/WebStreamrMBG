@@ -53,6 +53,7 @@ const extractors = createExtractors(fetcher);
 
 const addon = express();
 addon.set('trust proxy', true);
+addon.get('/', (_req, res) => { res.redirect('/configure'); });
 
 if (envIsProd()) {
   addon.use(rateLimit({ windowMs: 60 * 1000, limit: 30 }));
@@ -94,10 +95,6 @@ addon.use((err: Error, _req: Request, _res: Response, next: NextFunction) => {
   logger.error(`Error: ${err}, cause: ${err.cause}, stack: ${err.stack}`);
 
   return next(err);
-});
-
-addon.get('/', (_req: Request, res: Response) => {
-  res.redirect('/configure');
 });
 
 addon.get('/startup', async (_req: Request, res: Response) => {
