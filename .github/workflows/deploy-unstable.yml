@@ -22,6 +22,8 @@ jobs:
       - name: Install and build
         run: |
           npm install
+          VERSION=$(node -p "require('./package.json').version")
+          sed -i "s/version: '[^']*', \/\/ x-release-please-version/version: '${VERSION}-dev', \/\/ x-release-please-version/" src/utils/manifest.ts
           npm run build
       - name: Setup SSH
         run: |
