@@ -6,8 +6,6 @@ on:
     paths:
       - 'src/**'
       - '!src/utils/manifest.ts'
-      - 'package.json'
-      - 'package-lock.json'
       - 'tsconfig.json'
       - 'Procfile'
 jobs:
