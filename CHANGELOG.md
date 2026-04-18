@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.70.3](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.2...v0.70.3) (2026-04-18)
+
+
+### Continuous Integration
+
+* auto-append -dev suffix to version on unstable deploys ([f61c9c0](https://github.com/newman2x/WebStreamrMBG/commit/f61c9c0d44f51967574a86b3d601a3de7b3c1206))
+
+
+### Bug Fixes
+
+* **VixSrc:** delegate MediaFlow extraction to VixCloud extractor for IP-locked token fix ([00d3e21](https://github.com/newman2x/WebStreamrMBG/commit/00d3e213e434ea69528c2947f73fe4850423be0b))
+
 ## [0.70.2](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.1...v0.70.2) (2026-04-15)
 
 
