@@ -77,13 +77,20 @@ export class HubCloud extends Extractor {
             },
           };
         }).toArray(),
-      ...$('a')
+      ...await Promise.all($('a')
         .filter((_i, el) => $(el).text().includes('PixelServer'))
         .map((_i, el) => {
           const userUrl = new URL(($(el).attr('href') as string).replace('/api/file/', '/u/'));
           const url = new URL(userUrl.href.replace('/u/', '/api/file/'));
           url.searchParams.set('download', '');
-
+          return { url, userUrl };
+        }).toArray()
+        .map(async ({ url, userUrl }) => {
+          try {
+            await this.fetcher.head(ctx, url, { headers: { Referer: userUrl.href } });
+          } catch {
+            return null;
+          }
           return {
             url,
             format: Format.unknown,
@@ -98,7 +105,8 @@ export class HubCloud extends Extractor {
             },
             requestHeaders: { Referer: userUrl.href },
           };
-        }).toArray(),
+        })
+      ).then(results => results.filter(r => r !== null)),
     ]);
   };
 }

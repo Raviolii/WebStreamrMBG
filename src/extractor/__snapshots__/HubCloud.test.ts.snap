@@ -79,22 +79,6 @@ exports[`HubCloud handle dexter original sin 2024 s01e01 1`] = `
     "ttl": 43200000,
     "url": "https://pub-b5ecaffddf2344a0ae2222f5e8913e1b.r2.dev/Dexter.Original.Sin.S01E01.2160p.SKST.WEB-DL.H.265.DDP5.1-Tyrell.mkv?token=1774428754",
   },
-  {
-    "format": "unknown",
-    "label": "HubCloud (PixelServer)",
-    "meta": {
-      "bytes": 5733781340,
-      "countryCodes": [],
-      "extractorId": "hubcloud_pixelserver",
-      "height": 2160,
-      "title": "Dexter.Original.Sin.S01E01.2160p.SKST.WEB-DL.H.265.DDP5.1-Tyrell.mkv",
-    },
-    "requestHeaders": {
-      "Referer": "https://pixeldrain.dev/u/HqAiguQV",
-    },
-    "ttl": 43200000,
-    "url": "https://pixeldrain.dev/api/file/HqAiguQV?download=",
-  },
 ]
 `;
 
