@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.70.7](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.6...v0.70.7) (2026-04-22)
+
+
+### Bug Fixes
+
+* HDHub4u & change 4KHDHub domain ([0fd2144](https://github.com/newman2x/WebStreamrMBG/commit/0fd21446c5d2feca3ce6c57cf8b244d88e3fe7e4))
+
 ## [0.70.6](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.5...v0.70.6) (2026-04-22)
 
 
