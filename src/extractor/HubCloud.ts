@@ -11,7 +11,7 @@ export class HubCloud extends Extractor {
 
   public override readonly ttl: number = 43200000; // 12h
 
-  public override readonly cacheVersion = 1;
+  public override readonly cacheVersion = 3;
 
   public supports(_ctx: Context, url: URL): boolean {
     return null !== url.host.match(/hubcloud/);
@@ -42,7 +42,6 @@ export class HubCloud extends Extractor {
           return {
             url,
             format: Format.unknown,
-            notWebReady: false,
             label: `${this.label} (FSL)`,
             meta: {
               ...meta,
@@ -65,7 +64,6 @@ export class HubCloud extends Extractor {
           return {
             url,
             format: Format.unknown,
-            notWebReady: false,
             label: `${this.label} (FSLv2)`,
             meta: {
               ...meta,

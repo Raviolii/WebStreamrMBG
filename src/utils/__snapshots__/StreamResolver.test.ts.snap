@@ -447,6 +447,7 @@ exports[`resolve skips fallback sources if possible 1`] = `
   {
     "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
+      "notWebReady": true,
       "videoSize": 22430466703,
     },
     "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 2160p",
@@ -457,6 +458,7 @@ exports[`resolve skips fallback sources if possible 1`] = `
   {
     "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
+      "notWebReady": true,
       "videoSize": 19295140577,
     },
     "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 2160p",
@@ -483,6 +485,7 @@ exports[`resolve skips fallback sources if possible 1`] = `
   {
     "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
+      "notWebReady": true,
       "videoSize": 10018011217,
     },
     "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
@@ -509,6 +512,7 @@ exports[`resolve skips fallback sources if possible 1`] = `
   {
     "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
+      "notWebReady": true,
       "videoSize": 9985798963,
     },
     "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
@@ -535,6 +539,7 @@ exports[`resolve skips fallback sources if possible 1`] = `
   {
     "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
+      "notWebReady": true,
       "videoSize": 5712306503,
     },
     "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
@@ -561,6 +566,7 @@ exports[`resolve skips fallback sources if possible 1`] = `
   {
     "behaviorHints": {
       "bingeGroup": "webstreamr-mbg-4khdhub-hubcloud_fsl-multi_en_hi",
+      "notWebReady": true,
       "videoSize": 1374389534,
     },
     "name": "WebStreamrMBG 🌐 🇺🇸 🇮🇳 1080p",
