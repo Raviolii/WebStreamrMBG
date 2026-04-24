@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.70.8](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.7...v0.70.8) (2026-04-24)
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/setup-node action to v6 ([2696229](https://github.com/newman2x/WebStreamrMBG/commit/269622908a9f5629c6e51e47af1f42f8a5220937))
+* **deps:** update actions/setup-node action to v6 ([57336a6](https://github.com/newman2x/WebStreamrMBG/commit/57336a667e98789d1e7a520f0583ca5bcb96be9e))
+* **deps:** update dependency axios to v1.15.2 ([a8af181](https://github.com/newman2x/WebStreamrMBG/commit/a8af1819f62cadf8fc6aafe94a781c7fb778355c))
+* **deps:** update dependency axios to v1.15.2 ([2a8090e](https://github.com/newman2x/WebStreamrMBG/commit/2a8090e758f977aff1a303d63fb4d4fdcdf89b84))
+* **deps:** update dependency express-rate-limit to v8.4.0 ([e695804](https://github.com/newman2x/WebStreamrMBG/commit/e69580422da9b1498d7794a0ce11c7a5d636cc90))
+* **deps:** update dependency express-rate-limit to v8.4.0 ([ad17e13](https://github.com/newman2x/WebStreamrMBG/commit/ad17e136a99efce5677c9fa2b69cadc3583ff06f))
+* **deps:** update dependency typescript-eslint to v8.59.0 ([be8f918](https://github.com/newman2x/WebStreamrMBG/commit/be8f9187e56ac45ad83b0f359e27f3c5ea69ea7f))
+* **deps:** update dependency typescript-eslint to v8.59.0 ([900d7f0](https://github.com/newman2x/WebStreamrMBG/commit/900d7f08a62b316392ef417e2ac7bb46af73a92c))
+* **deps:** update googleapis/release-please-action action to v5 ([c53e71e](https://github.com/newman2x/WebStreamrMBG/commit/c53e71e47f8eb3158c99f6bbbfe2cec3cee6c3d1))
+* **deps:** update googleapis/release-please-action action to v5 ([f561c75](https://github.com/newman2x/WebStreamrMBG/commit/f561c75b0516af5dbf46ba8bc34a7f3a70a88328))
+
+
+### Bug Fixes
+
+* frembed ([2236f74](https://github.com/newman2x/WebStreamrMBG/commit/2236f74b05520eb8aba268cf9ec0f24aced38161))
+* HubCloud ([67cd56d](https://github.com/newman2x/WebStreamrMBG/commit/67cd56d540ef9e9a4497ba36b6d0b42dcca36c69))
+
 ## [0.70.7](https://github.com/newman2x/WebStreamrMBG/compare/v0.70.6...v0.70.7) (2026-04-22)
 
 
