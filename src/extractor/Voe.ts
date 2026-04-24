@@ -37,6 +37,7 @@ export class Voe extends Extractor {
         'bradleyviewdoctor.com',
         'brittneystandardwestern.com',
         'brucevotewithin.com',
+        'charlestoughrace.com',
         'christopheruntilpoint.com',
         'chromotypic.com',
         'chuckle-tube.com',

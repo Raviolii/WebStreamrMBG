@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`Voe charlestoughrace.com custom domain 1`] = `
+[
+  {
+    "error": [Error: Error: getaddrinfo ENOTFOUND mediaflow.test.org],
+    "format": "unknown",
+    "isExternal": true,
+    "label": "VOE (MFP)",
+    "meta": {
+      "extractorId": "voe",
+    },
+    "ttl": 0,
+    "url": "https://charlestoughrace.com/lbeqm6ofmauq",
+  },
+]
+`;
+
 exports[`Voe embed only urls which otherwise lead to 404 1`] = `
 [
   {

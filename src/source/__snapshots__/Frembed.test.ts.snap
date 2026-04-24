@@ -7,27 +7,37 @@ exports[`Frembed handle battle royal 1`] = `
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Battle Royale (2000)",
     },
-    "url": "https://myvidplay.com/e/gtenfs0rffzq",
+    "url": "https://playmogo.com/e/gtenfs0rffzq",
   },
   {
     "meta": {
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Battle Royale (2000)",
     },
-    "url": "https://lancewhosedifficult.com/e/lbeqm6ofmauq",
+    "url": "https://netu.frembed.bond/e/p0QUHavRbQD0",
   },
   {
     "meta": {
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
+      "title": "Battle Royale (2000)",
+    },
+    "url": "https://charlestoughrace.com/e/lbeqm6ofmauq",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "fr",
+      ],
+      "referer": "https://frembed.cyou",
       "title": "Battle Royale (2000)",
     },
     "url": "https://uqload.is/embed-pnxmokgrigu9.html",
@@ -42,7 +52,7 @@ exports[`Frembed handle imdb black mirror s4e2 1`] = `
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Black Mirror S04E02",
     },
     "url": "https://ahvsh.com/e/83izf7qzwpae,https://netu.frembed.fun/e/0DFgfkcXOsDP,https://likessb.com/e/7yjgl1x56n08.html,https://ds2play.com/e/fzfvfq3ngig0",
@@ -52,20 +62,30 @@ exports[`Frembed handle imdb black mirror s4e2 1`] = `
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Black Mirror S04E02",
     },
-    "url": "https://myvidplay.com/e/dfx8me4un4ul",
+    "url": "https://playmogo.com/e/dfx8me4un4ul",
   },
   {
     "meta": {
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Black Mirror S04E02",
     },
-    "url": "https://lancewhosedifficult.com/e/cqy9oue7sv0g",
+    "url": "https://netu.frembed.bond/e/0DFgfkcXOsDP",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "fr",
+      ],
+      "referer": "https://frembed.cyou",
+      "title": "Black Mirror S04E02",
+    },
+    "url": "https://charlestoughrace.com/e/cqy9oue7sv0g",
   },
 ]
 `;
@@ -77,7 +97,7 @@ exports[`Frembed handle tmdb black mirror s4e2 1`] = `
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Black Mirror S04E02",
     },
     "url": "https://ahvsh.com/e/83izf7qzwpae,https://netu.frembed.fun/e/0DFgfkcXOsDP,https://likessb.com/e/7yjgl1x56n08.html,https://ds2play.com/e/fzfvfq3ngig0",
@@ -87,20 +107,30 @@ exports[`Frembed handle tmdb black mirror s4e2 1`] = `
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Black Mirror S04E02",
     },
-    "url": "https://myvidplay.com/e/dfx8me4un4ul",
+    "url": "https://playmogo.com/e/dfx8me4un4ul",
   },
   {
     "meta": {
       "countryCodes": [
         "fr",
       ],
-      "referer": "https://frembed.work",
+      "referer": "https://frembed.cyou",
       "title": "Black Mirror S04E02",
     },
-    "url": "https://lancewhosedifficult.com/e/cqy9oue7sv0g",
+    "url": "https://netu.frembed.bond/e/0DFgfkcXOsDP",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "fr",
+      ],
+      "referer": "https://frembed.cyou",
+      "title": "Black Mirror S04E02",
+    },
+    "url": "https://charlestoughrace.com/e/cqy9oue7sv0g",
   },
 ]
 `;
