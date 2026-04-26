@@ -6,6 +6,7 @@ exports[`MovieBox Avatar movie streams 1`] = `
     "format": "mp4",
     "label": "360p",
     "meta": {
+      "bytes": 623914683,
       "countryCodes": [
         "multi",
       ],
@@ -22,6 +23,7 @@ exports[`MovieBox Avatar movie streams 1`] = `
     "format": "mp4",
     "label": "480p",
     "meta": {
+      "bytes": 666976066,
       "countryCodes": [
         "multi",
       ],
@@ -38,6 +40,7 @@ exports[`MovieBox Avatar movie streams 1`] = `
     "format": "mp4",
     "label": "720p",
     "meta": {
+      "bytes": 3119803643,
       "countryCodes": [
         "multi",
       ],
@@ -54,6 +57,7 @@ exports[`MovieBox Avatar movie streams 1`] = `
     "format": "mp4",
     "label": "1080p",
     "meta": {
+      "bytes": 5184360316,
       "countryCodes": [
         "multi",
       ],
@@ -75,6 +79,7 @@ exports[`MovieBox Breaking Bad S01E01 streams 1`] = `
     "format": "mp4",
     "label": "360p",
     "meta": {
+      "bytes": 200149402,
       "countryCodes": [
         "multi",
       ],
@@ -91,6 +96,7 @@ exports[`MovieBox Breaking Bad S01E01 streams 1`] = `
     "format": "mp4",
     "label": "480p",
     "meta": {
+      "bytes": 242949969,
       "countryCodes": [
         "multi",
       ],
@@ -107,6 +113,7 @@ exports[`MovieBox Breaking Bad S01E01 streams 1`] = `
     "format": "mp4",
     "label": "720p",
     "meta": {
+      "bytes": 684742893,
       "countryCodes": [
         "multi",
       ],
@@ -123,6 +130,7 @@ exports[`MovieBox Breaking Bad S01E01 streams 1`] = `
     "format": "mp4",
     "label": "1080p",
     "meta": {
+      "bytes": 1439519712,
       "countryCodes": [
         "multi",
       ],
@@ -144,6 +152,7 @@ exports[`MovieBox HLS stream 1`] = `
     "format": "hls",
     "label": "1080p",
     "meta": {
+      "bytes": undefined,
       "countryCodes": [
         "multi",
       ],
@@ -165,6 +174,7 @@ exports[`MovieBox MP4 format field without .mp4 in URL 1`] = `
     "format": "mp4",
     "label": "720p",
     "meta": {
+      "bytes": 1000000000,
       "countryCodes": [
         "multi",
       ],
@@ -206,6 +216,7 @@ exports[`MovieBox URL without se/ep params uses defaults 1`] = `
     "format": "mp4",
     "label": "360p",
     "meta": {
+      "bytes": 623914683,
       "countryCodes": [
         "multi",
       ],
@@ -222,6 +233,7 @@ exports[`MovieBox URL without se/ep params uses defaults 1`] = `
     "format": "mp4",
     "label": "480p",
     "meta": {
+      "bytes": 666976066,
       "countryCodes": [
         "multi",
       ],
@@ -238,6 +250,7 @@ exports[`MovieBox URL without se/ep params uses defaults 1`] = `
     "format": "mp4",
     "label": "720p",
     "meta": {
+      "bytes": 3119803643,
       "countryCodes": [
         "multi",
       ],
@@ -254,6 +267,7 @@ exports[`MovieBox URL without se/ep params uses defaults 1`] = `
     "format": "mp4",
     "label": "1080p",
     "meta": {
+      "bytes": 5184360316,
       "countryCodes": [
         "multi",
       ],
@@ -275,6 +289,7 @@ exports[`MovieBox Unknown format stream 1`] = `
     "format": "mp4",
     "label": "0p",
     "meta": {
+      "bytes": 1500000000,
       "countryCodes": [
         "multi",
       ],
@@ -291,6 +306,7 @@ exports[`MovieBox Unknown format stream 1`] = `
     "format": "unknown",
     "label": "0p",
     "meta": {
+      "bytes": undefined,
       "countryCodes": [
         "multi",
       ],

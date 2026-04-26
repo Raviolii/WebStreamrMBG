@@ -88,6 +88,8 @@ export class MovieBox extends Extractor {
 
       const format = isHls ? Format.hls : isMp4 ? Format.mp4 : Format.unknown;
 
+      const sizeBytes = download.size ? parseInt(download.size, 10) : undefined;
+
       results.push({
         url: streamUrl,
         format,
@@ -97,6 +99,7 @@ export class MovieBox extends Extractor {
           ...meta,
           countryCodes: countryCodeArray,
           height: resolution || undefined,
+          bytes: sizeBytes || undefined,
         },
       });
     }
