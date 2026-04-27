@@ -9,8 +9,6 @@ export class HubCloud extends Extractor {
 
   public readonly label = 'HubCloud';
 
-  public override readonly ttl: number = 3600000;
-
   public override readonly cacheVersion = 4;
 
   public supports(_ctx: Context, url: URL): boolean {
@@ -29,50 +27,41 @@ export class HubCloud extends Extractor {
     const title = $('title').text().trim();
     const countryCodes = [...new Set([...meta.countryCodes ?? [], ...findCountryCodes(title)])];
     const height = meta.height ?? findHeight(title);
+    const fileSize = bytes.parse($('#size').text()) as number;
+
+    const fslTtl = (href: string): number => {
+      const tokenMatch = href.match(/token=(\d{10})/);
+      return tokenMatch
+        ? Math.max(900000, parseInt(tokenMatch[1] as string) * 1000 - Date.now() - 120000)
+        : 3600000;
+    };
 
     return Promise.all([
       ...$('a')
         .filter((_i, el) => {
           const text = $(el).text();
-
           return text.includes('FSL') && !text.includes('FSLv2');
         })
         .map((_i, el) => {
-          const url = new URL(($(el).attr('href') as string) + '1' + new Date(Date.now()).getMinutes());
+          const fslHref = ($(el).attr('href') as string) + '1' + new Date(Date.now()).getMinutes();
           return {
-            url,
+            url: new URL(fslHref),
             format: Format.unknown,
+            ttl: fslTtl(fslHref),
             label: `${this.label} (FSL)`,
-            meta: {
-              ...meta,
-              bytes: bytes.parse($('#size').text()) as number,
-              extractorId: `${this.id}_fsl`,
-              countryCodes,
-              height,
-              title,
-            },
+            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fsl`, countryCodes, height, title },
           };
         }).toArray(),
       ...$('a')
-        .filter((_i, el) => {
-          const text = $(el).text();
-
-          return text.includes('FSLv2');
-        })
+        .filter((_i, el) => $(el).text().includes('FSLv2'))
         .map((_i, el) => {
-          const url = new URL(($(el).attr('href') as string) + '_1' + new Date(Date.now()).getMinutes());
+          const fslHref = ($(el).attr('href') as string) + '_1' + new Date(Date.now()).getMinutes();
           return {
-            url,
+            url: new URL(fslHref),
             format: Format.unknown,
+            ttl: fslTtl(fslHref),
             label: `${this.label} (FSLv2)`,
-            meta: {
-              ...meta,
-              bytes: bytes.parse($('#size').text()) as number,
-              extractorId: `${this.id}_fslv2`,
-              countryCodes,
-              height,
-              title,
-            },
+            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_fslv2`, countryCodes, height, title },
           };
         }).toArray(),
       ...await Promise.all($('a')
@@ -93,14 +82,7 @@ export class HubCloud extends Extractor {
             url,
             format: Format.unknown,
             label: `${this.label} (PixelServer)`,
-            meta: {
-              ...meta,
-              bytes: bytes.parse($('#size').text()) as number,
-              extractorId: `${this.id}_pixelserver`,
-              countryCodes,
-              height,
-              title,
-            },
+            meta: { ...meta, bytes: fileSize, extractorId: `${this.id}_pixelserver`, countryCodes, height, title },
             requestHeaders: { Referer: userUrl.href },
           };
         }),

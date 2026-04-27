@@ -103,6 +103,7 @@ export interface InternalUrlResult {
   meta?: Meta;
   notWebReady?: boolean;
   requestHeaders?: Record<string, string>;
+  ttl?: number;
 }
 
 export interface UrlResult {
