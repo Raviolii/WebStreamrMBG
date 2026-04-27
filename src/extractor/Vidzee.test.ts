@@ -109,8 +109,9 @@ describe('Vidzee', () => {
     } as unknown as Fetcher;
 
     const extractor = new Vidzee(mockFetcher);
-    const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string }[];
+    const result = await callExtractInternal(extractor, new URL('https://player.vidzee.wtf/v2/embed/movie/27205?sr=4')) as { format: string; meta?: { height?: number } }[];
     expect(result).toHaveLength(1);
+    expect(result[0]?.meta?.height).toBe(1080);
     expect(result[0]?.format).toBe('hls');
   });
 
