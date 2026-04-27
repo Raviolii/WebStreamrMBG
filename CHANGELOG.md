@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.72.2](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.1...v0.72.2) (2026-04-27)
+
+
+### Bug Fixes
+
+* filmpalastTO ([f30d89f](https://github.com/newman2x/WebStreamrMBG/commit/f30d89f4511c975daa2d9980f4e148cd5c036e51))
+* HDHub4u ([98efe2c](https://github.com/newman2x/WebStreamrMBG/commit/98efe2c3cb5fb74fe68d52c691dec72885c4fcbc))
+* HDHub4u&HubDrive ([defebec](https://github.com/newman2x/WebStreamrMBG/commit/defebecc998e6ce2c75ecc868f5baec5485b9989))
+* Vidzee ([d42f917](https://github.com/newman2x/WebStreamrMBG/commit/d42f91726856ced199745a8d1f1e77d4c4785d34))
+
 ## [0.72.1](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.0...v0.72.1) (2026-04-27)
 
 
