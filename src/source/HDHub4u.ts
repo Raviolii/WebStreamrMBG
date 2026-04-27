@@ -71,13 +71,18 @@ export class HDHub4u extends Source {
       ];
     }
 
+    const ep = imdbId.episode;
+    const epPadded = String(ep).padStart(2, '0');
+    const episodeSelector = [
+      `h4:contains("EPiSODE ${ep}")`,
+      `h4:contains("EPiSODE ${epPadded}")`,
+      `h4:contains("Episode ${ep}")`,
+      `h4:contains("Episode ${epPadded}")`,
+    ].join(', ');
+
     return [
-      ...(await Promise.all(
-        $(`a:contains("EPiSODE ${imdbId.episode}"), a:contains("EPiSODE ${String(imdbId.episode).padStart(2, '0')}")`)
-          .map(async (_i, el) => this.handleHubLinks(ctx, new URL($(el).attr('href') as string), pageUrl, meta)),
-      )).flat(),
       ...this.extractHubDriveUrlResults(
-        $(`h4:contains("EPiSODE ${imdbId.episode}"), h4:contains("EPiSODE ${String(imdbId.episode).padStart(2, '0')}")`)
+        $(episodeSelector)
           .first()
           .nextUntil('hr')
           .map((_i, el) => $.html(el))
