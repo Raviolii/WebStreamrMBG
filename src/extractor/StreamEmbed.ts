@@ -1,5 +1,6 @@
 import { NotFoundError } from '../error';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { buildMediaFlowProxyHlsUrl, supportsMediaFlowProxy } from '../utils';
 import { Extractor } from './Extractor';
 
 export class StreamEmbed extends Extractor {
@@ -24,9 +25,15 @@ export class StreamEmbed extends Extractor {
 
     const video = JSON.parse((html.match(/video ?= ?(.*);/) as string[])[1] as string);
 
+    const m3u8Url = new URL(`/m3u8/${video.uid}/${video.md5}/master.txt?s=1&id=${video.id}&cache=${video.status}`, url.origin);
+
+    const streamUrl = supportsMediaFlowProxy(ctx)
+      ? buildMediaFlowProxyHlsUrl(ctx, m3u8Url, { Referer: url.origin }, true)
+      : m3u8Url;
+
     return [
       {
-        url: new URL(`/m3u8/${video.uid}/${video.md5}/master.txt?s=1&id=${video.id}&cache=${video.status}`, url.origin),
+        url: streamUrl,
         format: Format.hls,
         meta: {
           ...meta,
