@@ -288,14 +288,13 @@ export class Fetcher {
         throw new BlockedError(url, BlockedReason.flaresolverr_failed, {});
       }
 
-      challengeResult.solution.cookies.forEach((cookie) => {
+      await Promise.all(challengeResult.solution.cookies.map(async (cookie) => {
         if (!cookie.name.startsWith('cf_') && !cookie.name.startsWith('__cf') && !cookie.name.startsWith('__ddg')) {
           return;
         }
-
-        this.cookieJar.setCookie(
+        await this.cookieJar.setCookie(
           new Cookie({
-            domain: cookie.domain.replace(/^.+/, ''),
+            domain: cookie.domain.replace(/^\./, ''),
             expires: new Date(cookie.expiry * 1000),
             httpOnly: cookie.httpOnly,
             key: cookie.name,
@@ -306,7 +305,7 @@ export class Fetcher {
           }),
           url.href,
         );
-      });
+      }));
 
       this.hostUserAgentMap.set(url.host, challengeResult.solution.userAgent);
 

@@ -61,12 +61,6 @@ if (envIsProd()) {
   addon.use(rateLimit({ windowMs: 60 * 1000, limit: 30 }));
 }
 
-if (envGet('CACHE_FILES_DELETE_ON_START')) {
-  (async function () {
-    await clearCache(logger);
-  })();
-}
-
 addon.use((req: Request, res: Response, next: NextFunction) => {
   process.env['HOST'] = req.host;
   process.env['PROTOCOL'] = req.protocol;
@@ -172,6 +166,11 @@ addon.get('/stats', async (_req: Request, res: Response) => {
 });
 
 const port = parseInt(envGet('PORT') || '51546');
-addon.listen(port, () => {
-  logger.info(`Add-on Repository URL: http://127.0.0.1:${port}/manifest.json`);
-});
+(async () => {
+  if (envGet('CACHE_FILES_DELETE_ON_START')) {
+    await clearCache(logger);
+  }
+  addon.listen(port, () => {
+    logger.info(`Add-on Repository URL: http://127.0.0.1:${port}/manifest.json`);
+  });
+})();

@@ -104,8 +104,7 @@ export class FetcherMock extends Fetcher {
         if (envGet('TEST_UPDATE_FIXTURES')) {
           response = await super.fetchWithTimeout(ctx, url, requestConfig);
         } else {
-          console.error(`No fixture found at "${path}".`);
-          process.exit(1);
+          throw new Error(`No fixture found at "${path}".`);
         }
       } catch (error) {
         fs.writeFileSync(errorPath, `${error}`);
