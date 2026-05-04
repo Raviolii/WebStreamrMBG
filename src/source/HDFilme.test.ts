@@ -16,6 +16,11 @@ describe('HDFilme', () => {
     expect(streams).toHaveLength(0);
   });
 
+  test('returns empty when tmdb id has no season and episode', async () => {
+    const streams = await source.handle(ctx, 'series', new TmdbId(42009, undefined, undefined));
+    expect(streams).toHaveLength(0);
+  });
+
   test('handle black mirror s2e4', async () => {
     const streams = await source.handle(ctx, 'series', new TmdbId(42009, 2, 4));
     expect(streams).toMatchSnapshot();
