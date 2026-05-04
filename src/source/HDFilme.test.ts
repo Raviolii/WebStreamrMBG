@@ -55,4 +55,9 @@ describe('HDFilme', () => {
     const streams = await source.handle(ctx, 'series', new TmdbId(900005, 1, 1));
     expect(streams).toHaveLength(0);
   });
+
+  test('uses fallback mirror title when link has no text', async () => {
+    const streams = await source.handle(ctx, 'series', new TmdbId(900006, 1, 1));
+    expect(streams).toMatchSnapshot();
+  });
 });

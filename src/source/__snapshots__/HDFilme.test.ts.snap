@@ -22,16 +22,6 @@ exports[`HDFilme handle black mirror s2e4 1`] = `
     },
     "url": "https://dropload.pro/jvjwrkpijr0f",
   },
-  {
-    "meta": {
-      "countryCodes": [
-        "de",
-      ],
-      "referer": "https://hdfilme.win/filme1/29992-black-mirror-stream.html",
-      "title": "Black Mirror S02E04 (Player HD/4K)",
-    },
-    "url": "https://hdfilme.win/engine/player.php?id=29992&s=1",
-  },
 ]
 `;
 
@@ -60,19 +50,24 @@ exports[`HDFilme handles links filtering and next-episode boundaries 1`] = `
         "de",
       ],
       "referer": "https://hdfilme.win/case-links.html",
-      "title": "HDFilme S01E01 (Mirror)",
+      "title": "HDFilme S01E01 (External Host)",
     },
-    "url": "https://hdfilme.win/engine/player.php?id=10&s=1",
+    "url": "https://validhost.example/stream-1",
   },
+]
+`;
+
+exports[`HDFilme uses fallback mirror title when link has no text 1`] = `
+[
   {
     "meta": {
       "countryCodes": [
         "de",
       ],
-      "referer": "https://hdfilme.win/case-links.html",
-      "title": "HDFilme S01E01 (External Host)",
+      "referer": "https://hdfilme.win/case-empty-link-text.html",
+      "title": "Mirror Label Fallback Show S01E01 (Mirror)",
     },
-    "url": "https://validhost.example/stream-1",
+    "url": "https://validhost.example/mirror-only",
   },
 ]
 `;

@@ -61,12 +61,12 @@ export class HDFilme extends Source {
 
     segment$('a').each((_i, el) => {
       const href = segment$(el).attr('href');
-      if (!href || href.includes('report-error') || href.startsWith('javascript')) return;
+      if (!href || href.includes('report-error') || href.startsWith('javascript') || href.includes('/engine/player.php')) return;
 
       try {
         const url = new URL(href, this.baseUrl);
 
-        if (!url.host.includes('hdfilme') || url.pathname.includes('player.php')) {
+        if (!url.host.includes('hdfilme')) {
           results.push({
             url,
             meta: {
