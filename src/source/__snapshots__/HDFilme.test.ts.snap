@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`HDFilme handle black mirror s2e4 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://hdfilme.win/filme1/29992-black-mirror-stream.html",
+      "title": "Black Mirror S02E04 (Supervideo)",
+    },
+    "url": "https://supervideo.cc/22go50mon0ke.html",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://hdfilme.win/filme1/29992-black-mirror-stream.html",
+      "title": "Black Mirror S02E04 (Dropload)",
+    },
+    "url": "https://dropload.pro/jvjwrkpijr0f",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://hdfilme.win/filme1/29992-black-mirror-stream.html",
+      "title": "Black Mirror S02E04 (Player HD/4K)",
+    },
+    "url": "https://hdfilme.win/engine/player.php?id=29992&s=1",
+  },
+]
+`;
+
+exports[`HDFilme handle monster: the ed gein story s1e2 1`] = `[]`;
+
+exports[`HDFilme handles last episode segment when no next episode marker exists 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://hdfilme.win/case-last-episode.html",
+      "title": "Last Episode Show S01E01 (Final Link)",
+    },
+    "url": "https://validhost.example/final",
+  },
+]
+`;
+
+exports[`HDFilme handles links filtering and next-episode boundaries 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://hdfilme.win/case-links.html",
+      "title": "HDFilme S01E01 (Mirror)",
+    },
+    "url": "https://hdfilme.win/engine/player.php?id=10&s=1",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://hdfilme.win/case-links.html",
+      "title": "HDFilme S01E01 (External Host)",
+    },
+    "url": "https://validhost.example/stream-1",
+  },
+]
+`;

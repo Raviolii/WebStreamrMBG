@@ -7,6 +7,7 @@ import { FilmpalastTO } from './FilmpalastTO';
 import { FourKHDHub } from './FourKHDHub';
 import { Frembed } from './Frembed';
 import { FrenchCloud } from './FrenchCloud';
+import { HDFilme } from './HDFilme';
 import { HDHub4u } from './HDHub4u';
 import { HomeCine } from './HomeCine';
 import { KinoGer } from './KinoGer';
@@ -52,6 +53,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MeineCloud(fetcher),
     new StreamKiste(fetcher),
     new FilmpalastTO(fetcher),
+    new HDFilme(fetcher),
     // FR
     new Frembed(fetcher),
     new FrenchCloud(fetcher),
