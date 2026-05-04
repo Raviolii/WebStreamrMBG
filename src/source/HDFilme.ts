@@ -24,6 +24,9 @@ export class HDFilme extends Source {
 
   public async handleInternal(ctx: Context, _type: string, id: Id): Promise<SourceResult[]> {
     const tmdbId = await getTmdbId(ctx, this.fetcher, id);
+    if (tmdbId.season === undefined || tmdbId.episode === undefined) {
+      return [];
+    }
 
     const seriesPageUrl = await this.fetchSeriesPageUrl(ctx, tmdbId);
     if (!seriesPageUrl) {
