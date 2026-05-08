@@ -53,11 +53,12 @@ describe('SerienStream', () => {
     expect(streams).toHaveLength(0);
   });
 
-  test('properly formats the redirect URL', async () => {
+  test('resolves s.to redirect to the streaming host URL', async () => {
     const streams = await source.handle(ctx, 'series', new ImdbId('tt1190634', 4, 8));
     const firstStream = streams[0];
     if (firstStream) {
-      expect(firstStream.url.href).toContain('https://s.to/r?t=');
+      expect(firstStream.url.hostname).not.toBe('s.to');
+      expect(firstStream.url.href.startsWith('https://')).toBe(true);
     }
   });
 

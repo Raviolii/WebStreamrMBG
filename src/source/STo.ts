@@ -56,25 +56,34 @@ export class STo extends Source {
 
     // 5. Target only German links
     // S.to uses data-language-id="1" for German
-    $episode('button.link-box[data-language-id="1"]').each((_i, el) => {
+    const linkBoxes = $episode('button.link-box[data-language-id="1"]').toArray();
+    for (const el of linkBoxes) {
       const playPath = $episode(el).attr('data-play-url');
       const hostname = $episode(el).attr('data-provider-name') || 'Unknown';
 
-      if (playPath) {
-        // Construct the full redirect URL: https://s.to/r?t=...
-        const fullRedirectUrl = new URL(playPath, this.baseUrl).href;
+      if (!playPath) continue;
 
-        results.push({
-          url: new URL(fullRedirectUrl),
-          meta: {
-            countryCodes: [CountryCode.de],
-            referer: targetUrl,
-            title: `${hostname} (DE) - S${season}E${episode}`,
-            sourceLabel: this.label,
-          },
+      // Construct the full redirect URL: https://s.to/r?t=... then follow it so Voe/DoodStream
+      // extractors (and MediaFlow proxy) see the real host, not s.to.
+      let streamUrl = new URL(playPath, this.baseUrl);
+      try {
+        streamUrl = await this.fetcher.getFinalRedirectUrl(ctx, streamUrl, {
+          headers: { Referer: targetUrl },
         });
+      } catch {
+        streamUrl = new URL(playPath, this.baseUrl);
       }
-    });
+
+      results.push({
+        url: streamUrl,
+        meta: {
+          countryCodes: [CountryCode.de],
+          referer: targetUrl,
+          title: `${hostname} (DE) - S${season}E${episode}`,
+          sourceLabel: this.label,
+        },
+      });
+    }
 
     return results;
   }
