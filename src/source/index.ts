@@ -17,7 +17,7 @@ import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
 import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
-import { STo } from './Movix';
+import { STo } from './STo';
 import { RgShows } from './RgShows';
 import { Source } from './Source';
 import { StreamKiste } from './StreamKiste';
