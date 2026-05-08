@@ -8,7 +8,7 @@ describe('SerienStream', () => {
   let source: SerienStream;
 
   beforeEach(() => {
-    source = new SerienStream(new FetcherMock(`${__dirname}/__fixtures__/SerienStream`));
+    source = new SerienStream(new FetcherMock(`${__dirname}/__fixtures__/STo`));
   });
 
   test('should only handle series content types', async () => {
