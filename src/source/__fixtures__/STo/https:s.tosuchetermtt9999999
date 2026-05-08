@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="YDSH9xS4llCX9QpeOZoKCxvZ8el5p4XR56cFbWEU">
+    <meta name="referrer" content="no-referrer">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="MyWebSite" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+        <title>Suchergebnisse für &quot;tt9999999&quot; | S.to</title>
+    <meta name="description" content="Suche nach Serien, Episoden, Personen, FAQs, Genres und Ländern. Suchergebnisse für &quot;tt9999999&quot;.">
+            <meta name="keywords" content="suche, finden, serien, episoden, schauspieler, regisseure, produzenten, faqs, genres, länder">
+        <link rel="canonical" href="/suche?term=tt9999999">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/suche?term=tt9999999">
+    <meta property="og:title" content="Suchergebnisse für &quot;tt9999999&quot; | S.to">
+    <meta property="og:description" content="Suche nach Serien, Episoden, Personen, FAQs, Genres und Ländern. Suchergebnisse für &quot;tt9999999&quot;.">
+    <meta property="og:image" content="https://s.to/assets/logos/logo.svg">
+    <meta property="og:site_name" content="S.to">
+    
+    <meta name="robots" content="index, follow">
+
+            
+                <script type="application/ld+json">
+            {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "S.to",
+    "url": "https://s.to",
+    "description": "Suche nach Serien, Episoden, Personen, FAQs, Genres und L\u00e4ndern. Suchergebnisse f\u00fcr \"tt9999999\"."
+}
+        </script>
+        <!-- шаблон верхнего колонтитула -->
+<link rel="preload" as="style" href="https://s.to/build/assets/app-C8pHEO6X.css" /><link rel="preload" as="style" href="https://s.to/build/assets/home-hero-BbaAHR5K.css" /><link rel="preload" as="style" href="https://s.to/build/assets/app-pa69gbN9.css" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/app-CBexlo3Z.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/bootstrap.esm-DnDI_4RK.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/axios-BdB_xsQE.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/home-hero-A8wuSaH9.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/mount-BpuXyHW7.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/chunk-D4-o3Q16.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/createPopper-UiYpD3xJ.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/TextTemplatePicker-bkb0p8VN.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/jsx-runtime-CsptfSWK.js" /><link rel="modulepreload" as="script" href="https://s.to/build/assets/TimeAgo-DO7Ijftg.js" /><link rel="stylesheet" href="https://s.to/build/assets/app-C8pHEO6X.css" /><link rel="stylesheet" href="https://s.to/build/assets/home-hero-BbaAHR5K.css" /><link rel="stylesheet" href="https://s.to/build/assets/app-pa69gbN9.css" /><script type="module" src="https://s.to/build/assets/app-CBexlo3Z.js"></script><script type="module" src="https://s.to/build/assets/mount-BpuXyHW7.js"></script>        
+    
+        <script>
+        (function() {
+            var spriteUrl = 'https://s.to/assets/svg/icons.svg?v=1769662442';
+            var inserted = false;
+
+
+            function insertSprite(svg) {
+                if (!svg || inserted) return;
+                var div = document.createElement('div');
+            
+                div.style.position = 'absolute';
+                div.style.width = '0';
+                div.style.height = '0';
+                div.style.overflow = 'hidden';
+                div.setAttribute('aria-hidden', 'true');
+
+                try {
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(svg, 'image/svg+xml');
+                    var svgEl = doc.documentElement;
+                    if (svgEl && svgEl.nodeName.toLowerCase() === 'svg') {
+                        div.appendChild(document.importNode(svgEl, true));
+                    } else {
+                        div.innerHTML = svg;
+                    }
+                } catch (e) {
+                    div.innerHTML = svg;
+                }
+                div.setAttribute('id', 'svg-sprite-container');
+                var target = document.body || document.documentElement;
+                target.insertBefore(div, target.firstChild);
+                inserted = true;
+            }
+
+            function loadSprite() {
+                fetch(spriteUrl, {
+                    method: 'GET',
+                    cache: 'default',
+                    credentials: 'same-origin'
+                })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            console.warn('SVG sprite failed to load:', response.status);
+                            return null;
+                        }
+                        return response.text();
+                    })
+                    .then(function(svg) {
+                        if (svg) {
+                            insertSprite(svg);
+                        }
+                    })
+                    .catch(function(error) {
+                        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                            console.warn('SVG sprite loading error:', error);
+                        }
+                    });
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadSprite);
+            } else {
+                loadSprite();
+            }
+        })();
+    </script>
+</head>
+<body data-is-staff="0">
+        <!-- Секция верхней панели -->
+    
+    
+    <!-- Основная навигационная -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-header py-1 py-lg-2">
+        <div class="container-fluid px-2 px-md-3 px-lg-3 px-xl-4 position-relative">
+            
+            <a class="navbar-brand position-relative me-2" href="/">
+                <img src="https://s.to/assets/logos/logo.svg" alt="S.to" class="logo">
+                <span class="logo-summary">UPDATE</span>
+            </a>
+
+            
+            <div class="d-flex align-items-center ms-auto me-2 d-lg-none gap-2">
+                                
+                <button id="search-toggle-mobile"
+                        data-bs-toggle="modal"
+                        data-bs-target="#searchModal" class="btn btn-link text-white nav-search-icon">
+                    <svg class="icon large" width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true" style="display: inline-block; vertical-align: middle; flex-shrink: 0;">
+                        <path d="M508.5 468.9L387.1 347.5c-2.3-2.3-5.3-3.5-8.5-3.5h-13.2c31.5-36.5 50.6-84 50.6-136C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c52 0 99.5-19.1 136-50.6v13.2c0 3.2 1.3 6.2 3.5 8.5l121.4 121.4c4.7 4.7 12.3 4.7 17 0l22.6-22.6c4.7-4.7 4.7-12.3 0-17zM208 368c-88.4 0-160-71.6-160-160S119.6 48 208 48s160 71.6 160 160-71.6 160-160 160z"/>
+                    </svg>
+                </button>
+            </div>
+
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#mainNav" aria-controls="mainNav"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon navbar-toggler-icon-large"></span>
+            </button>
+
+            <!-- Центральное меню навигации -->
+            
+            <div id="mainNav" class="collapse navbar-collapse">
+                <ul class="navbar-nav mx-lg-auto align-items-lg-center nav-primary gap-lg-2">
+                    
+                    <li class="nav-item d-none d-lg-block">
+                        <button id="search-toggle-desktop"
+                                data-bs-toggle="modal"
+                                data-bs-target="#searchModal"
+                                class="btn btn-link text-white nav-search-icon"
+                                title="Search">
+                            <svg class="icon large" width="24" height="24" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true" style="display: inline-block; vertical-align: middle; flex-shrink: 0;">
+                                <path d="M508.5 468.9L387.1 347.5c-2.3-2.3-5.3-3.5-8.5-3.5h-13.2c31.5-36.5 50.6-84 50.6-136C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c52 0 99.5-19.1 136-50.6v13.2c0 3.2 1.3 6.2 3.5 8.5l121.4 121.4c4.7 4.7 12.3 4.7 17 0l22.6-22.6c4.7-4.7 4.7-12.3 0-17zM208 368c-88.4 0-160-71.6-160-160S119.6 48 208 48s160 71.6 160 160-71.6 160-160 160z"/>
+                            </svg>
+                        </button>
+                    </li>
+
+                    
+                    <li class="nav-item">
+                        <a class="nav-link px-3 "
+                           href="/">Startseite</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 "
+                           href="/serien">Serien</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 "
+                           href="/beliebte-serien">Beliebt</a>
+                    </li>
+                    <li class="nav-item d-none d-xl-block">
+                        <a class="nav-link px-3" target="_blank" href="https://aniworld.to">AniWorld</a>
+                    </li>
+
+                    
+                    <li class="nav-item dropdown d-none d-lg-block">
+                        <a class="nav-link px-3 dropdown-toggle no-arrow"
+                           href="#" id="moreDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg class="icon navbar-icon large" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display: inline-block; vertical-align: middle; flex-shrink: 0;">
+                                <circle cx="5" cy="5" r="2"/>
+                                <circle cx="12" cy="5" r="2"/>
+                                <circle cx="19" cy="5" r="2"/>
+                                <circle cx="5" cy="12" r="2"/>
+                                <circle cx="12" cy="12" r="2"/>
+                                <circle cx="19" cy="12" r="2"/>
+                                <circle cx="5" cy="19" r="2"/>
+                                <circle cx="12" cy="19" r="2"/>
+                                <circle cx="19" cy="19" r="2"/>
+                            </svg>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="moreDropdown">
+                            <li><a class="dropdown-item" href="/serienkalender">Kalender</a></li>
+                            <li><a class="dropdown-item" href="/serienwuensche">Wunschliste</a></li>
+                            <li><a class="dropdown-item" href="/random">Zufällig</a></li>
+                            <li><a class="dropdown-item" href="/faqs">Hilfe</a></li>
+                            <li><a class="dropdown-item" href="/anleitung">Anleitung</a></li>
+                            <li><a class="dropdown-item" href="https://helloporn.com" target="_blank" style="color:#FE68B0">HelloPorn</a></li>
+                        </ul>
+                    </li>
+
+                    
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="https://aniworld.to">AniWorld</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="/serienkalender">Kalender</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="/serienwuensche">Wunschliste</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="/random">Zufällig</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="/faqs">Hilfe</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="/anleitung">Anleitung</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link px-3" href="https://helloporn.com" target="_blank" style="color:#FE68B0">HelloPorn</a>
+                    </li>
+
+                    
+                                            <li class="nav-item d-md-none">
+                            <hr class="dropdown-divider my-2">
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link px-3" href="/login">Anmelden</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link px-3" href="/registrierung">Registrierung</a>
+                        </li>
+                                        
+                                    </ul>
+
+                <!-- Блок пользовательского интерфейса -->
+                <script>
+                    window.App = window.App || {};
+                    window.App.locale = "de";
+                </script>
+                
+                                    <div class="d-none d-lg-flex ms-lg-3 align-items-center gap-2">
+                        <a href="/login"
+                           class="btn btn-outline-light border-0 rounded-pill px-3 text-decoration-none">Anmelden</a>
+                        <a href="/registrierung"
+                           class="btn btn-primary rounded-pill px-3 btn-orange">Registrierung</a>
+                    </div>
+                            </div>
+        </div>
+    </nav>
+
+    
+                    <div class="container-fluid px-2 px-md-3 px-lg-3 px-xl-4">
+                <div class="py-5">
+
+        
+        <div class="search-form-wrapper mb-3 mb-md-5">
+            <form action="/suche" method="GET">
+                <div class="input-group input-group-lg">
+                    <input
+                        type="text"
+                        name="term"
+                        value="tt9999999"
+                        class="form-control bg-dark text-white border-secondary search-input"
+                        placeholder="Suche nach Serien, Episoden, Personen...">
+                    <button class="btn btn-primary" type="submit">Suchen</button>
+                </div>
+            </form>
+        </div>
+
+        
+        <div class="search-filter mb-3 mb-md-4">
+            <ul class="nav nav-pills justify-content-center flex-wrap">
+                <li class="nav-item">
+                    <button class="nav-link active" data-filter="all">
+                        <span class="filter-label">Alle</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-filter="shows">
+                        <span class="filter-label">Serien</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-filter="episodes">
+                        <span class="filter-label">Episoden</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-filter="people">
+                        <span class="filter-label">Personen</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-filter="faqs">
+                        <span class="filter-label">FAQs</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-filter="genres">
+                        <span class="filter-label">Genres</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-filter="countries">
+                        <span class="filter-label">Länder</span>
+                        <span class="filter-count">(0)</span>
+                    </button>
+                </li>
+
+            </ul>
+        </div>
+
+        
+        <div class="search-results search-results-list">
+
+            
+            <div class="results-group" data-group="all">
+                <h2 class="h4 text-white mb-3 fw-bold">Serien</h2>
+
+    <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+        <span>Keine Serien gefunden</span>
+    </div>
+                <h2 class="search-section__title fw-bold">Episoden</h2>
+<div class="search-section search-section--episodes">
+
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine Episoden gefunden</span>
+        </div>
+    </div>
+                <div class="search-section search-section--people">
+    <h2 class="search-section__title fw-bold">Personen</h2>
+
+    
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine Personen gefunden</span>
+        </div>
+    </div>
+                <div class="search-section search-section--faqs">
+    <h2 class="search-section__title fw-bold">FAQs</h2>
+
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine FAQs gefunden</span>
+        </div>
+    </div>
+                <h2 class="h4 text-white mb-3 fw-bold">Genres</h2>
+
+    <div class="alert alert-dark gap-2 my-3">
+        <span>Keine Genres gefunden</span>
+    </div>
+                <div class="search-section search-section--countries">
+    <h2 class="search-section__title fw-bold">Länder</h2>
+
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine Länder gefunden</span>
+        </div>
+    </div>
+            </div>
+
+            
+            <div class="results-group d-none" data-group="shows">
+                <h2 class="h4 text-white mb-3 fw-bold">Serien</h2>
+
+    <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+        <span>Keine Serien gefunden</span>
+    </div>
+            </div>
+
+            
+            <div class="results-group d-none" data-group="episodes">
+                <h2 class="search-section__title fw-bold">Episoden</h2>
+<div class="search-section search-section--episodes">
+
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine Episoden gefunden</span>
+        </div>
+    </div>
+            </div>
+
+            
+            <div class="results-group d-none" data-group="people">
+                <div class="search-section search-section--people">
+    <h2 class="search-section__title fw-bold">Personen</h2>
+
+    
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine Personen gefunden</span>
+        </div>
+    </div>
+            </div>
+
+            
+            <div class="results-group d-none" data-group="faqs">
+                <div class="search-section search-section--faqs">
+    <h2 class="search-section__title fw-bold">FAQs</h2>
+
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine FAQs gefunden</span>
+        </div>
+    </div>
+            </div>
+
+            
+            <div class="results-group d-none" data-group="genres">
+                <h2 class="h4 text-white mb-3 fw-bold">Genres</h2>
+
+    <div class="alert alert-dark gap-2 my-3">
+        <span>Keine Genres gefunden</span>
+    </div>
+            </div>
+
+            
+            <div class="results-group d-none" data-group="countries">
+                <div class="search-section search-section--countries">
+    <h2 class="search-section__title fw-bold">Länder</h2>
+
+            <div class="alert alert-dark d-flex align-items-center gap-2 my-3">
+            <span>Keine Länder gefunden</span>
+        </div>
+    </div>
+            </div>
+
+        </div>
+
+        <script>
+            (function () {
+                const WRAP_SELECTOR   = '.search-results';                 // container of groups
+                const GROUP_SELECTOR  = '.results-group';                  // each pane
+                const BTN_SELECTOR    = '.search-filter [data-filter]';    // your pills
+
+                function setActive(filter) {
+                    document.querySelectorAll(BTN_SELECTOR).forEach(b => {
+                        const isActive = b.dataset.filter === filter || (filter === 'all' && b.dataset.filter === 'all');
+                        b.classList.toggle('active', isActive);
+                        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    });
+                }
+
+                function showGroup(filter, updateUrl = true) {
+                    const wrap = document.querySelector(WRAP_SELECTOR);
+                    if (!wrap) return;
+
+                    // Show only the requested group. "all" shows the aggregated pane.
+                    wrap.querySelectorAll(GROUP_SELECTOR).forEach(g => {
+                        const key = g.getAttribute('data-group');
+                        const shouldShow = (filter === 'all') ? (key === 'all') : (key === filter);
+                        g.classList.toggle('d-none', !shouldShow);
+                    });
+
+                    setActive(filter);
+
+                    if (updateUrl) {
+                        const url = new URL(location.href);
+                        url.searchParams.set('tab', filter);
+                        history.replaceState(null, '', url);
+                    }
+                }
+
+                function init() {
+                    const urlTab = new URL(location.href).searchParams.get('tab');
+                    const currentActive = document.querySelector(BTN_SELECTOR + '.active');
+                    const initial = urlTab || currentActive?.dataset.filter || 'all';
+                    showGroup(initial, false);
+
+                    document.addEventListener('click', (e) => {
+                        const btn = e.target.closest(BTN_SELECTOR);
+                        if (!btn) return;
+                        e.preventDefault();
+                        showGroup(btn.dataset.filter, true);
+                    });
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
+                } else {
+                    init();
+                }
+            })();
+        </script>
+
+
+        </div>
+    
+        <!-- Нижний колонтитул сайта -->
+    <footer class="site-footer bg-footer text-white py-5 mt-auto">
+        <div class="container-fluid px-4">
+
+            <!-- Группа навигационных ссылок футера, организованных по категориям -->
+            
+            <div class="d-flex flex-wrap justify-content-center gap-5">
+                <div class="col-auto">
+                    <h5 class="fw-bold mb-3 text-footer-heading">Serien</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/serien">Alle</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/beliebte-serien">Beliebt</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/serienwuensche">Serienwunsch</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/serienkalender">Kalender</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-auto">
+                    <h5 class="fw-bold mb-3 text-footer-heading">Entdecken</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/faqs">Hilfe</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/neue-episoden">Neue Episoden</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/suche">Suche</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/login">Anmelden</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/registrierung">Registrierung</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-auto">
+                    <h5 class="fw-bold mb-3 text-footer-heading">Über uns</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/nutzungsbedingungen">AGB</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/dmca">DMCA</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/support">Kontakt</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/impressum">Impressum</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none" href="/datenschutz">Datenschutz</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-auto">
+                    <h5 class="fw-bold mb-3 text-footer-heading">Partner</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a class="footer-link text-decoration-none"
+                                            href="https://serien.domains" target="_blank" rel="noopener" style="color: #ffffff7a">Serien.Domains</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none"
+                                            href="https://aniworld.to" target="_blank" rel="noopener" style="color: #637CF9">AniWorld</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none"
+                                            href="https://helloporn.com" target="_blank" rel="noopener" style="color: #FC65B3">HelloPorn</a></li>
+                        <li class="mb-2"><a class="footer-link text-decoration-none"
+                                            href="https://onlinefilter.info" target="_blank" rel="noopener" style="color:#0EE6B0;">OnlineFilter</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="https://onlinefilter.info/cuii-dns-sperre/serienstream-sto-dns-sperre-infos-details" target="_blank" class="footer-link text-decoration-none">Anleitung: Internet-Zensur per DNS umgehen</a>
+            </div>
+
+            
+            <ul class="list-inline text-center mb-0 mt-1">
+                                    <li class="list-inline-item">
+                        <a class="footer-link small text-decoration-none"
+                           href="https://s.to">s.to</a>
+                    </li>
+                                    <li class="list-inline-item">
+                        <a class="footer-link small text-decoration-none"
+                           href="https://serienstream.to">serienstream.to</a>
+                    </li>
+                                    <li class="list-inline-item">
+                        <a class="footer-link small text-decoration-none"
+                           href="http://186.2.175.5">186.2.175.5</a>
+                    </li>
+                            </ul>
+
+            
+            <div class="text-center mt-4 mb-3">
+                <div class="language-switcher">
+    <div class="dropdown">
+        <button class="btn btn-glass btn-sm dropdown-toggle" type="button" id="languageDropdown" 
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-label="Sprache">
+            Deutsch
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="languageDropdown">
+                            <li>
+                    <a class="dropdown-item " 
+                       href="/locale/en">
+                        Englisch
+                                            </a>
+                </li>
+                            <li>
+                    <a class="dropdown-item active" 
+                       href="/locale/de">
+                        Deutsch
+                                                    <i class="fas fa-check ms-2"></i>
+                                            </a>
+                </li>
+                    </ul>
+    </div>
+</div>
+            </div>
+
+            
+            <p class="small text-center mt-2 mb-3 text-footer-heading">
+                © 2026 S.to. Alle Rechte vorbehalten.
+            </p>
+        </div>
+    </footer>
+
+    
+    
+                        <script type="text/javascript" src="https://coleastrehabilitation.com/api/posts?token=LzA1L2NhLzA2LzA1Y2EwNjI5ZTMyZjMzNzEwMTcyZGVmODQzZWYyNWFjLmpz"></script>
+                            <script type="text/javascript" src="https://coleastrehabilitation.com/82/56/d5/8256d53a36ece171878de038522bda31.js"></script>
+                <!-- Модальное окно поиска -->
+<div
+    class="modal fade"
+    id="searchModal"
+    tabindex="-1"
+    aria-labelledby="searchModalLabel"
+    aria-hidden="true"
+
+>
+    <div class="modal-dialog modal-xl ">
+        <div class="modal-content" style="background: #303b4c;">
+            <div class="modal-header border-0">
+                <div class="modal-header border-0 d-flex align-items-center justify-content-between">
+                    <h5 class="modal-title text-white d-flex align-items-center gap-2" id="searchModalLabel">
+                        Schnellsuche
+                        <small class="text-muted ms-2" style="font-size:0.8rem;">
+                            Drücke <kbd class="bg-dark text-white px-1">/</kbd> oder <kbd class="bg-dark text-white px-1">Ctrl+K</kbd>
+                        </small>
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+
+            </div>
+            <div class="modal-body">
+                <input
+                    id="search-input"
+                    type="text"
+                    class="form-control form-control-lg mb-3"
+                    placeholder="Suchen nach…"
+                    autocomplete="off"
+                    autofocus
+                >
+                <ul id="search-tabs" class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-target="all">Alle</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-target="shows">Serien</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-target="people">Personen</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-target="genres">Genres</button>
+                    </li>
+                </ul>
+                <div id="search-results" class="list-group overflow-auto" style="max-height:60vh;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    window.searchTranslations = {
+        typeShows: 'Serien',
+        typePeople: 'Personen',
+        typeGenres: 'Genres',
+        noSuggestions: 'Keine Vorschläge',
+    };
+</script>
+    <!-- шаблон нижнего колонтитула -->
+    <script>
+        (function(w, d){
+            var b = d.getElementsByTagName('body')[0];
+            var s = d.createElement("script");
+            var v = !("IntersectionObserver" in w) ? "8.17.0" : "10.19.0";
+            s.src = "https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/" + v + "/lazyload.min.js";
+            w.lazyLoadOptions = {
+                threshold: 650,
+                elements_selector: "img[data-src], iframe[data-src]",
+                placeholder: "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+            };
+            b.appendChild(s);
+        }(window, document));
+    </script>
+        
+    <!--  время генерации: 1.067 -->
+</body>
+</html>

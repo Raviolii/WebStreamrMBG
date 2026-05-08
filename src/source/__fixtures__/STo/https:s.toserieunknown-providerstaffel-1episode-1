@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <body>
+    <button
+      class="link-box"
+      data-language-id="1"
+      data-play-url="/r?t=unknown-provider"
+    ></button>
+    <button
+      class="link-box"
+      data-language-id="1"
+      data-provider-name="NoUrlProvider"
+    ></button>
+  </body>
+</html>

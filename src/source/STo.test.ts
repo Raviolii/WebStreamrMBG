@@ -5,10 +5,10 @@ import { STo } from './STo';
 const ctx = createTestContext({ de: 'on' });
 
 describe('SerienStream', () => {
-  let source: SerienStream;
+  let source: STo;
 
   beforeEach(() => {
-    source = new SerienStream(new FetcherMock(`${__dirname}/__fixtures__/STo`));
+    source = new STo(new FetcherMock(`${__dirname}/__fixtures__/STo`));
   });
 
   test('should only handle series content types', async () => {
@@ -38,6 +38,16 @@ describe('SerienStream', () => {
     expect(streams).toMatchSnapshot();
   });
 
+  test('defaults season to 1 when only episode is provided', async () => {
+    const streams = await source.handle(ctx, 'series', new ImdbId('tt1190634_eponly', undefined, 1));
+    expect(streams.length).toBeGreaterThan(0);
+  });
+
+  test('defaults episode to 1 when only season is provided', async () => {
+    const streams = await source.handle(ctx, 'series', new ImdbId('tt1190634', 1, undefined));
+    expect(streams.length).toBeGreaterThan(0);
+  });
+
   test('correctly handles search failures', async () => {
     const streams = await source.handle(ctx, 'series', new ImdbId('tt9999999', 1, 1));
     expect(streams).toHaveLength(0);
@@ -53,5 +63,12 @@ describe('SerienStream', () => {
   test('returns empty array when no German hosters are available', async () => {
     const streams = await source.handle(ctx, 'series', new ImdbId('tt_no_german_links', 1, 1));
     expect(streams).toHaveLength(0);
+  });
+
+  test('uses Unknown provider fallback and ignores entries without play url', async () => {
+    const streams = await source.handle(ctx, 'series', new ImdbId('tt_unknown_provider', 1, 1));
+    expect(streams).toHaveLength(1);
+    expect(streams[0].meta.title).toContain('Unknown (DE) - S1E1');
+    expect(streams[0].url.href).toContain('https://s.to/r?t=unknown-provider');
   });
 });

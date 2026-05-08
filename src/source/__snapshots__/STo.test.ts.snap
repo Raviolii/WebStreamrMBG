@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`SerienStream defaults to Season 1 Episode 1 if not provided 1`] = `[]`;
+
+exports[`SerienStream handles The Boys (tt1190634) S01E01 correctly 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://s.to/serie/the-boys/staffel-1/episode-1",
+      "sourceLabel": "S.to",
+      "title": "VOE (DE) - S1E1",
+    },
+    "url": "https://s.to/r?t=eyJpdiI6Im1SN2JxR2hpRUF5VEVsZGFma0orMVE9PSIsInZhbHVlIjoicXFsVzk5a3p4bXkrMG41emNIcW5CTzlFVG9Ja1BjSjBON3ROOTZUY0lKNFd5cmZFZTlTVS9UM0JBKzMzbnBnaUpPWGU2NEtSSHpnNTFrT25uWEpFeFE9PSIsIm1hYyI6IjcxYzY4ZTA0YTU0NDJjMDQ0MGZmZjBkMGQ5NWUzNDQzZmExOGU4ZWZjOGJjNjQ0ZmQyYjE3NDcxNThkOGEwNWEiLCJ0YWciOiIifQ%3D%3D",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://s.to/serie/the-boys/staffel-1/episode-1",
+      "sourceLabel": "S.to",
+      "title": "Doodstream (DE) - S1E1",
+    },
+    "url": "https://s.to/r?t=eyJpdiI6Im9NcWdYVHR1QzNDeUphbzB0OE91Znc9PSIsInZhbHVlIjoiWHBIM1FEREJodC91R21lUGhnSVlQQno2STkwMWQ4MHRtUFp6WmlvNjhVYk96b09HR0VIV1dkOFZRUjAzQ09lWDZSbEFJQmF0L01XQlJFeTZZMldEeUE9PSIsIm1hYyI6IjEwYzYyZTc3YmNiM2QwOGJhZGQzNmRmMjM4ZWViZmNlZmQwODgyMjZmZTMyYzU5NjFhODJiN2U2YjJkNzZlYzEiLCJ0YWciOiIifQ%3D%3D",
+  },
+]
+`;
