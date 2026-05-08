@@ -4,6 +4,17 @@ import { Context, CountryCode } from '../types';
 import { Fetcher, Id } from '../utils';
 import { Source, SourceResult } from './Source';
 
+/* istanbul ignore next */
+export const STREAMING_HOSTS = [
+  'voe', 'dood', 'streamtape', 'veev', 'vinovo', 'vidhide', 'dhtpre',
+  'mixdrop', 'supervideo', 'uqload', 'filelion', 'lulustream', 'fastream',
+  'dropload', 'savefiles', 'streamembed', 'vidara', 'vidsonic',
+];
+
+/* istanbul ignore next */
+export const isStreamingHost = (hostname: string): boolean =>
+  STREAMING_HOSTS.some(host => hostname.includes(host));
+
 export class STo extends Source {
   public readonly id = 's-to';
   public readonly label = 'S.to';
@@ -47,7 +58,7 @@ export class STo extends Source {
     // S.to uses data-language-id="1" for German
     $episode('button.link-box[data-language-id="1"]').each((_i, el) => {
       const playPath = $episode(el).attr('data-play-url');
-      const providerName = $episode(el).attr('data-provider-name') || 'Unknown';
+      const hostname = $episode(el).attr('data-provider-name') || 'Unknown';
 
       if (playPath) {
         // Construct the full redirect URL: https://s.to/r?t=...
@@ -58,7 +69,7 @@ export class STo extends Source {
           meta: {
             countryCodes: [CountryCode.de],
             referer: targetUrl,
-            title: `${providerName} (DE) - S${season}E${episode}`,
+            title: `${hostname} (DE) - S${season}E${episode}`,
             sourceLabel: this.label,
           },
         });
