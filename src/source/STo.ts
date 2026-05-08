@@ -4,7 +4,7 @@ import { Context, CountryCode } from '../types';
 import { Fetcher, Id } from '../utils';
 import { Source, SourceResult } from './Source';
 
-export class SerienStream extends Source {
+export class STo extends Source {
   public readonly id = 's-to';
   public readonly label = 'S.to';
   public readonly baseUrl = 'https://s.to';
