@@ -74,6 +74,17 @@ export class STo extends Source {
         streamUrl = new URL(playPath, this.baseUrl);
       }
 
+      // s.to often responds to HEAD with 200 and no Location; GET returns the real 302 chain.
+      if (streamUrl.hostname === 's.to' && streamUrl.pathname.startsWith('/r')) {
+        try {
+          streamUrl = await this.fetcher.getFinalRedirectUrlGet(ctx, new URL(playPath, this.baseUrl), {
+            headers: { Referer: targetUrl },
+          });
+        } catch {
+          streamUrl = new URL(playPath, this.baseUrl);
+        }
+      }
+
       results.push({
         url: streamUrl,
         meta: {

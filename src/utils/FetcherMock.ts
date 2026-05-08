@@ -64,6 +64,21 @@ export class FetcherMock extends Fetcher {
     }
 
     return url;
+  };
+
+  public override async getFinalRedirectUrlGet(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount?: number, count?: number): Promise<URL> {
+    const newRequestConfig = { ...requestConfig, method: 'GET', maxRedirects: 0 };
+
+    if (count && maxCount && count >= maxCount) {
+      return url;
+    }
+
+    const response = await this.fetch(ctx, url, newRequestConfig);
+    if (response.headers['location']) {
+      return await this.getFinalRedirectUrlGet(ctx, new URL(response.headers['location']), newRequestConfig, maxCount, (count ?? 0) + 1);
+    }
+
+    return url;
   }
 
   private readonly slugifyUrl = (url: URL): string => {

@@ -126,6 +126,22 @@ export class Fetcher {
     return url;
   }
 
+  /** Like {@link getFinalRedirectUrl} but uses GET. Many hosts (incl. s.to) only emit redirects on GET, not HEAD. */
+  public async getFinalRedirectUrlGet(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount?: number, count?: number): Promise<URL> {
+    const newRequestConfig = { ...requestConfig, method: 'GET', maxRedirects: 0 };
+
+    if (count && maxCount && count >= maxCount) {
+      return url;
+    }
+
+    const response = await this.queuedFetch(ctx, url, newRequestConfig);
+    if (response.status >= 300 && response.status < 400) {
+      return await this.getFinalRedirectUrlGet(ctx, new URL(response.headers['location'] as string, url), newRequestConfig, maxCount, (count ?? 0) + 1);
+    }
+
+    return url;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async json(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<any> {
     const jsonRequestConfig = {
