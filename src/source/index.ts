@@ -17,6 +17,7 @@ import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
 import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
+import { STo } from './Movix';
 import { RgShows } from './RgShows';
 import { Source } from './Source';
 import { StreamKiste } from './StreamKiste';
@@ -52,6 +53,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MegaKino(fetcher),
     new MeineCloud(fetcher),
     new StreamKiste(fetcher),
+    new STo(fetcher),
     new FilmpalastTO(fetcher),
     new HDFilme(fetcher),
     // FR
