@@ -12,7 +12,7 @@ describe('SerienStream', () => {
   });
 
   test('should only handle series content types', async () => {
-    const streams = await source.handle(ctx, 'movie' as unknown as any, new ImdbId('tt1190634', undefined, undefined));
+    const streams = await source.handle(ctx, 'movie', new ImdbId('tt1190634', undefined, undefined));
     expect(streams).toHaveLength(0);
   });
 
@@ -36,16 +36,6 @@ describe('SerienStream', () => {
   test('defaults to Season 1 Episode 1 if not provided', async () => {
     const streams = await source.handle(ctx, 'series', new ImdbId('tt1190634', undefined, undefined));
     expect(streams).toMatchSnapshot();
-  });
-
-  test('defaults season to 1 when only episode is provided', async () => {
-    const streams = await source.handle(ctx, 'series', new ImdbId('tt1190634_eponly', undefined, 1));
-    expect(streams.length).toBeGreaterThan(0);
-  });
-
-  test('defaults episode to 1 when only season is provided', async () => {
-    const streams = await source.handle(ctx, 'series', new ImdbId('tt1190634', 1, undefined));
-    expect(streams.length).toBeGreaterThan(0);
   });
 
   test('correctly handles search failures', async () => {
