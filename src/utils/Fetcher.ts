@@ -135,8 +135,27 @@ export class Fetcher {
     }
 
     const response = await this.queuedFetch(ctx, url, newRequestConfig);
+    const locationHeader = response.headers?.['location'] as (string | undefined);
+    if (locationHeader) {
+      return await this.getFinalRedirectUrlGet(ctx, new URL(locationHeader, url), newRequestConfig, maxCount, (count ?? 0) + 1);
+    }
+
     if (response.status >= 300 && response.status < 400) {
-      return await this.getFinalRedirectUrlGet(ctx, new URL(response.headers['location'] as string, url), newRequestConfig, maxCount, (count ?? 0) + 1);
+      return url;
+    }
+
+    // Some hosts (incl. s.to) return 200 and redirect via JS/meta refresh.
+    const html = typeof response.data === 'string' ? response.data : '';
+    if (html) {
+      const jsRedirect =
+        html.match(/window\.location(?:\.href)?\s*=\s*['"]([^'"]+)['"]/i)
+        ?? html.match(/location\.href\s*=\s*['"]([^'"]+)['"]/i)
+        ?? html.match(/location\.replace\(\s*['"]([^'"]+)['"]\s*\)/i)
+        ?? html.match(/<meta\s+http-equiv=['"]refresh['"]\s+content=['"][^'"]*url=([^'"]+)['"]/i);
+
+      if (jsRedirect?.[1]) {
+        return await this.getFinalRedirectUrlGet(ctx, new URL(jsRedirect[1], url), newRequestConfig, maxCount, (count ?? 0) + 1);
+      }
     }
 
     return url;
