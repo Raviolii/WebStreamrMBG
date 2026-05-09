@@ -119,8 +119,13 @@ export class Fetcher {
     }
 
     const response = await this.queuedFetch(ctx, url, newRequestConfig);
+    const locationHeader = response.headers?.['location'] as (string | undefined);
+    if (locationHeader) {
+      return await this.getFinalRedirectUrl(ctx, new URL(locationHeader, url), newRequestConfig, maxCount, (count ?? 0) + 1);
+    }
+
     if (response.status >= 300 && response.status < 400) {
-      return await this.getFinalRedirectUrl(ctx, new URL(response.headers['location']), newRequestConfig, maxCount, (count ?? 0) + 1);
+      return url;
     }
 
     return url;
