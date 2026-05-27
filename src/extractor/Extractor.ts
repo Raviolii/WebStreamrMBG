@@ -1,3 +1,4 @@
+import winston from 'winston';
 import { NotFoundError } from '../error';
 import { Context, Format, InternalUrlResult, Meta, UrlResult } from '../types';
 import { Fetcher } from '../utils';
@@ -11,12 +12,17 @@ export abstract class Extractor {
 
   public readonly cacheVersion: number | undefined = undefined;
 
+  public readonly lazyExtract: boolean = false;
+
   public readonly viaMediaFlowProxy: boolean = false;
 
   protected readonly fetcher: Fetcher;
 
-  public constructor(fetcher: Fetcher) {
+  protected readonly logger: winston.Logger;
+
+  public constructor(fetcher: Fetcher, logger: winston.Logger) {
     this.fetcher = fetcher;
+    this.logger = logger;
   }
 
   public abstract supports(ctx: Context, url: URL): boolean;
@@ -24,6 +30,11 @@ export abstract class Extractor {
   public normalize(url: URL): URL {
     return url;
   };
+
+  // Async normalization for cache key only; original URL still passed to extractInternal()
+  public async normalizeAsync(_ctx: Context, url: URL): Promise<URL> {
+    return url;
+  }
 
   protected abstract extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]>;
 

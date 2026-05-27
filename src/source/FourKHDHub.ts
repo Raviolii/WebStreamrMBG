@@ -2,13 +2,14 @@ import bytes from 'bytes';
 import * as cheerio from 'cheerio';
 import { BasicAcceptedElems, CheerioAPI } from 'cheerio';
 import { AnyNode } from 'domhandler';
-import levenshtein from 'fast-levenshtein';
-import memoize from 'memoizee';
+import Fuse from 'fuse.js';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode, Meta } from '../types';
-import { Fetcher, findCountryCodes, getTmdbId, getTmdbNameAndYear, Id, TmdbId } from '../utils';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getTmdbId, getTmdbNameAndYear, HUB_HOST_PATTERN, Id, TmdbId } from '../utils';
 import { resolveRedirectUrl } from './hd-hub-helper';
 import { Source, SourceResult } from './Source';
+
+const PIXEL_PATTERNS = /pixel\.(hubcdn|rohitkiskk)/;
 
 export class FourKHDHub extends Source {
   public readonly id = '4khdhub';
@@ -19,7 +20,18 @@ export class FourKHDHub extends Source {
 
   public readonly countryCodes: CountryCode[] = [CountryCode.multi, CountryCode.hi, CountryCode.ta, CountryCode.te];
 
-  public readonly baseUrl = 'https://4khdhub.click';
+  public readonly baseUrl = 'https://4khdhub.link';
+
+  protected override readonly domainKey = '4kHDHub';
+
+  private readonly FALLBACK_CANDIDATES = [
+    'https://4khdhub.link',
+    'https://4khdhub.click',
+    'https://4khdhub.ink',
+    'https://4khdhub.one',
+    'https://4khdhub.to',
+    'https://4khdhub.cc',
+  ];
 
   private readonly fetcher: Fetcher;
 
@@ -27,11 +39,6 @@ export class FourKHDHub extends Source {
     super();
 
     this.fetcher = fetcher;
-
-    this.getBaseUrl = memoize(this.getBaseUrl, {
-      maxAge: 3600000, // 1 hour
-      normalizer: () => 'baseUrl',
-    });
   }
 
   public async handleInternal(ctx: Context, _type: string, id: Id): Promise<SourceResult[]> {
@@ -46,7 +53,7 @@ export class FourKHDHub extends Source {
     const $ = cheerio.load(html);
 
     if (tmdbId.season) {
-      return Promise.all(
+      const results = await Promise.all(
         $(`.episode-item`)
           .filter((_i, el) => $('.episode-title', el).text().includes(`S${String(tmdbId.season).padStart(2, '0')}`))
           .map((_i, el) => ({
@@ -58,13 +65,15 @@ export class FourKHDHub extends Source {
           .map(async (_id, { countryCodes, downloadItem }) => await this.extractSourceResults(ctx, $, downloadItem as BasicAcceptedElems<AnyNode>, countryCodes))
           .toArray(),
       );
+      return results.flat();
     }
 
-    return Promise.all(
+    const results = await Promise.all(
       $(`.download-item`)
         .map(async (_i, el) => await this.extractSourceResults(ctx, $, el, [CountryCode.multi, ...findCountryCodes($(el).html() as string)]))
         .toArray(),
     );
+    return results.flat();
   };
 
   private readonly fetchPageUrl = async (ctx: Context, tmdbId: TmdbId): Promise<URL | undefined> => {
@@ -93,16 +102,14 @@ export class FourKHDHub extends Source {
           .replace(/\[.*?]/, '')
           .trim();
 
-        const diff = levenshtein.get(movieCardTitle, name, { useCollator: true });
-
-        return diff < 5
-          || (movieCardTitle.includes(name) && diff < 16);
+        const fuse = new Fuse([movieCardTitle], { threshold: 0.3 });
+        return fuse.search(name).length > 0;
       })
       .map(async (_i, el) => new URL($(el).attr('href') as string, await this.getBaseUrl(ctx)))
       .get(0);
   };
 
-  private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: BasicAcceptedElems<AnyNode>, countryCodes: CountryCode[]): Promise<SourceResult> => {
+  private readonly extractSourceResults = async (ctx: Context, $: CheerioAPI, el: BasicAcceptedElems<AnyNode>, countryCodes: CountryCode[]): Promise<SourceResult[]> => {
     const localHtml = $(el).html() as string;
 
     const sizeMatch = localHtml.match(/([\d.]+ ?[GM]B)/);
@@ -115,24 +122,49 @@ export class FourKHDHub extends Source {
       ...(sizeMatch && { bytes: bytes.parse(sizeMatch[1] as string) as number }),
     };
 
-    const redirectUrlHubCloud = $('a', el)
-      .filter((_i, el) => $(el).text().includes('HubCloud'))
-      .map((_i, el) => new URL($(el).attr('href') as string))
-      .get(0);
+    const urls: URL[] = [];
+    const seenUrls = new Set<string>();
 
-    if (redirectUrlHubCloud) {
-      return { url: await resolveRedirectUrl(ctx, this.fetcher, redirectUrlHubCloud), meta };
+    $('a', el)
+      .filter((_i, a) => {
+        const href = $(a).attr('href');
+        return !!href && HUB_HOST_PATTERN.test(href.toLowerCase());
+      })
+      .each((_i, a) => {
+        const href = $(a).attr('href') as string;
+        try {
+          const url = new URL(href);
+          if (seenUrls.has(url.href)) return;
+          seenUrls.add(url.href);
+
+          if (DEAD_HUBCLOUD_HOSTS.has(url.hostname)) return;
+          if (PIXEL_PATTERNS.test(url.href)) return;
+
+          urls.push(url);
+        } catch {
+          // skip invalid URLs
+        }
+      });
+
+    return Promise.all(urls.map(async url => ({
+      url: await this.resolveIfRedirect(ctx, url),
+      meta,
+    })));
+  };
+
+  private readonly resolveIfRedirect = async (ctx: Context, url: URL): Promise<URL> => {
+    if (HUB_HOST_PATTERN.test(url.hostname)) {
+      return url;
     }
 
-    const redirectUrlHubDrive = $('a', el)
-      .filter((_i, el) => $(el).text().includes('HubDrive'))
-      .map((_i, el) => new URL($(el).attr('href') as string))
-      .get(0) as URL;
-
-    return { url: await resolveRedirectUrl(ctx, this.fetcher, redirectUrlHubDrive), meta };
+    try {
+      return await resolveRedirectUrl(ctx, this.fetcher, url);
+    } catch {
+      return url;
+    }
   };
 
   private readonly getBaseUrl = async (ctx: Context): Promise<URL> => {
-    return await this.fetcher.getFinalRedirectUrl(ctx, new URL(this.baseUrl));
+    return this.probeBaseUrl(ctx, this.fetcher, this.domainKey, this.FALLBACK_CANDIDATES);
   };
 }

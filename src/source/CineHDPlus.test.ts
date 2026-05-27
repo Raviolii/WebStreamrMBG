@@ -33,4 +33,9 @@ describe('CineHDPlus', () => {
     const streamsMx = await source.handle({ ...ctx, ...{ config: { mx: 'on' } } }, 'series', new TmdbId(3137, 2, 3));
     expect(streamsMx).toHaveLength(0);
   });
+
+  test('handles no exact name match in search results', async () => {
+    const streams = await source.handle(ctx, 'series', new TmdbId(99999, 1, 1));
+    expect(streams).toHaveLength(0);
+  });
 });

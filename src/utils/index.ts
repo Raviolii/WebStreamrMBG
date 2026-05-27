@@ -7,6 +7,7 @@ export * from './context';
 export * from './embed';
 export * from './env';
 export * from './height';
+export * from './hub';
 export * from './id';
 export * from './language';
 export * from './manifest';

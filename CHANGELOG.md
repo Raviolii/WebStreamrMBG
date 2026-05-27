@@ -1,5 +1,75 @@
 # Changelog
 
+## [0.73.2](https://github.com/newman2x/WebStreamrMBG/compare/v0.73.1...v0.73.2) (2026-05-12)
+
+
+### Miscellaneous Chores
+
+* remove RgShows and StreamKiste sources ([906e634](https://github.com/newman2x/WebStreamrMBG/commit/906e634511c333f20e48b662886b09ee4e1439e7))
+
+
+### Bug Fixes
+
+* clean deadDomains on probe success, skip VixSrc without MFP ([78cc235](https://github.com/newman2x/WebStreamrMBG/commit/78cc2352476dc6f57f21891dde29302d9f49b628))
+* dedup hub streams via canonical URL ([63cb0bc](https://github.com/newman2x/WebStreamrMBG/commit/63cb0bc9eb4a119ee26dae7845d88b67274a22f0))
+* evict stale HubExtractor cache entries ([feec344](https://github.com/newman2x/WebStreamrMBG/commit/feec344a2ff258076820d6a4993c258fdacf52a5))
+* **extractor:** dedup extractions and enrich HubDrive meta ([3fd7868](https://github.com/newman2x/WebStreamrMBG/commit/3fd78683d58355b90f34a4af527e39d2bb9faaba))
+* **extractor:** harden hub redirect decoding ([5c602f6](https://github.com/newman2x/WebStreamrMBG/commit/5c602f6c2b8a557e0cd05a4959ce3a355ed6d5a0))
+* **extractor:** rewrite HubCloud category matching & handle non-seekable streams ([c49adc1](https://github.com/newman2x/WebStreamrMBG/commit/c49adc151bf34e9e3117b438a0790815e2a420a9))
+* **extractor:** unify hub extraction to eliminate duplicate streams ([b40d77b](https://github.com/newman2x/WebStreamrMBG/commit/b40d77b360873bd252713af0e9a4a80d12a37237))
+* **HBLinks:** deduplicate hub links ([4ba661e](https://github.com/newman2x/WebStreamrMBG/commit/4ba661e5fcae25284e067dbc11afe3d52b63e9b2))
+* **HBLinks:** deduplicate HubCloud extraction ([cdca0a3](https://github.com/newman2x/WebStreamrMBG/commit/cdca0a3b97aceb209650132b437393a6eac05c77))
+* HDHub4u CDN recovery and series links ([146fdae](https://github.com/newman2x/WebStreamrMBG/commit/146fdae26ed808032cf37c93eac3650a20a94c7b))
+* **HDHub4u:** deduplicate hub source results ([093ddbd](https://github.com/newman2x/WebStreamrMBG/commit/093ddbd6d29b09406cc8a12db56b07c85fa8a7b1))
+* **HubExtractor:** delegate CDN URLs to HubCloud ([4ab0fc2](https://github.com/newman2x/WebStreamrMBG/commit/4ab0fc2c0a07c9d2057c05f95020e7e5e9b78117))
+* lazy extract and MFP config ([f31313e](https://github.com/newman2x/WebStreamrMBG/commit/f31313e8013495775eefd98371ca31137f47f721))
+* lazy-extract HubCloud tokens ([8be256b](https://github.com/newman2x/WebStreamrMBG/commit/8be256b8902f45bb418a34d6e2c9fe970d0cb895))
+* **Source:** tighten domain failure signal ([da9cc4d](https://github.com/newman2x/WebStreamrMBG/commit/da9cc4d80686081d035446621119d55bb082068a))
+* unique bingeGroup per HubCDN stream ([83449b1](https://github.com/newman2x/WebStreamrMBG/commit/83449b1a96b18e400fc94c4db642a2e5172e34de))
+
+
+### Code Refactoring
+
+* hub constants to utils/hub ([6c84c8b](https://github.com/newman2x/WebStreamrMBG/commit/6c84c8b00cdcd130f89a43652470a5df41880230))
+* stream name/title ([aec01f6](https://github.com/newman2x/WebStreamrMBG/commit/aec01f6e10caee5be9a3708d07137164a485d4b5))
+
+## [0.73.1](https://github.com/newman2x/WebStreamrMBG/compare/v0.73.0...v0.73.1) (2026-05-08)
+
+
+### Miscellaneous Chores
+
+* pin resolve/typescript/eslint versions in renovate config ([80456c0](https://github.com/newman2x/WebStreamrMBG/commit/80456c0a27af76ddef52621569ba92f9d0cdeb76))
+* pin sqlite3 below v6 ([e41d797](https://github.com/newman2x/WebStreamrMBG/commit/e41d79777c9ad9702ee56f43ed018ceceb17c98a))
+
+
+### Bug Fixes
+
+* add input validation and error handling for malformed requests ([d842f10](https://github.com/newman2x/WebStreamrMBG/commit/d842f10e6eefba85aa406cae3b9846bcd81379e2))
+* guard regex matches and JSON.parse calls against null/invalid input ([58e2bba](https://github.com/newman2x/WebStreamrMBG/commit/58e2bba213dea77ac1f8f295f310afbab5dc3bed))
+* HDHub sources ([e9ba2e3](https://github.com/newman2x/WebStreamrMBG/commit/e9ba2e36f311e29a692c8a4ff6c7c2981a0aad6b))
+* **hubcloud:** support new download link formats ([47927b9](https://github.com/newman2x/WebStreamrMBG/commit/47927b9959ef524f4588cdcb6fdcf114990948ec))
+* resolve 5 bugs in Fetcher, FetcherMock, language, and cache utilities ([638a2d8](https://github.com/newman2x/WebStreamrMBG/commit/638a2d89b2343ce9b125668f299c9781b7fc4974))
+* resolve 6 confirmed bugs from Phase 0 triage ([5e0625e](https://github.com/newman2x/WebStreamrMBG/commit/5e0625ea5833f5a9db1e3d750100b511467b0c31))
+
+## [0.73.0](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.3...v0.73.0) (2026-05-06)
+
+
+### Continuous Integration
+
+* add commit SHA to unstable version ([0e245df](https://github.com/newman2x/WebStreamrMBG/commit/0e245df9fe209939dc90f9fcd628c16b1381710e))
+* add workflow files to deploy trigger paths ([4e25fae](https://github.com/newman2x/WebStreamrMBG/commit/4e25fae155ab62bd8fbedfa4d54232885dba54e2))
+
+
+### Features
+
+* add HBLinks/HDStream4U extractors, dynamic domain probing, logger propagation ([4fe0824](https://github.com/newman2x/WebStreamrMBG/commit/4fe082455e9001a605de0b936511c6dbe1f2bfa4))
+
+
+### Bug Fixes
+
+* extract video URL ([d94c3bf](https://github.com/newman2x/WebStreamrMBG/commit/d94c3bf63342274b706efd942bfb458bb52eb35e))
+* startup race condition and cookie bugs ([533a929](https://github.com/newman2x/WebStreamrMBG/commit/533a929d8ee756d5fec533fdc83fd282a83001bd))
+
 ## [0.72.3](https://github.com/newman2x/WebStreamrMBG/compare/v0.72.2...v0.72.3) (2026-04-28)
 
 

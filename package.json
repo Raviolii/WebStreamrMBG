@@ -1,7 +1,7 @@
 {
   "name": "webstreamr-mbg",
   "description": "Provides HTTP URLs from streaming websites.",
-  "version": "0.72.3",
+  "version": "0.73.2",
   "type": "commonjs",
   "scripts": {
     "analyse": "tsc --noEmit --project ./tsconfig.dev.json",
@@ -53,7 +53,9 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
     "fast-levenshtein": "^3.0.0",
+    "fuse.js": "^7.3.0",
     "glob": "^13.0.0",
+    "got-scraping": "^4.2.1",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.6",
     "memoizee": "^0.4.17",

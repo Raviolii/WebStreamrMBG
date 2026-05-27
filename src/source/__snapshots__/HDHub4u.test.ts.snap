@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`HDHub4u handle stranger things s05e01 1`] = `
+exports[`HDHub4u handle stranger things s05e05 1`] = `
 [
   {
     "meta": {
@@ -10,7 +10,7 @@ exports[`HDHub4u handle stranger things s05e01 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/2452204677",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=Fv8xSTLVr_myF7sxac7dVKo38LcekxfbbGD62Cbz8oCCTrLL&q=U3RyYW5nZXIgVGhpbmdzIFMwNSBFcGlzb2RlIDUgNzIwcA",
   },
   {
     "meta": {
@@ -20,7 +20,7 @@ exports[`HDHub4u handle stranger things s05e01 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubcdn.fans/file/8kEamo5bv3KOCwzJfUwGfyyBO",
+    "url": "https://hubcdn.org/file/s209STlORA7KCZMDW1zBZD1F2",
   },
   {
     "meta": {
@@ -30,7 +30,7 @@ exports[`HDHub4u handle stranger things s05e01 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/1788432714",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=-TrPfwv24ecfiVXil0_9bQrdNAe_7sKDuFodaD2FVi7VwhGm&q=U3RyYW5nZXIgVGhpbmdzIFMwNSBFcGlzb2RlIDUgMTA4MHA",
   },
   {
     "meta": {
@@ -40,12 +40,12 @@ exports[`HDHub4u handle stranger things s05e01 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubcdn.fans/file/08ZDmgm3XGClD9qMG1q8wSkhZ",
+    "url": "https://hubcdn.org/file/HVsAjJbUA3Dx4n5gkXJP8h6FA",
   },
 ]
 `;
 
-exports[`HDHub4u handle stranger things s05e08 1`] = `
+exports[`HDHub4u handle stranger things s05e07 1`] = `
 [
   {
     "meta": {
@@ -55,7 +55,37 @@ exports[`HDHub4u handle stranger things s05e08 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/1793632174",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=LbjsKFBtH_KjuWWg8jRbxDXqUr8QP4oCy9DY5ySaS18WgkZP&q=U3RyYW5nZXIgVGhpbmdzIFMwNSBFcGlzb2RlIDcgNzIwcA",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "multi",
+        "en",
+        "hi",
+      ],
+    },
+    "url": "https://hubcdn.org/file/6SbBuOBqZilbXKo0OnaLQyo2I",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "multi",
+        "en",
+        "hi",
+      ],
+    },
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=9PgksPIXSzM0iB-HpdNwptwP7cgLk4sxkMKbs4EzhSVEJMZa&q=U3RyYW5nZXIgVGhpbmdzIFMwNSBFcGlzb2RlIDcgMTA4MHA",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "multi",
+        "en",
+        "hi",
+      ],
+    },
+    "url": "https://hubcdn.org/file/8eFiSeVdd4nzXZD5NsPP3gaiN",
   },
 ]
 `;
@@ -70,7 +100,7 @@ exports[`HDHub4u handle superman 2025 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/2048323831",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=611XfumURzbMxSJG3XAB9QlfMwuIVENRUS91L7DBtuTZV4eT&q=U3VwZXJtYW4gMjAyNSA3MjBw",
   },
   {
     "meta": {
@@ -80,7 +110,7 @@ exports[`HDHub4u handle superman 2025 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/1931317982",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=B0Zt2spEe_FuSEhY1b7nb3_MNzADN6UJ8oGLBhyYH6s8HzVc&q=U3VwZXJtYW4gMjAyNSAxMDgwcA",
   },
   {
     "meta": {
@@ -90,7 +120,7 @@ exports[`HDHub4u handle superman 2025 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/7875454809",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=fkG65xap4NOYyb3Ri24SqkLkhkeef9ImR3X8Ge9dN5-C7mmF&q=U3VwZXJtYW4gMjAyNSAxMDgwcA",
   },
   {
     "meta": {
@@ -100,95 +130,7 @@ exports[`HDHub4u handle superman 2025 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/3608508909",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95885",
-    },
-    "url": "https://hubcdn.fans/file/unjuCFnbWh9HgdFnf8KWM0gNF",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95885",
-    },
-    "url": "https://hubdrive.space/file/2171324800",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95884",
-    },
-    "url": "https://hubcdn.fans/file/UtYwC98y7q2XLd3XjjPFubHpU",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95884",
-    },
-    "url": "https://hubdrive.space/file/1866728891",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95883",
-    },
-    "url": "https://hubcdn.fans/file/l7tTvPxTw5xkzmmt21NCt67Ax",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95883",
-    },
-    "url": "https://hubdrive.space/file/3938026297",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95882",
-    },
-    "url": "https://hubcdn.fans/file/k7mWab8DaoCasF9g5K3w4NkvQ",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/95882",
-    },
-    "url": "https://hubdrive.space/file/2823990434",
+    "url": "https://hubcloud.foo/drive/search-recover.php?from_ac=1AUzY_MDAjMVPbIYBtOREd9TbiC4uLhIq_6Pzt07oSL6Y7ix&q=U3VwZXJtYW4gMjAyNSA0Sw",
   },
 ]
 `;
@@ -203,7 +145,7 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/2165806385",
+    "url": "https://hubcloud.foo/drive/mphhuejosenpo1f",
   },
   {
     "meta": {
@@ -213,7 +155,7 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/2777734670",
+    "url": "https://hubcloud.foo/drive/y24dkxj21ff1pi4",
   },
   {
     "meta": {
@@ -223,7 +165,7 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/6051118182",
+    "url": "https://hubcloud.foo/drive/prhvvpxzam7rpva",
   },
   {
     "meta": {
@@ -233,51 +175,7 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/13783802255",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/104571",
-    },
-    "url": "https://hubcdn.fans/file/9aZMnNKrsUKOwqu7xPVJHdY9E",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/104571",
-    },
-    "url": "https://hubdrive.space/file/2026023433",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/104570",
-    },
-    "url": "https://hubcdn.fans/file/8EGxOgumBUUPbNraUZiYVdxrh",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "en",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/104570",
-    },
-    "url": "https://hubdrive.space/file/4232622187",
+    "url": "https://hubcloud.foo/drive/wybyd8a0v52rwda",
   },
   {
     "meta": {
@@ -286,7 +184,7 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "hi",
       ],
     },
-    "url": "https://hubdrive.space/file/2298599706",
+    "url": "https://hubcloud.foo/drive/cqhutwars6jjrtd",
   },
   {
     "meta": {
@@ -294,9 +192,8 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "multi",
         "hi",
       ],
-      "referer": "https://hblinks.dad/archives/103118",
     },
-    "url": "https://hubcdn.fans/file/zGJJai9ztO2vSCjVRe2SLguFI",
+    "url": "https://hubcloud.foo/drive/brkmtrr9qaxqbgt",
   },
   {
     "meta": {
@@ -304,29 +201,8 @@ exports[`HDHub4u handle the bone temple 2026 1`] = `
         "multi",
         "hi",
       ],
-      "referer": "https://hblinks.dad/archives/103118",
     },
-    "url": "https://hubdrive.space/file/2291074311",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/103119",
-    },
-    "url": "https://hubcdn.fans/file/tnLb9vXZhFvBslFQcwUWqx9sp",
-  },
-  {
-    "meta": {
-      "countryCodes": [
-        "multi",
-        "hi",
-      ],
-      "referer": "https://hblinks.dad/archives/103119",
-    },
-    "url": "https://hubdrive.space/file/2244066767",
+    "url": "https://hubcloud.foo/drive/6xxhpyawdn0pn2c",
   },
 ]
 `;

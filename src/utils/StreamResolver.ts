@@ -54,6 +54,10 @@ export class StreamResolver {
     const handleSource = async (source: Source, countUrlResultsByCountryCode: boolean) => {
       try {
         const sourceResults = await source.handle(ctx, type, id);
+        this.logger.info(`Source ${source.id} returned ${sourceResults.length} results`, ctx);
+        for (const sr of sourceResults) {
+          this.logger.info(`Source ${source.id} URL: ${sr.url}`, ctx);
+        }
         const sourceUrlResults = await Promise.all(
           sourceResults.map(({ url, meta }) => this.extractorRegistry.handle(ctx, url, { sourceLabel: source.label, sourceId: source.id, priority: source.priority, ...meta }, true)),
         );
@@ -198,21 +202,20 @@ export class StreamResolver {
   };
 
   private buildName(ctx: Context, urlResult: UrlResult): string {
-    let name = envGetAppName();
+    const lines: string[] = [envGetAppName()];
 
-    urlResult.meta?.countryCodes?.forEach((countryCode) => {
-      name += ` ${flagFromCountryCode(countryCode)}`;
-    });
+    const flags = urlResult.meta?.countryCodes?.map(cc => flagFromCountryCode(cc)).join(' ');
+    if (flags) lines.push(flags);
 
     if (urlResult.meta?.height) {
-      name += ` ${getClosestResolution(urlResult.meta.height)}`;
+      lines.push(getClosestResolution(urlResult.meta.height));
     }
 
     if (urlResult.isExternal && showExternalUrls(ctx.config)) {
-      name += ` ⚠️ external`;
+      lines.push('⚠️ external');
     }
 
-    return name;
+    return lines.join('\n');
   };
 
   private buildTitle(ctx: Context, urlResult: UrlResult): string {
@@ -222,17 +225,15 @@ export class StreamResolver {
       titleLines.push(urlResult.meta.title);
     }
 
-    const titleDetailsLine = [];
     if (urlResult.meta?.bytes) {
-      titleDetailsLine.push(`💾 ${bytes.format(urlResult.meta.bytes, { unitSeparator: ' ' })}`);
+      titleLines.push(`💾 ${bytes.format(urlResult.meta.bytes, { unitSeparator: ' ' })}`);
     }
     const sourceLabel = urlResult.meta?.sourceLabel;
     if (sourceLabel && sourceLabel !== urlResult.label) {
-      titleDetailsLine.push(`🔗 ${urlResult.label} from ${urlResult.meta?.sourceLabel}`);
+      titleLines.push(`🔗 ${urlResult.label} from ${urlResult.meta?.sourceLabel}`);
     } else {
-      titleDetailsLine.push(`🔗 ${urlResult.label}`);
+      titleLines.push(`🔗 ${urlResult.label}`);
     }
-    titleLines.push(titleDetailsLine.join(' '));
 
     if (urlResult.error) {
       titleLines.push(logErrorAndReturnNiceString(ctx, this.logger, urlResult.meta?.sourceId ?? '', urlResult.error));

@@ -51,6 +51,8 @@ export type CustomRequestConfig = AxiosRequestConfig & {
 };
 
 export class Fetcher {
+  private static readonly DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+
   private readonly DEFAULT_TIMEOUT = 10000;
   private readonly DEFAULT_QUEUE_LIMIT = 50;
   private readonly DEFAULT_QUEUE_TIMEOUT = 10000;
@@ -78,6 +80,17 @@ export class Fetcher {
   private readonly flareSolverrCache = new Cacheable({ primary: new Keyv({ store: new CacheableMemory({ lruSize: 1024 }) }) });
   private readonly flareSolverrMutexes = new Map<string, Mutex>();
 
+  private flareSolverrFailures = 0;
+  private flareSolverrOpenUntil = 0;
+  private readonly FLARE_FAILURE_THRESHOLD = 5;
+  private readonly FLARE_OPEN_DURATION = 30_000; // 30 seconds
+
+  private readonly cfProtectedDomains = new Map<string, number>();
+  private readonly CF_DOMAIN_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+  private readonly GOT_SCRAPING_BYPASS_TTL = 60 * 60 * 1000; // 1 hour
+  private static gotScrapingBypassedDomains = new Map<string, number>();
+  private static gotScraping: typeof import('got-scraping').gotScraping | undefined;
+
   public constructor(axios: AxiosInstance, logger: winston.Logger) {
     this.axios = axios;
     this.logger = logger;
@@ -88,6 +101,10 @@ export class Fetcher {
       httpStatus: Object.fromEntries(this.httpStatus),
       hostUserAgentMap: Object.fromEntries(this.hostUserAgentMap),
       cookieJar: this.cookieJar.toJSON(),
+      flareSolverrCircuitOpen: Date.now() < this.flareSolverrOpenUntil,
+      flareSolverrFailures: this.flareSolverrFailures,
+      cfProtectedDomains: Object.fromEntries(this.cfProtectedDomains),
+      gotScrapingBypassedDomains: Object.fromEntries(Fetcher.gotScrapingBypassedDomains),
     };
   };
 
@@ -111,7 +128,7 @@ export class Fetcher {
     return (await this.queuedFetch(ctx, url, { ...requestConfig, method: 'HEAD' })).headers;
   };
 
-  public async getFinalRedirectUrl(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount?: number, count?: number): Promise<URL> {
+  public async getFinalRedirectUrl(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount = 10, count?: number): Promise<URL> {
     const newRequestConfig = { ...requestConfig, method: 'HEAD', maxRedirects: 0 };
 
     if (count && maxCount && count >= maxCount) {
@@ -119,48 +136,10 @@ export class Fetcher {
     }
 
     const response = await this.queuedFetch(ctx, url, newRequestConfig);
-    const locationHeader = response.headers?.['location'] as (string | undefined);
-    if (locationHeader) {
-      return await this.getFinalRedirectUrl(ctx, new URL(locationHeader, url), newRequestConfig, maxCount, (count ?? 0) + 1);
-    }
-
     if (response.status >= 300 && response.status < 400) {
-      return url;
-    }
-
-    return url;
-  }
-
-  /** Like {@link getFinalRedirectUrl} but uses GET. Many hosts (incl. s.to) only emit redirects on GET, not HEAD. */
-  public async getFinalRedirectUrlGet(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount?: number, count?: number): Promise<URL> {
-    const newRequestConfig = { ...requestConfig, method: 'GET', maxRedirects: 0 };
-
-    if (count && maxCount && count >= maxCount) {
-      return url;
-    }
-
-    const response = await this.queuedFetch(ctx, url, newRequestConfig);
-    const locationHeader = response.headers?.['location'] as (string | undefined);
-    if (locationHeader) {
-      return await this.getFinalRedirectUrlGet(ctx, new URL(locationHeader, url), newRequestConfig, maxCount, (count ?? 0) + 1);
-    }
-
-    if (response.status >= 300 && response.status < 400) {
-      return url;
-    }
-
-    // Some hosts (incl. s.to) return 200 and redirect via JS/meta refresh.
-    const html = typeof response.data === 'string' ? response.data : '';
-    if (html) {
-      const jsRedirect =
-        html.match(/window\.location(?:\.href)?\s*=\s*['"]([^'"]+)['"]/i)
-        ?? html.match(/location\.href\s*=\s*['"]([^'"]+)['"]/i)
-        ?? html.match(/location\.replace\(\s*['"]([^'"]+)['"]\s*\)/i)
-        ?? html.match(/<meta\s+http-equiv=['"]refresh['"]\s+content=['"][^'"]*url=([^'"]+)['"]/i);
-
-      if (jsRedirect?.[1]) {
-        return await this.getFinalRedirectUrlGet(ctx, new URL(jsRedirect[1], url), newRequestConfig, maxCount, (count ?? 0) + 1);
-      }
+      const location = response.headers['location'];
+      if (!location) return url;
+      return await this.getFinalRedirectUrl(ctx, new URL(location, url.href), newRequestConfig, maxCount, (count ?? 0) + 1);
     }
 
     return url;
@@ -175,10 +154,24 @@ export class Fetcher {
       ...requestConfig,
     };
 
-    return JSON.parse(await this.text(ctx, url, jsonRequestConfig));
+    try {
+      return JSON.parse(await this.text(ctx, url, jsonRequestConfig));
+    } catch {
+      throw new Error(`Invalid JSON response from ${url.href}`);
+    }
   }
 
   protected async fetchWithTimeout(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, tryCount = 0): Promise<AxiosResponse> {
+    const flareSolverrEndpoint = envGet('FLARESOLVERR_ENDPOINT');
+    const cfDetectedAt = this.cfProtectedDomains.get(url.hostname);
+    if (cfDetectedAt && !flareSolverrEndpoint) {
+      if (Date.now() - cfDetectedAt < this.CF_DOMAIN_CACHE_TTL) {
+        this.logger.info(`Fast-fail CF-protected domain: ${url.hostname}`, ctx);
+        throw new BlockedError(url, BlockedReason.cloudflare_challenge, {});
+      }
+      this.cfProtectedDomains.delete(url.hostname); // expired — re-check
+    }
+
     const proxyUrl = this.getProxyForUrl(ctx, url);
 
     let message = `Fetch ${requestConfig?.method ?? 'GET'} ${url}`;
@@ -229,7 +222,7 @@ export class Fetcher {
           'Accept-Language': 'en',
           ...(url.username && { Authorization: 'Basic ' + Buffer.from(`${url.username}:${url.password}`).toString('base64') }),
           'Priority': 'u=0',
-          'User-Agent': this.hostUserAgentMap.get(url.host) ?? 'Mozilla',
+          'User-Agent': this.hostUserAgentMap.get(url.host) ?? Fetcher.DEFAULT_USER_AGENT,
           ...(cookieString && { Cookie: cookieString }),
           ...(ctx.ip && !requestConfig?.noProxyHeaders && {
             'Forwarded': `by=unknown;for=${ctx.ip};host=${url.host};proto=${forwardedProto}`,
@@ -261,6 +254,17 @@ export class Fetcher {
 
     await this.trackHttpStatus(ctx, url, response.status);
     this.logger.info(`Got ${response.status} (${response.statusText}) for ${url}`, ctx);
+    const setCookieHeaders = response.headers['set-cookie'];
+    if (setCookieHeaders) {
+      const cookies = Array.isArray(setCookieHeaders) ? setCookieHeaders : [setCookieHeaders];
+      for (const cookieStr of cookies) {
+        try {
+          this.cookieJar.setCookieSync(cookieStr, url.href);
+        } catch {
+          this.logger.info(`Failed to parse Set-Cookie: ${cookieStr.substring(0, 50)}`, ctx);
+        }
+      }
+    }
 
     await this.decreaseTimeoutsCount(url);
 
@@ -286,9 +290,15 @@ export class Fetcher {
     }
 
     if (response.headers['cf-mitigated'] === 'challenge' || triggeredCloudflareTurnstile) {
-      const flareSolverrEndpoint = envGet('FLARESOLVERR_ENDPOINT');
+      this.cfProtectedDomains.set(url.hostname, Date.now());
+
       if (!flareSolverrEndpoint) {
         throw new BlockedError(url, BlockedReason.cloudflare_challenge, response.headers);
+      }
+
+      if (Date.now() < this.flareSolverrOpenUntil) {
+        this.logger.info(`FlareSolverr circuit breaker open — skipping for ${url.hostname}`, ctx);
+        throw new BlockedError(url, BlockedReason.flaresolverr_failed, response.headers);
       }
 
       const cachedSolution = await this.flareSolverrCache.get<FlareSolverrSolution>(url.href);
@@ -306,27 +316,38 @@ export class Fetcher {
         this.flareSolverrMutexes.set(session, mutex);
       }
 
-      const challengeResult = await mutex.runExclusive(async () => {
-        this.logger.info(`Query FlareSolverr for ${url.href}`, ctx);
+      let challengeResult: FlareSolverrResult;
+      try {
+        challengeResult = await mutex.runExclusive(async () => {
+          this.logger.info(`Query FlareSolverr for ${url.href}`, ctx);
 
-        const data = {
-          cmd: 'request.get',
-          url: url.href,
-          session,
-          session_ttl_minutes: 60,
-          maxTimeout: 15000,
-          disableMedia: true,
-          ...(proxyUrl && { proxy: { url: proxyUrl.href } }),
-        };
+          const data = {
+            cmd: 'request.get',
+            url: url.href,
+            session,
+            session_ttl_minutes: 60,
+            maxTimeout: 15000,
+            disableMedia: true,
+            ...(proxyUrl && { proxy: { url: proxyUrl.href } }),
+          };
 
-        const requestConfig: CustomRequestConfig = { method: 'POST', data, headers: { 'Content-Type': 'application/json' }, timeout: 15000, queueTimeout: 60000 };
-        return JSON.parse((await this.queuedFetch(ctx, new URL('/v1', flareSolverrEndpoint), requestConfig)).data) as FlareSolverrResult;
-      });
+          const requestConfig: CustomRequestConfig = { method: 'POST', data, headers: { 'Content-Type': 'application/json' }, timeout: 15000, queueTimeout: 60000 };
+          return JSON.parse((await this.queuedFetch(ctx, new URL('/v1', flareSolverrEndpoint), requestConfig)).data) as FlareSolverrResult;
+        });
+      } catch (error) {
+        this.recordFlareSolverrResult(false);
+        this.logger.warn(`FlareSolverr request failed for ${url.href}: ${error}`, ctx);
+        throw new BlockedError(url, BlockedReason.flaresolverr_failed, {});
+      }
 
       if (challengeResult.status !== 'ok') {
+        this.recordFlareSolverrResult(false);
         this.logger.warn(`FlareSolverr issue: ${JSON.stringify(challengeResult)}`, ctx);
         throw new BlockedError(url, BlockedReason.flaresolverr_failed, {});
       }
+
+      this.recordFlareSolverrResult(true);
+      this.cfProtectedDomains.delete(url.hostname);
 
       await Promise.all(challengeResult.solution.cookies.map(async (cookie) => {
         if (!cookie.name.startsWith('cf_') && !cookie.name.startsWith('__cf') && !cookie.name.startsWith('__ddg')) {
@@ -361,6 +382,11 @@ export class Fetcher {
         throw new BlockedError(url, BlockedReason.media_flow_proxy_auth, response.headers);
       }
 
+      const gotScrapingResult = await this.fallbackToGotScraping(ctx, url, requestConfig);
+      if (gotScrapingResult) {
+        return gotScrapingResult;
+      }
+
       throw new BlockedError(url, BlockedReason.unknown, response.headers);
     }
 
@@ -372,9 +398,10 @@ export class Fetcher {
       const retryAfter = parseInt(`${response.headers['retry-after']}`);
       if (!isNaN(retryAfter)) {
         await this.rateLimitedCache.set<true>(url.host, true, retryAfter * 1000);
+        throw new TooManyRequestsError(url, retryAfter);
       }
 
-      throw new TooManyRequestsError(url, retryAfter);
+      throw new TooManyRequestsError(url, 0);
     }
 
     throw new HttpError(url, response.status, response.statusText, response.headers);
@@ -490,5 +517,91 @@ export class Fetcher {
       httpStatusCounts[status] = (httpStatusCounts[status] ?? 0) + 1;
       this.httpStatus.set(url.host, httpStatusCounts);
     });
+  }
+
+  private recordFlareSolverrResult(success: boolean): void {
+    if (success) {
+      this.flareSolverrFailures = 0;
+    } else {
+      this.flareSolverrFailures++;
+      if (this.flareSolverrFailures >= this.FLARE_FAILURE_THRESHOLD) {
+        this.flareSolverrOpenUntil = Date.now() + this.FLARE_OPEN_DURATION;
+        this.flareSolverrFailures = 0;
+      }
+    }
+  }
+
+  private async loadGotScraping(): Promise<typeof import('got-scraping').gotScraping | undefined> {
+    if (Fetcher.gotScraping) {
+      return Fetcher.gotScraping;
+    }
+
+    try {
+      const mod = await import('got-scraping');
+      Fetcher.gotScraping = mod.gotScraping;
+      return Fetcher.gotScraping;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async fallbackToGotScraping(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<AxiosResponse | null> {
+    if (requestConfig?.method && requestConfig.method !== 'GET') {
+      return null;
+    }
+
+    const bypassedAt = Fetcher.gotScrapingBypassedDomains.get(url.hostname);
+    if (bypassedAt && Date.now() - bypassedAt < this.GOT_SCRAPING_BYPASS_TTL) {
+      return null;
+    }
+    if (bypassedAt) {
+      Fetcher.gotScrapingBypassedDomains.delete(url.hostname);
+    }
+
+    const gotScraping = await this.loadGotScraping();
+    if (!gotScraping) {
+      return null;
+    }
+
+    this.logger.info(`Retry with got-scraping for ${url}`, ctx);
+
+    try {
+      const cookieString = this.cookieJar.getCookieStringSync(url.href);
+      const resp = await gotScraping.get(url.href, {
+        headers: {
+          ...(cookieString && { Cookie: cookieString }),
+          ...(typeof requestConfig?.headers === 'object' && requestConfig.headers),
+        } as Record<string, string>,
+        timeout: { request: requestConfig?.timeout ?? this.DEFAULT_TIMEOUT },
+        throwHttpErrors: false,
+      });
+
+      if (resp.statusCode >= 200 && resp.statusCode <= 399) {
+        this.logger.info(`got-scraping bypassed CF for ${url.hostname}`, ctx);
+        Fetcher.gotScrapingBypassedDomains.set(url.hostname, Date.now());
+
+        const setCookieHeaders = resp.headers['set-cookie'];
+        if (setCookieHeaders) {
+          const cookies = Array.isArray(setCookieHeaders) ? setCookieHeaders : [setCookieHeaders];
+          for (const cookieStr of cookies) {
+            try {
+              this.cookieJar.setCookieSync(cookieStr as string, url.href);
+            } catch { /* ignore */ }
+          }
+        }
+
+        return {
+          status: resp.statusCode,
+          statusText: resp.statusMessage ?? '',
+          headers: resp.headers as AxiosResponse['headers'],
+          data: resp.body,
+          config: { headers: resp.headers as Record<string, string> } as AxiosRequestConfig,
+        } as AxiosResponse;
+      }
+    } catch (e) {
+      this.logger.info(`got-scraping failed for ${url}: ${e}`, ctx);
+    }
+
+    return null;
   }
 }

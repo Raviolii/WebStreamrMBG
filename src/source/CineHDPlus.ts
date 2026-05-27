@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
-import { Fetcher, getTmdbId, Id, TmdbId } from '../utils';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
 import { Source, SourceResult } from './Source';
 
 export class CineHDPlus extends Source {
@@ -13,7 +13,7 @@ export class CineHDPlus extends Source {
 
   public readonly countryCodes: CountryCode[] = [CountryCode.es, CountryCode.mx];
 
-  public readonly baseUrl = 'https://cinehdplus.gratis';
+  public readonly baseUrl = 'https://cinehdplus.zone';
 
   private readonly fetcher: Fetcher;
 
@@ -26,7 +26,14 @@ export class CineHDPlus extends Source {
   public async handleInternal(ctx: Context, _type: string, id: Id): Promise<SourceResult[]> {
     const tmdbId = await getTmdbId(ctx, this.fetcher, id);
 
-    const seriesPageUrl = await this.fetchSeriesPageUrl(ctx, tmdbId);
+    let name: string;
+    try {
+      [name] = await getTmdbNameAndYear(ctx, this.fetcher, tmdbId, 'es');
+    } catch {
+      return [];
+    }
+
+    const seriesPageUrl = await this.fetchSeriesPageUrl(ctx, name);
     if (!seriesPageUrl) {
       return [];
     }
@@ -50,14 +57,15 @@ export class CineHDPlus extends Source {
     );
   };
 
-  private fetchSeriesPageUrl = async (ctx: Context, tmdbId: TmdbId): Promise<URL | undefined> => {
-    const html = await this.fetcher.text(ctx, new URL(`/series/?story=${tmdbId.id}&do=search&subaction=search`, this.baseUrl));
+  // Case-insensitive match handles TMDB/CineHDPlus capitalization differences (e.g. "La casa de dragón" vs "La Casa del Dragón")
+  private fetchSeriesPageUrl = async (ctx: Context, name: string): Promise<URL | undefined> => {
+    const html = await this.fetcher.text(ctx, new URL(`/series/?story=${encodeURIComponent(name)}&do=search&subaction=search`, this.baseUrl));
 
     const $ = cheerio.load(html);
 
-    const url = $('.card__title a[href]:first')
-      .map((_i, el) => $(el).attr('href'))
-      .get(0);
+    const url = $('.card__title a[href]')
+      .filter((_i, el) => $(el).text().trim().toLowerCase() === name.toLowerCase())
+      .attr('href');
 
     return url !== undefined ? new URL(url) : url;
   };

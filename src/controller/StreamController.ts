@@ -40,7 +40,13 @@ export class StreamController {
       return;
     }
 
-    const ctx = contextFromRequestAndResponse(req, res);
+    let ctx;
+    try {
+      ctx = contextFromRequestAndResponse(req, res);
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+      return;
+    }
 
     this.logger.info(`Search stream for type "${type}" and id "${rawId}" for ip ${ctx.ip}`, ctx);
 
@@ -56,7 +62,7 @@ export class StreamController {
       const { streams, ttl } = await this.streamResolver.resolve(ctx, sources, type, id);
 
       if (ttl && envIsProd()) {
-        res.setHeader('Cache-Control', `public, max-age=${Math.floor(ttl / 1000)}, immutable`);
+        res.setHeader('Cache-Control', `public, max-age=${Math.floor(ttl / 1000)}`);
       }
 
       res.setHeader('Content-Type', 'application/json');

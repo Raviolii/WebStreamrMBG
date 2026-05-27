@@ -5,7 +5,7 @@ import { ExtractorRegistry } from './ExtractorRegistry';
 import { VixSrc } from './VixSrc';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
-const extractorRegistry = new ExtractorRegistry(logger, [new VixSrc(new FetcherMock(`${__dirname}/__fixtures__/VixSrc`))]);
+const extractorRegistry = new ExtractorRegistry(logger, [new VixSrc(new FetcherMock(`${__dirname}/__fixtures__/VixSrc`), logger)]);
 
 const ctx = createTestContext();
 
@@ -30,5 +30,9 @@ describe('VixSrc', () => {
     const ctx = createTestContext({ de: 'on' });
 
     expect(await extractorRegistry.handle(ctx, new URL('https://vixsrc.to/tv/42009/4/3'))).toMatchSnapshot();
+  });
+
+  test('returns empty when embed page has no token/expires/url patterns', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://vixsrc.to/movie/999999'))).toHaveLength(0);
   });
 });

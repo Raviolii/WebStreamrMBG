@@ -1,15 +1,16 @@
+import winston from 'winston';
 import { DoodStream } from '../extractor/DoodStream';
 import { ExternalUrl } from '../extractor/ExternalUrl';
 import { SuperVideo } from '../extractor/SuperVideo';
 import { createSources } from '../source';
 import { MeineCloud } from '../source/MeineCloud';
-import { StreamKiste } from '../source/StreamKiste';
 import { VerHdLink } from '../source/VerHdLink';
 import { VixSrc } from '../source/VixSrc';
 import { FetcherMock } from './FetcherMock';
 import { buildManifest } from './manifest';
 
 const fetcher = new FetcherMock('/dev/null');
+const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 
 describe('buildManifest', () => {
   test('default manifest', async () => {
@@ -24,7 +25,6 @@ describe('buildManifest', () => {
     const sources = [
       new VixSrc(fetcher),
       new VerHdLink(fetcher),
-      new StreamKiste(fetcher),
       new MeineCloud(fetcher),
     ];
 
@@ -36,7 +36,6 @@ describe('buildManifest', () => {
   test('has checked source with appropriate config', () => {
     const sources = [
       new VerHdLink(fetcher),
-      new StreamKiste(fetcher),
       new MeineCloud(fetcher),
     ];
     const manifest = buildManifest(sources, [], { de: 'on', includeExternalUrls: 'on' });
@@ -64,9 +63,9 @@ describe('buildManifest', () => {
 
   test('disable extractors', () => {
     const extractors = [
-      new DoodStream(fetcher),
-      new SuperVideo(fetcher),
-      new ExternalUrl(fetcher),
+      new DoodStream(fetcher, logger),
+      new SuperVideo(fetcher, logger),
+      new ExternalUrl(fetcher, logger),
     ];
     const manifest = buildManifest([], extractors, { disableExtractor_doodstream: 'on' });
 
