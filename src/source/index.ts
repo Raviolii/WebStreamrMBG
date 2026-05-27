@@ -21,6 +21,7 @@ import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
 import { Vidzee } from './Vidzee';
 import { VixSrc } from './VixSrc';
+import { OhaTO } from './OhaTo';
 
 export * from './Source';
 
@@ -48,6 +49,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MegaKino(fetcher),
     new MeineCloud(fetcher),
     new FilmpalastTO(fetcher),
+    new OhaTO(fetcher),
     // FR
     new Frembed(fetcher),
     new FrenchCloud(fetcher),
