@@ -66,6 +66,10 @@ export class FetcherMock extends Fetcher {
     return url;
   }
 
+  public override async getFinalRedirectUrlGet(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount = 10, count?: number): Promise<URL> {
+    return await this.getFinalRedirectUrl(ctx, url, requestConfig, maxCount, count);
+  }
+
   private readonly slugifyUrl = (url: URL): string => {
     const slugifiedUrl = slugify(url.href);
 

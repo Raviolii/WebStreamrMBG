@@ -47,9 +47,9 @@ export class OhaTO extends Source {
 
     let links: OhaApiLink[] = [];
     try {
-      links = await this.fetcher.json<OhaApiLink[]>(ctx, linksUrl, {
+      links = await this.fetcher.json(ctx, linksUrl, {
         headers: this.getApiHeaders(),
-      });
+      }) as OhaApiLink[];
     } catch {
       return [];
     }

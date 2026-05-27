@@ -129,7 +129,22 @@ export class Fetcher {
   };
 
   public async getFinalRedirectUrl(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount = 10, count?: number): Promise<URL> {
-    const newRequestConfig = { ...requestConfig, method: 'HEAD', maxRedirects: 0 };
+    return await this.followRedirects(ctx, url, 'HEAD', requestConfig, maxCount, count);
+  }
+
+  public async getFinalRedirectUrlGet(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount = 10, count?: number): Promise<URL> {
+    return await this.followRedirects(ctx, url, 'GET', requestConfig, maxCount, count);
+  }
+
+  private async followRedirects(
+    ctx: Context,
+    url: URL,
+    method: 'GET' | 'HEAD',
+    requestConfig?: CustomRequestConfig,
+    maxCount = 10,
+    count?: number,
+  ): Promise<URL> {
+    const newRequestConfig = { ...requestConfig, method, maxRedirects: 0 };
 
     if (count && maxCount && count >= maxCount) {
       return url;
@@ -139,7 +154,7 @@ export class Fetcher {
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers['location'];
       if (!location) return url;
-      return await this.getFinalRedirectUrl(ctx, new URL(location, url.href), newRequestConfig, maxCount, (count ?? 0) + 1);
+      return await this.followRedirects(ctx, new URL(location, url.href), method, requestConfig, maxCount, (count ?? 0) + 1);
     }
 
     return url;
