@@ -28,22 +28,23 @@ export class OhaTO extends Source {
   }
 
   private getApiHeaders(): Record<string, string> {
-    return {
-      Authorization: this.apiKey,
-      'Content-Type': 'application/json',
-    };
+    return { Authorization: this.apiKey };
+  }
+
+  private buildApiUrl(serverEndpoint: string): URL {
+    return new URL(`/web-vod/api/${serverEndpoint}`, this.baseUrl);
   }
 
   protected override async handleInternal(ctx: Context, _type: ContentType, id: Id): Promise<SourceResult[]> {
     const tmdbId = await getTmdbId(ctx, this.fetcher, id);
     const results: SourceResult[] = [];
 
-    // Construct the API target ID based on media type
     const ohaId = tmdbId.season
       ? `series.${tmdbId.id}.${tmdbId.season}.${tmdbId.episode ?? 1}`
       : `movie.${tmdbId.id}`;
 
-    const linksUrl = new URL(`/web-vod/api/links?id=${ohaId}`, this.baseUrl);
+    // Swift: GET https://oha.to/web-vod/api/links?id=movie.{tmdbId}
+    const linksUrl = this.buildApiUrl(`links?id=${ohaId}`);
 
     let links: OhaApiLink[] = [];
     try {
@@ -58,15 +59,15 @@ export class OhaTO extends Source {
       return [];
     }
 
-    // For each link, hit the streaming endpoint and resolve the final redirect URL
     for (const link of links) {
       if (!link.url) continue;
 
       try {
+        // Swift: https://oha.to/web-vod/api/get?link={mirrorUrl} (loaded via GET)
         const streamApiUrl = new URL('/web-vod/api/get', this.baseUrl);
         streamApiUrl.searchParams.set('link', link.url);
 
-        const finalUrl = await this.fetcher.getFinalRedirectUrl(ctx, streamApiUrl, {
+        const finalUrl = await this.fetcher.getFinalRedirectUrlGet(ctx, streamApiUrl, {
           headers: this.getApiHeaders(),
         });
 
@@ -75,7 +76,7 @@ export class OhaTO extends Source {
           meta: {
             countryCodes: link.language === 'de' ? [CountryCode.de] : [],
             referer: this.baseUrl,
-            title: `${link.name} [${link.language.toUpperCase()}]`,
+            title: `${link.name} [${(link.language ?? 'de').toUpperCase()}]`,
             sourceLabel: this.label,
           },
         });
