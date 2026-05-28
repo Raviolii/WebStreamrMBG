@@ -30,7 +30,12 @@ export class OhaTO extends Source {
   }
 
   private getApiHeaders(): Record<string, string> {
-    return { Authorization: this.apiKey };
+    return {
+      Authorization: `Bearer ${this.apiKey}`,
+      Accept: 'application/json',
+      Origin: this.baseUrl,
+      Referer: this.baseUrl + '/',
+    };
   }
 
   private buildApiUrl(serverEndpoint: string): URL {
