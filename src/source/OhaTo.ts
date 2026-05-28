@@ -78,7 +78,20 @@ export class OhaTO extends Source {
       originalName: vodData ? (vodData.original_name || vodData.originalTitle || vodData.name || vodData.title) : undefined,
       releaseDate: vodData ? (vodData.release_date || vodData.releaseDate) : undefined,
       nameTranslations: vodData ? (vodData.nameTranslations || { de: vodData.name || vodData.title }) : { de: 'Unbekannter Titel' },
-      episode: {},
+      episode: tmdbId.season
+        ? {
+            ids: {
+              tmdb_episode_id:
+                (vodData && (vodData.episode && (vodData.episode.tmdb_episode_id || vodData.episode.tmdbEpisodeId))) ||
+                (vodData && (vodData.tmdb_episode_id || vodData.tmdbEpisodeId)) ||
+                undefined,
+            },
+            name: vodData && (vodData.episode && (vodData.episode.name || vodData.episode.title)) || undefined,
+            releaseDate: vodData && (vodData.episode && (vodData.episode.release_date || vodData.episode.releaseDate)) || undefined,
+            season: tmdbId.season,
+            episode: tmdbId.episode ?? 1,
+          }
+        : {},
       clientVersion: '3.0.2',
     } as any;
 
