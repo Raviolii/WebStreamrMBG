@@ -41,6 +41,12 @@ describe('OhaTO', () => {
     expect(streams).toHaveLength(1);
   });
 
+  test('handle link without language defaults title country to DE', async () => {
+    const streams = await source.handle(ctx, 'movie', new TmdbId(3180, undefined, undefined));
+    expect(streams).toHaveLength(1);
+    expect(streams[0].meta?.title).toContain('[DE]');
+  });
+
   test('handle series defaults episode and skips empty url mirror', async () => {
     // episode is intentionally omitted to cover `episode ?? 1` branch
     const streams = await source.handle(ctx, 'series', new TmdbId(42009, 4, undefined));
