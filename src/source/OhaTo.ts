@@ -38,7 +38,7 @@ export class OhaTO extends Source {
   }
 
   protected override async handleInternal(ctx: Context, _type: ContentType, id: Id): Promise<SourceResult[]> {
-    const debug = process.env.DEBUG_OHATO === '1';
+    const debug = process.env['DEBUG_OHATO'] === '1';
 
     if (debug) console.log(`OhaTO: handleInternal called for id=${id}`);
 
@@ -57,7 +57,7 @@ export class OhaTO extends Source {
       vodData = await this.fetcher.json(ctx, infoUrl, { headers: this.getApiHeaders() });
       if (debug) console.log('OhaTO: info fetched', vodData && (vodData.name || vodData.title));
     } catch (e) {
-      if (debug) console.log('OhaTO: info fetch failed', e && (e.message || e));
+      if (debug) console.log('OhaTO: info fetch failed', (e as any)?.message || e);
       vodData = null;
     }
 
@@ -114,7 +114,7 @@ export class OhaTO extends Source {
           }
         }
       } catch (e) {
-        if (debug) console.log('OhaTO: links flow failed', e && (e.message || e));
+        if (debug) console.log('OhaTO: links flow failed', (e as any)?.message || e);
         return [];
       }
 
@@ -164,8 +164,8 @@ export class OhaTO extends Source {
         });
         signature = lokkeResp?.addonSig;
         if (debug) console.log('OhaTO: lokke signature received', signature ? 'yes' : 'no');
-      } catch (e) {
-        if (debug) console.log('OhaTO: lokke ping failed', e && (e.message || e));
+      } catch (err) {
+        if (debug) console.log('OhaTO: lokke ping failed', (err as any)?.message || err);
         return [];
       }
 
@@ -196,7 +196,7 @@ export class OhaTO extends Source {
         if (debug) console.log('OhaTO: posting item to oha');
         await this.fetcher.textPost(ctx, new URL(OHA_ITEM_URL), JSON.stringify(itemPayload), { headers: ohaHeaders });
       } catch (e) {
-        if (debug) console.log('OhaTO: item post failed', e && (e.message || e));
+        if (debug) console.log('OhaTO: item post failed', (e as any)?.message || e);
       }
 
       let finalData: any;
@@ -204,7 +204,7 @@ export class OhaTO extends Source {
         if (debug) console.log('OhaTO: requesting sources from oha');
         finalData = await this.fetcher.json(ctx, new URL(OHA_SOURCE_URL), { method: 'POST', data: JSON.stringify(movieData), headers: ohaHeaders });
       } catch (e) {
-        if (debug) console.log('OhaTO: source request failed', e && (e.message || e));
+        if (debug) console.log('OhaTO: source request failed', (e as any)?.message || e);
         return [];
       }
 
@@ -231,9 +231,9 @@ export class OhaTO extends Source {
               sourceLabel: this.label,
             },
           });
-        } catch {
-          continue;
-        }
+          } catch {
+            continue;
+          }
       }
 
       return out;
@@ -244,5 +244,8 @@ export class OhaTO extends Source {
       if (debug) console.log('OhaTO: using Lokke flow (vodData present)');
       return await fetchWithLokke(dynamicMovieData);
     }
+
+    // Ensure we always return an array
+    return results;
   }
 }
