@@ -27,7 +27,6 @@ interface OhaTaskRequest {
 
 interface OhaFinalResponse {
   kind?: string;
-  // This captures the final streaming URL structures returned by Oha
   url?: string;
   data?: {
     playlistUrl?: string;
@@ -157,7 +156,6 @@ export class Voe extends Extractor {
     return new URL(`/${url.pathname.replace(/\/+$/, '').split('/').at(-1)}`, url);
   }
 
-  // Returns { playlistUrl, htmlBackup }
   private async resolveOhaThroughLoop(targetUrl: URL): Promise<{ playlistUrl: string | null; html: string }> {
     const LOKKE_PING_URL = 'https://www.lokke.app/api/app/ping';
     const OHA_RESOLVE_URL = 'https://oha.to/mediaurl-resolve.json';
@@ -259,7 +257,6 @@ export class Voe extends Extractor {
       ohaResult = (await loopResolveResponse.json()) as OhaResponse;
     }
 
-    // Attempt to scrape the final stream link from Oha's resolved data structural layout
     const finalData = ohaResult as OhaFinalResponse;
     const streamUrl = finalData?.url || finalData?.data?.url || finalData?.data?.playlistUrl || null;
 
@@ -273,14 +270,17 @@ export class Voe extends Extractor {
     const headers = { Referer: meta.referer ?? url.href };
 
     let html = '';
-    let playlistUrl: string | null = null;
+    let playlistUrl: URL | null = null;
     let fallbackToProxy = false;
 
     try {
-      // Try fast track loop
       const ohaResolution = await this.resolveOhaThroughLoop(url);
       html = ohaResolution.html;
-      playlistUrl = ohaResolution.playlistUrl;
+      
+      // Fix 1: Map string to formal URL structure safely if present
+      if (ohaResolution.playlistUrl) {
+        playlistUrl = new URL(ohaResolution.playlistUrl);
+      }
     } catch (error) {
       fallbackToProxy = true;
       /* istanbul ignore next */
@@ -289,7 +289,6 @@ export class Voe extends Extractor {
       }
     }
 
-    // Proxy Fallback: Runs only if Oha execution failed entirely
     if (fallbackToProxy || !playlistUrl) {
       try {
         html = await this.fetcher.text(ctx, url, { headers });
@@ -318,7 +317,7 @@ export class Voe extends Extractor {
     const sizeMatch = html.matchAll(/[\d.]+ ?[GM]B/g).toArray().at(-1);
     const size = sizeMatch ? bytes.parse(sizeMatch[0] as string) as number : null;
 
-    // Direct configuration check: If Oha didn't extract the m3u8 directly, fallback to mediaflow proxy extractor helper
+    // Fix 2: Explicitly confirm playlistUrl exists before querying utility methods
     if (!playlistUrl) {
       playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
     }
