@@ -48,14 +48,14 @@ export class DoodStream extends Extractor {
         iap: { supported: true, error: 'No in-app payment subscriptions found' },
       };
 
-      // Removed <{ addonSig?: string }> to resolve TS2558 build failure
+      // Changed 'body' to 'data' to satisfy CustomRequestConfig constraints
       const lokkeRes = await this.fetcher.json(ctx, new URL(LOKKE_PING_URL), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
         },
-        body: JSON.stringify(lokkeHandshakePayload)
+        data: JSON.stringify(lokkeHandshakePayload)
       }) as any;
 
       const signature = lokkeRes?.addonSig;
@@ -70,7 +70,7 @@ export class DoodStream extends Extractor {
         clientVersion: '3.0.2'
       };
 
-      // Removed <any> to resolve TS2558 build failure
+      // Changed 'body' to 'data' to satisfy CustomRequestConfig constraints
       const ohaResult = await this.fetcher.json(ctx, new URL(OHA_RESOLVE_URL), {
         method: 'POST',
         headers: {
@@ -79,7 +79,7 @@ export class DoodStream extends Extractor {
           'Accept-Language': 'de-DE,de;q=0.9',
           'mediaurl-signature': signature
         },
-        body: JSON.stringify(ohaInputPayload)
+        data: JSON.stringify(ohaInputPayload)
       }) as any;
 
       // Verify response integrity from oha
