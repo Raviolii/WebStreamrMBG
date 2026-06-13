@@ -19,10 +19,7 @@ export class DoodStream extends Extractor {
   }
 
   public override normalize(url: URL): URL {
-    // Extract the unique video ID from whatever format came in (/e/, /d/, /w/)
     const videoId = url.pathname.replace(/\/+$/, '').split('/').at(-1) as string;
-
-    // Normalize directly to the exact format the oha.to server requires
     return new URL(`https://dood.yt/w/${videoId}`);
   }
 
@@ -48,14 +45,14 @@ export class DoodStream extends Extractor {
         iap: { supported: true, error: 'No in-app payment subscriptions found' },
       };
 
-      // Changed 'body' to 'data' to satisfy CustomRequestConfig constraints
+      // FIX: Changed data from JSON.stringify string to a raw object
       const lokkeRes = await this.fetcher.json(ctx, new URL(LOKKE_PING_URL), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
         },
-        data: JSON.stringify(lokkeHandshakePayload)
+        data: lokkeHandshakePayload 
       }) as any;
 
       const signature = lokkeRes?.addonSig;
@@ -70,7 +67,7 @@ export class DoodStream extends Extractor {
         clientVersion: '3.0.2'
       };
 
-      // Changed 'body' to 'data' to satisfy CustomRequestConfig constraints
+      // FIX: Changed data from JSON.stringify string to a raw object
       const ohaResult = await this.fetcher.json(ctx, new URL(OHA_RESOLVE_URL), {
         method: 'POST',
         headers: {
@@ -79,7 +76,7 @@ export class DoodStream extends Extractor {
           'Accept-Language': 'de-DE,de;q=0.9',
           'mediaurl-signature': signature
         },
-        data: JSON.stringify(ohaInputPayload)
+        data: ohaInputPayload 
       }) as any;
 
       // Verify response integrity from oha
@@ -100,6 +97,7 @@ export class DoodStream extends Extractor {
 
     } catch (error) {
       // --- STRATEGY 2: Fallback to MediaFlow Proxy ---
+      // This part executes ONLY when the try block breaks due to an API error.
       const videoId = url.pathname.split('/').at(-1) as string;
       const fallbackEmbedUrl = new URL(`https://dood.to/e/${videoId}`);
       const headers = { Referer: meta.referer ?? fallbackEmbedUrl.href };
