@@ -127,12 +127,116 @@ export class Voe extends Extractor {
     return new URL(`/${url.pathname.replace(/\/+$/, '').split('/').at(-1)}`, url);
   }
 
+  private async resolveOhaThroughLoop(targetUrl: URL): Promise<string> {
+    const LOKKE_PING_URL = 'https://www.lokke.app/api/app/ping';
+    const OHA_RESOLVE_URL = 'https://oha.to/mediaurl-resolve.json';
+
+    // Forces payload URL structure strictly onto the 'voe.sx' domain
+    const voeSxUrl = `https://voe.sx${targetUrl.pathname}${targetUrl.search}`;
+
+    const inputPayload = {
+      language: "de",
+      region: "CH",
+      url: voeSxUrl,
+      clientVersion: "3.0.2"
+    };
+
+    const lokkeHandshakePayload = {
+      token: 'VKm7XwPbumwb9aeGoVi1fHa6ut1v41a5s6t-yzVQ4qZfN-VwHrdLcD18xPpL4qdzY92xAJiWD_7UZshSngIn_GTbU1uPRTuGFqYQCOBkXzu9YOUPV-u-EbB1WaSZjd6srGhQ',
+      reason: 'app-blur', locale: 'de', theme: 'dark',
+      metadata: {
+        device: { type: 'Handset', brand: 'Apple', model: 'iPhone 12 Pro', name: 'iPhone', uniqueId: '433C3F78-A264-4096-AF20-28BFF3AB4474' },
+        os: { name: 'ios', version: '18.7.7', abis: ['ARM64E'], host: 'unknown' },
+        app: { platform: 'ios', version: '1.0.2', buildId: '1.0.2', engine: 'jsc', installer: 'TestFlight' },
+        version: { package: 'app.lokke.main', binary: '1.0.2', js: '1.0.4' },
+      },
+      appFocusTime: 0, playerActive: false, playDuration: 0, devMode: true, hasAddon: true, castConnected: false,
+      package: 'app.lokke.main', version: '1.0.4', process: 'app',
+      firstAppStart: Date.now(), lastAppStart: Date.now(), ipLocation: null, adblockEnabled: true,
+      proxy: { supported: ['openvpn'], engine: 'openvpn', enabled: false, autoServer: true, id: 'fi-hel' },
+      iap: { supported: true, error: 'No in-app payment subscriptions found' },
+    };
+
+    const lokkePromise = fetch(LOKKE_PING_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
+      },
+      body: JSON.stringify(lokkeHandshakePayload)
+    }).then(res => res.json());
+
+    const lokkeData = await lokkePromise;
+    const signature = lokkeData?.addonSig;
+    if (!signature) throw new Error('Signature generation failed.');
+
+    const ohaHeaders = {
+      'Content-Type': 'application/json',
+      'mediaurl-signature': signature,
+      'User-Agent': 'MediaUrl/2',
+      'Accept-Language': 'de-DE,de;q=0.9',
+      'Accept': '*/*'
+    };
+
+    let resolveResponse = await fetch(OHA_RESOLVE_URL, {
+      method: 'POST',
+      headers: ohaHeaders,
+      body: JSON.stringify(inputPayload)
+    });
+
+    let ohaResult = await resolveResponse.json();
+
+    while (ohaResult?.kind === 'taskRequest') {
+      const taskData = ohaResult.data;
+      const targetHeaders = taskData.params?.headers || {};
+
+      const clientFetchResponse = await fetch(taskData.url, {
+        method: taskData.params?.method || 'GET',
+        headers: {
+          ...targetHeaders,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+      });
+
+      const responseText = await clientFetchResponse.text();
+      const responseHeaders: Record<string, string> = {};
+      
+      for (const [key, value] of clientFetchResponse.headers.entries()) {
+        responseHeaders[key] = value;
+      }
+
+      const taskResponsePayload = {
+        kind: "taskResponse",
+        id: ohaResult.id,
+        data: {
+          type: "fetch",
+          status: clientFetchResponse.status,
+          url: clientFetchResponse.url,
+          headers: responseHeaders,
+          text: responseText
+        }
+      };
+
+      const loopResolveResponse = await fetch(OHA_RESOLVE_URL, {
+        method: 'POST',
+        headers: ohaHeaders,
+        body: JSON.stringify(taskResponsePayload)
+      });
+
+      ohaResult = await loopResolveResponse.json();
+    }
+
+    return typeof ohaResult === 'string' ? ohaResult : JSON.stringify(ohaResult);
+  }
+
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
     const headers = { Referer: meta.referer ?? url.href };
 
     let html: string;
     try {
-      html = await this.fetcher.text(ctx, url, { headers });
+      // Pass the fully structured URL object to the task resolver
+      html = await this.resolveOhaThroughLoop(url);
     } catch (error) {
       /* istanbul ignore next */
       if (error instanceof NotFoundError && !url.href.includes('/e/')) {
@@ -177,5 +281,5 @@ export class Voe extends Extractor {
         },
       },
     ];
-  };
+  }
 }
