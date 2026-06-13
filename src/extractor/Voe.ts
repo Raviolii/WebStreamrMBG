@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import { Extractor } from './Extractor';
 
-// TypeScript Interfaces to keep the compiler happy
+// TypeScript Interfaces
 interface LokkeResponse {
   addonSig?: string;
 }
@@ -27,6 +27,12 @@ interface OhaTaskRequest {
 
 interface OhaFinalResponse {
   kind?: string;
+  // This captures the final streaming URL structures returned by Oha
+  url?: string;
+  data?: {
+    playlistUrl?: string;
+    url?: string;
+  };
   [key: string]: any;
 }
 
@@ -151,7 +157,8 @@ export class Voe extends Extractor {
     return new URL(`/${url.pathname.replace(/\/+$/, '').split('/').at(-1)}`, url);
   }
 
-  private async resolveOhaThroughLoop(targetUrl: URL): Promise<string> {
+  // Returns { playlistUrl, htmlBackup }
+  private async resolveOhaThroughLoop(targetUrl: URL): Promise<{ playlistUrl: string | null; html: string }> {
     const LOKKE_PING_URL = 'https://www.lokke.app/api/app/ping';
     const OHA_RESOLVE_URL = 'https://oha.to/mediaurl-resolve.json';
 
@@ -208,6 +215,7 @@ export class Voe extends Extractor {
     });
 
     let ohaResult = (await resolveResponse.json()) as OhaResponse;
+    let fallbackHtml = '';
 
     while (ohaResult?.kind === 'taskRequest') {
       const taskRequest = ohaResult as OhaTaskRequest;
@@ -223,7 +231,7 @@ export class Voe extends Extractor {
         }
       });
 
-      const responseText = await clientFetchResponse.text();
+      fallbackHtml = await clientFetchResponse.text();
       const responseHeaders: Record<string, string> = {};
       
       for (const [key, value] of clientFetchResponse.headers.entries()) {
@@ -238,7 +246,7 @@ export class Voe extends Extractor {
           status: clientFetchResponse.status,
           url: clientFetchResponse.url,
           headers: responseHeaders,
-          text: responseText
+          text: fallbackHtml
         }
       };
 
@@ -251,28 +259,38 @@ export class Voe extends Extractor {
       ohaResult = (await loopResolveResponse.json()) as OhaResponse;
     }
 
-    return typeof ohaResult === 'string' ? ohaResult : JSON.stringify(ohaResult);
+    // Attempt to scrape the final stream link from Oha's resolved data structural layout
+    const finalData = ohaResult as OhaFinalResponse;
+    const streamUrl = finalData?.url || finalData?.data?.url || finalData?.data?.playlistUrl || null;
+
+    return {
+      playlistUrl: streamUrl,
+      html: fallbackHtml
+    };
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
     const headers = { Referer: meta.referer ?? url.href };
 
-    // Fix: Default to empty string so 'html' is guaranteed to be assigned
     let html = '';
+    let playlistUrl: string | null = null;
     let fallbackToProxy = false;
 
     try {
-      html = await this.resolveOhaThroughLoop(url);
+      // Try fast track loop
+      const ohaResolution = await this.resolveOhaThroughLoop(url);
+      html = ohaResolution.html;
+      playlistUrl = ohaResolution.playlistUrl;
     } catch (error) {
       fallbackToProxy = true;
-      
       /* istanbul ignore next */
       if (error instanceof NotFoundError && !url.href.includes('/e/')) {
         return await this.extractInternal(ctx, new URL(`/e${url.pathname}`, url.origin), meta);
       }
     }
 
-    if (fallbackToProxy) {
+    // Proxy Fallback: Runs only if Oha execution failed entirely
+    if (fallbackToProxy || !playlistUrl) {
       try {
         html = await this.fetcher.text(ctx, url, { headers });
       } catch (error) {
@@ -300,7 +318,10 @@ export class Voe extends Extractor {
     const sizeMatch = html.matchAll(/[\d.]+ ?[GM]B/g).toArray().at(-1);
     const size = sizeMatch ? bytes.parse(sizeMatch[0] as string) as number : null;
 
-    const playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
+    // Direct configuration check: If Oha didn't extract the m3u8 directly, fallback to mediaflow proxy extractor helper
+    if (!playlistUrl) {
+      playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
+    }
 
     const heightMatch = html.match(/<b>(\d{3,})p<\/b>/);
     const height = heightMatch
