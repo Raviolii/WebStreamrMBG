@@ -48,30 +48,30 @@ export class DoodStream extends Extractor {
         iap: { supported: true, error: 'No in-app payment subscriptions found' },
       };
 
-      // 1. Fetch the authorization token from the Lokke handshake
-      const lokkeRes = await this.fetcher.json<{ addonSig?: string }>(ctx, new URL(LOKKE_PING_URL), {
+      // Removed <{ addonSig?: string }> to resolve TS2558 build failure
+      const lokkeRes = await this.fetcher.json(ctx, new URL(LOKKE_PING_URL), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
         },
         body: JSON.stringify(lokkeHandshakePayload)
-      });
+      }) as any;
 
       const signature = lokkeRes?.addonSig;
       if (!signature) {
         throw new Error('Failed to retrieve signature from Lokke API.');
       }
 
-      // 2. Submit the oha-normalized URL payload
       const ohaInputPayload = {
         language: 'de',
         region: 'CH',
-        url: url.href, // This will cleanly be 'https://dood.yt/w/{id}' because of normalize()
+        url: url.href,
         clientVersion: '3.0.2'
       };
 
-      const ohaResult = await this.fetcher.json<any>(ctx, new URL(OHA_RESOLVE_URL), {
+      // Removed <any> to resolve TS2558 build failure
+      const ohaResult = await this.fetcher.json(ctx, new URL(OHA_RESOLVE_URL), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
@@ -80,7 +80,7 @@ export class DoodStream extends Extractor {
           'mediaurl-signature': signature
         },
         body: JSON.stringify(ohaInputPayload)
-      });
+      }) as any;
 
       // Verify response integrity from oha
       if (ohaResult && ohaResult.url && ohaResult.kind !== 'taskRequest') {
@@ -100,7 +100,6 @@ export class DoodStream extends Extractor {
 
     } catch (error) {
       // --- STRATEGY 2: Fallback to MediaFlow Proxy ---
-      // Re-route back to standard Doodstream routing syntax expected by Cheerio scraper fallback
       const videoId = url.pathname.split('/').at(-1) as string;
       const fallbackEmbedUrl = new URL(`https://dood.to/e/${videoId}`);
       const headers = { Referer: meta.referer ?? fallbackEmbedUrl.href };
