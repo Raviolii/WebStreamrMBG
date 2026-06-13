@@ -257,14 +257,13 @@ export class Voe extends Extractor {
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
     const headers = { Referer: meta.referer ?? url.href };
 
-    let html: string;
+    // Fix: Default to empty string so 'html' is guaranteed to be assigned
+    let html = '';
     let fallbackToProxy = false;
 
     try {
-      // 1. Try resolving quickly using the Oha loop pipeline first
       html = await this.resolveOhaThroughLoop(url);
     } catch (error) {
-      // If Oha fails or times out, flag it to slide into the MediaFlow proxy backup
       fallbackToProxy = true;
       
       /* istanbul ignore next */
@@ -273,7 +272,6 @@ export class Voe extends Extractor {
       }
     }
 
-    // 2. Backup Plan: Fallback to reading raw page html via proxy if Oha broke down
     if (fallbackToProxy) {
       try {
         html = await this.fetcher.text(ctx, url, { headers });
@@ -302,7 +300,6 @@ export class Voe extends Extractor {
     const sizeMatch = html.matchAll(/[\d.]+ ?[GM]B/g).toArray().at(-1);
     const size = sizeMatch ? bytes.parse(sizeMatch[0] as string) as number : null;
 
-    // mediaurl resolution results or layout backup will supply the stream file location via proxy extractor mapping
     const playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
 
     const heightMatch = html.match(/<b>(\d{3,})p<\/b>/);
