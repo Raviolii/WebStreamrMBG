@@ -8,6 +8,30 @@ import {
 } from '../utils';
 import { Extractor } from './Extractor';
 
+// TypeScript Interfaces to keep the compiler happy
+interface LokkeResponse {
+  addonSig?: string;
+}
+
+interface OhaTaskRequest {
+  kind: 'taskRequest';
+  id: string;
+  data: {
+    url: string;
+    params?: {
+      method?: string;
+      headers?: Record<string, string>;
+    };
+  };
+}
+
+interface OhaFinalResponse {
+  kind?: string;
+  [key: string]: any;
+}
+
+type OhaResponse = OhaTaskRequest | OhaFinalResponse;
+
 /** @see https://github.com/Gujal00/ResolveURL/blob/master/script.module.resolveurl/lib/resolveurl/plugins/voesx.py */
 export class Voe extends Extractor {
   public readonly id = 'voe';
@@ -131,7 +155,6 @@ export class Voe extends Extractor {
     const LOKKE_PING_URL = 'https://www.lokke.app/api/app/ping';
     const OHA_RESOLVE_URL = 'https://oha.to/mediaurl-resolve.json';
 
-    // Forces payload URL structure strictly onto the 'voe.sx' domain
     const voeSxUrl = `https://voe.sx${targetUrl.pathname}${targetUrl.search}`;
 
     const inputPayload = {
@@ -164,7 +187,7 @@ export class Voe extends Extractor {
         'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
       },
       body: JSON.stringify(lokkeHandshakePayload)
-    }).then(res => res.json());
+    }).then(res => res.json() as Promise<LokkeResponse>);
 
     const lokkeData = await lokkePromise;
     const signature = lokkeData?.addonSig;
@@ -184,10 +207,11 @@ export class Voe extends Extractor {
       body: JSON.stringify(inputPayload)
     });
 
-    let ohaResult = await resolveResponse.json();
+    let ohaResult = (await resolveResponse.json()) as OhaResponse;
 
     while (ohaResult?.kind === 'taskRequest') {
-      const taskData = ohaResult.data;
+      const taskRequest = ohaResult as OhaTaskRequest;
+      const taskData = taskRequest.data;
       const targetHeaders = taskData.params?.headers || {};
 
       const clientFetchResponse = await fetch(taskData.url, {
@@ -208,7 +232,7 @@ export class Voe extends Extractor {
 
       const taskResponsePayload = {
         kind: "taskResponse",
-        id: ohaResult.id,
+        id: taskRequest.id,
         data: {
           type: "fetch",
           status: clientFetchResponse.status,
@@ -224,7 +248,7 @@ export class Voe extends Extractor {
         body: JSON.stringify(taskResponsePayload)
       });
 
-      ohaResult = await loopResolveResponse.json();
+      ohaResult = (await loopResolveResponse.json()) as OhaResponse;
     }
 
     return typeof ohaResult === 'string' ? ohaResult : JSON.stringify(ohaResult);
@@ -235,7 +259,6 @@ export class Voe extends Extractor {
 
     let html: string;
     try {
-      // Pass the fully structured URL object to the task resolver
       html = await this.resolveOhaThroughLoop(url);
     } catch (error) {
       /* istanbul ignore next */
