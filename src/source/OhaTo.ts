@@ -142,7 +142,9 @@ export class OhaTO extends Source {
             const location = headers['location'];
             const finalUrl = location ? new URL(location as string, streamApiUrl.href) : new URL(link.url);
 
-            const language = link.language ?? 'de';
+            const language = Array.isArray((link as any).languages) && (link as any).languages[0]
+              ? (link as any).languages[0]
+              : (link.language ?? 'de');
             const height = parseHeightFromString(link.name);
             if (debug) console.log(`OhaTO: link -> ${link.url} (language=${language}) final=${finalUrl.href} height=${height ?? 'unknown'}`);
             const quality = qualityFromHeight(height) ?? (link.quality || link.qualityLabel || undefined);
@@ -267,7 +269,11 @@ export class OhaTO extends Source {
         if (!urlStr) continue;
         try {
           const url = new URL(urlStr);
-          const language = (s.language || s.lang || movieData.language || 'de') as string;
+          let language = 'de';
+          if (Array.isArray(s.languages) && s.languages[0]) language = s.languages[0];
+          else if (s.language || s.lang) language = s.language || s.lang;
+          else if (movieData.language) language = movieData.language;
+
           const height = parseHeightFromString(s.height ?? s.resolution ?? s.res ?? s.quality ?? (Array.isArray(s.qualities) ? s.qualities[0] : undefined) ?? s.name ?? s.title);
           const quality = qualityFromHeight(height) ?? (s.quality || (Array.isArray(s.qualities) ? s.qualities[0] : undefined));
 
