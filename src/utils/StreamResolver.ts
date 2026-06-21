@@ -80,7 +80,11 @@ export class StreamResolver {
           sourceErrorCount++;
         });
 
-        if (showErrors(ctx.config)) {
+        // Do not show BlockedError entries in the UI even when showErrors is enabled
+        if (error instanceof BlockedError) {
+          // log at debug level to keep diagnostics but avoid UI noise
+          this.logger.debug(`${source.id}: blocked (${(error as BlockedError).reason}) — suppressed from UI`, ctx);
+        } else if (showErrors(ctx.config)) {
           streams.push({
             name: envGetAppName(),
             title: [`🔗 ${source.label}`, logErrorAndReturnNiceString(ctx, this.logger, source.id, error)].join('\n'),
