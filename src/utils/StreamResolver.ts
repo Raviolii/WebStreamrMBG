@@ -11,6 +11,7 @@ import { envGetAppName } from './env';
 import { Id } from './id';
 import { flagFromCountryCode } from './language';
 import { getClosestResolution } from './resolution';
+import { parseQualityFromUrl, qualityLabelFromUrl } from './quality';
 
 interface ResolveResponse {
   streams: Stream[];
@@ -45,6 +46,19 @@ export class StreamResolver {
     const sourceErrorCountMutex = new Mutex();
 
     const urlResults: UrlResult[] = [];
+
+    // Infer quality/height from the URL when metadata is missing
+    const inferQualityFromUrlIfMissing = (ur: UrlResult) => {
+      if (!ur.meta) ur.meta = {};
+      if (!ur.meta.height) {
+        const inferred = parseQualityFromUrl(ur.url);
+        if (inferred) ur.meta.height = inferred;
+      }
+      if (!ur.meta.quality) {
+        const qLabel = qualityLabelFromUrl(ur.url);
+        if (qLabel) ur.meta.quality = qLabel;
+      }
+    };
 
     const urlResultsCountByCountryCode = new Map<CountryCode, number>();
     const urlResultsCountByCountryCodeMutex = new Mutex();
@@ -119,6 +133,9 @@ export class StreamResolver {
       await handleSource(skippedFallbackSource, false);
     });
     await Promise.all(skippedFallbackSourcePromises);
+
+    // Run inference on collected url results
+    urlResults.forEach(inferQualityFromUrlIfMissing);
 
     urlResults.sort((a, b) => {
       if (a.error || b.error) {

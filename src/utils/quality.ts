@@ -9,9 +9,9 @@ export const parseQualityFromUrl = (input: string | URL): number | undefined => 
   const numMatch = url.match(/(?:_|\/|\-)(\d{3,4})(?:_|\/|\-|\.)/);
   if (numMatch) return Number(numMatch[1]);
 
-  // 4k / 2160 / UHD
-  if (/\b4k\b/i.test(url) || /2160/i.test(url)) return 2160;
-  if (/\b2k\b/i.test(url) || /1440/i.test(url)) return 1440;
+  // 4k / 2160 / UHD — use non-alphanumeric boundaries so underscore matches
+  if (/(^|[^0-9A-Za-z])4k(?:[^0-9A-Za-z]|$)/i.test(url) || /2160/i.test(url)) return 2160;
+  if (/(^|[^0-9A-Za-z])2k(?:[^0-9A-Za-z]|$)/i.test(url) || /1440/i.test(url)) return 1440;
 
   // sometimes quality is in query param like ?q=1080 or &resolution=720
   const queryMatch = url.match(/[?&](?:q|quality|resolution|res)=(\d{3,4})/i);
