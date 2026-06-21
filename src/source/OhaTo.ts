@@ -147,7 +147,7 @@ export class OhaTO extends Source {
               : (link.language ?? 'de');
             const height = parseHeightFromString(link.name);
             if (debug) console.log(`OhaTO: link -> ${link.url} (language=${language}) final=${finalUrl.href} height=${height ?? 'unknown'}`);
-            const quality = qualityFromHeight(height) ?? (link.quality || link.qualityLabel || undefined);
+            const quality = qualityFromHeight(height) ?? (link.quality || link.qualityLabel || link.tag || undefined);
             results.push({
               url: finalUrl,
               meta: {
@@ -274,8 +274,8 @@ export class OhaTO extends Source {
           else if (s.language || s.lang) language = s.language || s.lang;
           else if (movieData.language) language = movieData.language;
 
-          const height = parseHeightFromString(s.height ?? s.resolution ?? s.res ?? s.quality ?? (Array.isArray(s.qualities) ? s.qualities[0] : undefined) ?? s.name ?? s.title);
-          const quality = qualityFromHeight(height) ?? (s.quality || (Array.isArray(s.qualities) ? s.qualities[0] : undefined));
+          const height = parseHeightFromString(s.height ?? s.resolution ?? s.res ?? s.quality ?? s.tag ?? (Array.isArray(s.qualities) ? s.qualities[0] : undefined) ?? s.name ?? s.title);
+          const quality = qualityFromHeight(height) ?? (s.quality || s.tag || (Array.isArray(s.qualities) ? s.qualities[0] : undefined));
 
           if (debug) console.log(`OhaTO: candidate ${url.href} lang=${language} height=${height ?? 'unknown'}`);
 
