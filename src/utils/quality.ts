@@ -25,3 +25,17 @@ export const qualityLabelFromUrl = (input: string | URL): string | undefined => 
   if (!h) return undefined;
   return `${h}p`;
 };
+
+export const parseQualityLabelToHeight = (q?: string, fallback?: number): number | undefined => {
+  if (!q) return fallback;
+  const m = q.match(/(\d{3,4})/);
+  if (m) return Number(m[1]);
+  const l = q.toLowerCase();
+  if (l.includes('4k') || l.includes('2160')) return 2160;
+  if (l.includes('1440') || l.includes('2k')) return 1440;
+  if (l.includes('1080') || l.includes('fhd') || l === 'hd') return 1080;
+  if (l.includes('720')) return 720;
+  if (l.includes('480') || l === 'sd') return 480;
+
+  return fallback;
+};

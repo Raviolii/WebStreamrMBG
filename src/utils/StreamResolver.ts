@@ -11,7 +11,7 @@ import { envGetAppName } from './env';
 import { Id } from './id';
 import { flagFromCountryCode } from './language';
 import { getClosestResolution } from './resolution';
-import { parseQualityFromUrl, qualityLabelFromUrl } from './quality';
+import { parseQualityFromUrl, qualityLabelFromUrl, parseQualityLabelToHeight } from './quality';
 
 interface ResolveResponse {
   streams: Stream[];
@@ -255,12 +255,15 @@ export class StreamResolver {
     const flags = urlResult.meta?.countryCodes?.map(cc => flagFromCountryCode(cc)).join(' ');
     if (flags) lines.push(flags);
 
-    if (urlResult.meta?.height) {
-      lines.push(getClosestResolution(urlResult.meta.height));
-    }
-
-    // Prefer explicit quality label if provided (e.g. "720p", "HD")
-    if (urlResult.meta?.quality) {
+    // Compute a single, consistent quality label to avoid duplicate/conflicting
+    // badges (e.g. file name says 1080p but stream is 720p). Prefer numeric
+    // quality in `meta.quality`, then `meta.height`, then URL-inferred value.
+    const inferredFromUrl = parseQualityFromUrl(urlResult.url);
+    const primaryHeight = parseQualityLabelToHeight(urlResult.meta?.quality, urlResult.meta?.height ?? inferredFromUrl);
+    if (primaryHeight) {
+      lines.push(getClosestResolution(primaryHeight));
+    } else if (urlResult.meta?.quality) {
+      // non-numeric quality label (e.g. 'HD')
       lines.push(urlResult.meta.quality);
     }
 
