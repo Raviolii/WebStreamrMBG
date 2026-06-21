@@ -52,7 +52,8 @@ export class StreamResolver {
 
     const urlResults: UrlResult[] = [];
 
-    // Infer quality/height from the URL when metadata is missing
+    // Infer quality/height from the URL when metadata is missing.
+    // This helps when extractors don't provide `meta.quality` or `meta.height`.
     const inferQualityFromUrlIfMissing = (ur: UrlResult) => {
       if (!ur.meta) ur.meta = {};
       if (!ur.meta.height) {
@@ -139,7 +140,7 @@ export class StreamResolver {
     });
     await Promise.all(skippedFallbackSourcePromises);
 
-    // Run inference on collected url results
+    // Run inference on collected url results (URL-based inference enabled)
     urlResults.forEach(inferQualityFromUrlIfMissing);
 
     // For HLS streams, fetch the master playlist and infer variant resolutions
@@ -310,11 +311,23 @@ export class StreamResolver {
     if (urlResult.meta?.bytes) {
       titleLines.push(`💾 ${bytes.format(urlResult.meta.bytes, { unitSeparator: ' ' })}`);
     }
+
+    // Remove duplicated quality tokens from labels when we already show quality
+    // in the stream name (to avoid e.g. "1440p" appearing twice).
+    const stripQualityTokens = (s?: string) => {
+      if (!s) return s;
+      const cleaned = s.replace(/\b(\d{3,4}p|4k|2160p|1440p|1080p|720p|480p|hd|fhd|sd)\b/gi, '').replace(/\s{2,}/g, ' ').trim();
+      return cleaned || s;
+    };
+
     const sourceLabel = urlResult.meta?.sourceLabel;
+    const cleanedLabel = stripQualityTokens(urlResult.label);
+    const cleanedSourceLabel = stripQualityTokens(sourceLabel);
+
     if (sourceLabel && sourceLabel !== urlResult.label) {
-      titleLines.push(`🔗 ${urlResult.label} from ${urlResult.meta?.sourceLabel}`);
+      titleLines.push(`🔗 ${cleanedLabel} from ${cleanedSourceLabel}`);
     } else {
-      titleLines.push(`🔗 ${urlResult.label}`);
+      titleLines.push(`🔗 ${cleanedLabel}`);
     }
 
     if (urlResult.error) {
