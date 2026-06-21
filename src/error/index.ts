@@ -21,9 +21,12 @@ export const logErrorAndReturnNiceString = (ctx: Context, logger: winston.Logger
       return '⚠️ MediaFlow Proxy authentication failed. Please set the correct password.';
     }
 
-    logger.warn(`${source}: Request to ${error.url} was blocked, reason: ${error.reason}, headers: ${JSON.stringify(error.headers)}.`, ctx);
+    // Do not warn to avoid noisy UI logs for blocked hosts (Cloudflare, unknown, etc).
+    // Keep debug logs for diagnostics.
+    logger.debug(`${source}: Request to ${error.url} was blocked, reason: ${error.reason}, headers: ${JSON.stringify(error.headers)}.`, ctx);
 
-    return `⚠️ Request to ${error.url.host} was blocked. Reason: ${error.reason}`;
+    // Return empty string so callers can decide whether to show anything in the UI.
+    return '';
   }
 
   if (error instanceof TooManyRequestsError) {

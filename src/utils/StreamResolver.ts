@@ -222,6 +222,16 @@ export class StreamResolver {
       lines.push(getClosestResolution(urlResult.meta.height));
     }
 
+    // Prefer explicit quality label if provided (e.g. "720p", "HD")
+    if (urlResult.meta?.quality) {
+      lines.push(urlResult.meta.quality);
+    }
+
+    // Show language code when available (e.g. "de", "en")
+    if (urlResult.meta?.language) {
+      lines.push(urlResult.meta.language);
+    }
+
     if (urlResult.isExternal && showExternalUrls(ctx.config)) {
       lines.push('⚠️ external');
     }
@@ -247,7 +257,8 @@ export class StreamResolver {
     }
 
     if (urlResult.error) {
-      titleLines.push(logErrorAndReturnNiceString(ctx, this.logger, urlResult.meta?.sourceId ?? '', urlResult.error));
+      const errorMsg = logErrorAndReturnNiceString(ctx, this.logger, urlResult.meta?.sourceId ?? '', urlResult.error);
+      if (errorMsg) titleLines.push(errorMsg);
     }
 
     return titleLines.join('\n');
