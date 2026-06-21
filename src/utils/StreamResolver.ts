@@ -3,7 +3,6 @@ import bytes from 'bytes';
 import { ContentType, Stream } from 'stremio-addon-sdk';
 import winston from 'winston';
 import { logErrorAndReturnNiceString, BlockedError } from '../error';
-import { BlockedReason } from '../types';
 import { ExtractorRegistry } from '../extractor';
 import { Source } from '../source';
 import { Context, CountryCode, Format, UrlResult } from '../types';
@@ -149,8 +148,8 @@ export class StreamResolver {
 
     streams.push(
       ...urlResults.filter(urlResult => {
-        // Always hide Cloudflare-challenge blocked results from app display
-        if (urlResult.error instanceof BlockedError && (urlResult.error as BlockedError).reason === BlockedReason.cloudflare_challenge) {
+        // Always hide blocked results (e.g. Cloudflare challenge, unknown) from app display
+        if (urlResult.error instanceof BlockedError) {
           return false;
         }
 
