@@ -7,9 +7,11 @@ import { Source, SourceResult } from './Source';
 
 interface OhaApiLink {
   url: string;
-  name: string;
-  language: string;
+  name?: string;
+  language?: string;
   icon?: string;
+  quality?: string;
+  qualityLabel?: string;
 }
 
 export class OhaTO extends Source {
@@ -100,11 +102,11 @@ export class OhaTO extends Source {
       if (typeof text === 'number') return text;
       const s = String(text);
       const m = s.match(/(\d{3,4})p/i);
-      if (m) return parseInt(m[1], 10);
+      if (m) return parseInt(m[1]!, 10);
       const m2 = s.match(/(\d{3,4})x(\d{3,4})/i);
-      if (m2) return parseInt(m2[2], 10);
+      if (m2) return parseInt(m2[2]!, 10);
       const m3 = s.match(/(\d{3,4})/);
-      if (m3) return parseInt(m3[1], 10);
+      if (m3) return parseInt(m3[1]!, 10);
       if (/4k/i.test(s)) return 2160;
       if (/fhd|1080/i.test(s)) return 1080;
       if (/hd/i.test(s)) return 720;
