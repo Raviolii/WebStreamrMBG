@@ -129,6 +129,26 @@ export class StreamResolver {
         return a.isExternal ? 1 : -1;
       }
 
+      const parseQualityToHeight = (q?: string, h?: number) => {
+        if (q) {
+          const m = q.match(/(\d{3,4})/);
+          if (m) return Number(m[1]);
+          const ql = q.toLowerCase();
+          if (ql.includes('4k') || ql.includes('2160')) return 2160;
+          if (ql.includes('1440')) return 1440;
+          if (ql.includes('1080') || ql.includes('fhd') || ql === 'hd') return 1080;
+          if (ql.includes('720')) return 720;
+          if (ql.includes('480') || ql === 'sd') return 480;
+        }
+
+        return h ?? 0;
+      };
+
+      const qualityComparison = parseQualityToHeight(b.meta?.quality, b.meta?.height) - parseQualityToHeight(a.meta?.quality, a.meta?.height);
+      if (qualityComparison !== 0) {
+        return qualityComparison;
+      }
+
       const heightComparison = (b.meta?.height ?? 0) - (a.meta?.height ?? 0);
       if (heightComparison !== 0) {
         return heightComparison;
