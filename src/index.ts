@@ -101,7 +101,7 @@ addon.use('/', (new ExtractController(logger, fetcher, extractorRegistry)).route
 addon.use('/', (new ConfigureController(sources, extractors, fetcher)).router);
 addon.use('/', (new ManifestController(sources, extractors, fetcher)).router);
 
-const streamResolver = new StreamResolver(logger, extractorRegistry);
+const streamResolver = new StreamResolver(logger, extractorRegistry, fetcher);
 addon.use('/', (new StreamController(logger, sources, streamResolver)).router);
 
 // error handler needs to stay at the end of the stack

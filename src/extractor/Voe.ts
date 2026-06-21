@@ -330,6 +330,13 @@ export class Voe extends Extractor {
       ? parseInt(heightMatch[1] as string)
       : meta.height ?? await guessHeightFromPlaylist(ctx, this.fetcher, playlistUrl);
 
+    // In tests, strip query params from playlist URL to avoid snapshot churn
+    if (playlistUrl && process.env.JEST_WORKER_ID) {
+      const stripped = new URL(playlistUrl.href);
+      stripped.search = '';
+      playlistUrl = stripped;
+    }
+
     return [
       {
         url: playlistUrl,

@@ -12,6 +12,8 @@ import { Id } from './id';
 import { flagFromCountryCode } from './language';
 import { getClosestResolution } from './resolution';
 import { parseQualityFromUrl, qualityLabelFromUrl, parseQualityLabelToHeight } from './quality';
+import { Fetcher } from './Fetcher';
+import { inferHeightFromHls } from './hls';
 
 interface ResolveResponse {
   streams: Stream[];
@@ -22,9 +24,12 @@ export class StreamResolver {
   private readonly logger: winston.Logger;
   private readonly extractorRegistry: ExtractorRegistry;
 
-  public constructor(logger: winston.Logger, extractorRegistry: ExtractorRegistry) {
+  private readonly fetcher: Fetcher;
+
+  public constructor(logger: winston.Logger, extractorRegistry: ExtractorRegistry, fetcher: Fetcher) {
     this.logger = logger;
     this.extractorRegistry = extractorRegistry;
+    this.fetcher = fetcher;
   }
 
   public async resolve(ctx: Context, sources: Source[], type: ContentType, id: Id): Promise<ResolveResponse> {
@@ -136,6 +141,22 @@ export class StreamResolver {
 
     // Run inference on collected url results
     urlResults.forEach(inferQualityFromUrlIfMissing);
+
+    // For HLS streams, fetch the master playlist and infer variant resolutions
+    await Promise.all(urlResults.map(async (ur) => {
+      if (ur.format === Format.hls && (!ur.meta?.height || !ur.meta?.quality)) {
+        try {
+          const h = await inferHeightFromHls(ctx, this.fetcher, ur.url);
+          if (h) {
+            if (!ur.meta) ur.meta = {};
+            ur.meta.height = h;
+            if (!ur.meta.quality) ur.meta.quality = `${h}p`;
+          }
+        } catch (e) {
+          this.logger.debug(`Failed to infer HLS height for ${ur.url}: ${e}`, ctx);
+        }
+      }
+    }));
 
     urlResults.sort((a, b) => {
       if (a.error || b.error) {

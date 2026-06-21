@@ -1,5 +1,7 @@
 import { Context } from '../types';
 import { Fetcher } from './Fetcher';
+import { BlockedError } from '../error';
+import { BlockedReason } from '../types';
 
 interface ExtractResult {
   destination_url: string;
@@ -39,7 +41,18 @@ export const buildMediaFlowProxyExtractorStreamUrl = async (ctx: Context, fetche
 
   const extractResult: ExtractResult = await fetcher.json(ctx, mediaFlowProxyUrl, { queueLimit: 4, queueTimeout: 10000, timeout: 20000 });
 
-  const streamUrl = new URL(extractResult.mediaflow_proxy_url);
+  // Validate extract result — if the proxy returned an error or invalid URL,
+  // surface as BlockedError so the `StreamResolver` will hide it from the UI.
+  if (!extractResult || !extractResult.mediaflow_proxy_url) {
+    throw new BlockedError(url, BlockedReason.unknown, { details: extractResult });
+  }
+
+  let streamUrl: URL;
+  try {
+    streamUrl = new URL(extractResult.mediaflow_proxy_url);
+  } catch (e) {
+    throw new BlockedError(url, BlockedReason.unknown, { details: extractResult });
+  }
 
   for (const queryParamsKey in extractResult.query_params) {
     streamUrl.searchParams.append(queryParamsKey, extractResult.query_params[queryParamsKey] as string);
@@ -48,7 +61,6 @@ export const buildMediaFlowProxyExtractorStreamUrl = async (ctx: Context, fetche
     streamUrl.searchParams.append(`h_${requestHeadersKey}`, extractResult.request_headers[requestHeadersKey] as string);
   }
   streamUrl.searchParams.append('d', extractResult.destination_url);
-
   return streamUrl;
 };
 export const buildMediaFlowProxyHlsUrl = (ctx: Context, m3u8Url: URL, headers: Record<string, string> = {}, proxySegments = false): URL => {
