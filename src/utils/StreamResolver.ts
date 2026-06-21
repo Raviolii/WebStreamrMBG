@@ -2,7 +2,8 @@ import { Mutex } from 'async-mutex';
 import bytes from 'bytes';
 import { ContentType, Stream } from 'stremio-addon-sdk';
 import winston from 'winston';
-import { logErrorAndReturnNiceString } from '../error';
+import { logErrorAndReturnNiceString, BlockedError } from '../error';
+import { BlockedReason } from '../types';
 import { ExtractorRegistry } from '../extractor';
 import { Source } from '../source';
 import { Context, CountryCode, Format, UrlResult } from '../types';
@@ -147,7 +148,14 @@ export class StreamResolver {
     this.logger.info(`Got ${urlResults.length} url results, including ${errorCount} errors`, ctx);
 
     streams.push(
-      ...urlResults.filter(urlResult => (!urlResult.error || showErrors(ctx.config)) && !isResolutionExcluded(ctx.config, getClosestResolution(urlResult.meta?.height)))
+      ...urlResults.filter(urlResult => {
+        // Always hide Cloudflare-challenge blocked results from app display
+        if (urlResult.error instanceof BlockedError && (urlResult.error as BlockedError).reason === BlockedReason.cloudflare_challenge) {
+          return false;
+        }
+
+        return (!urlResult.error || showErrors(ctx.config)) && !isResolutionExcluded(ctx.config, getClosestResolution(urlResult.meta?.height));
+      })
         .filter((urlResult, index, self) =>
           // Remove duplicate URLs
           index === self.findIndex(t => t.url.href === urlResult.url.href),

@@ -175,17 +175,6 @@ exports[`resolve adds error info 2`] = `
         "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
         "notWebReady": true,
       },
-      "externalUrl": "https://example2.com/",
-      "name": "WebStreamrMBG
-🇩🇪",
-      "title": "🔗 hoster.com
-⚠️ Request to example2.com was blocked. Reason: cloudflare_challenge",
-    },
-    {
-      "behaviorHints": {
-        "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
-        "notWebReady": true,
-      },
       "name": "WebStreamrMBG
 🇩🇪",
       "title": "🔗 working1",
