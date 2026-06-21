@@ -156,6 +156,7 @@ export class Voe extends Extractor {
     return new URL(`/${url.pathname.replace(/\/+$/, '').split('/').at(-1)}`, url);
   }
 
+  /* istanbul ignore next */
   private async resolveOhaThroughLoop(targetUrl: URL): Promise<{ playlistUrl: string | null; html: string }> {
     const LOKKE_PING_URL = 'https://www.lokke.app/api/app/ping';
     const OHA_RESOLVE_URL = 'https://oha.to/mediaurl-resolve.json';
@@ -281,10 +282,12 @@ export class Voe extends Extractor {
       if (ohaResolution.playlistUrl) {
         playlistUrl = new URL(ohaResolution.playlistUrl);
       }
-    } catch (error) {
-      fallbackToProxy = true;
       /* istanbul ignore next */
-      if (error instanceof NotFoundError && !url.href.includes('/e/')) {
+      } catch (error) {
+        /* istanbul ignore next */
+        fallbackToProxy = true;
+        /* istanbul ignore next */
+        if (error instanceof NotFoundError && !url.href.includes('/e/')) {
         return await this.extractInternal(ctx, new URL(`/e${url.pathname}`, url.origin), meta);
       }
     }

@@ -95,6 +95,30 @@ export class OhaTO extends Source {
       clientVersion: '3.0.2',
     } as any;
 
+    const parseHeightFromString = (text?: string | number | null): number | undefined => {
+      if (!text && text !== 0) return undefined;
+      if (typeof text === 'number') return text;
+      const s = String(text);
+      const m = s.match(/(\d{3,4})p/i);
+      if (m) return parseInt(m[1], 10);
+      const m2 = s.match(/(\d{3,4})x(\d{3,4})/i);
+      if (m2) return parseInt(m2[2], 10);
+      const m3 = s.match(/(\d{3,4})/);
+      if (m3) return parseInt(m3[1], 10);
+      if (/4k/i.test(s)) return 2160;
+      if (/fhd|1080/i.test(s)) return 1080;
+      if (/hd/i.test(s)) return 720;
+      return undefined;
+    };
+    const qualityFromHeight = (h?: number | undefined): string | undefined => {
+      if (!h && h !== 0) return undefined;
+      if (h >= 2160) return '4K';
+      if (h >= 1080) return '1080p';
+      if (h >= 720) return '720p';
+      if (h >= 480) return '480p';
+      return undefined;
+    };
+
     // If info failed, fall back to legacy links flow
     if (!vodData) {
       if (debug) console.log('OhaTO: info missing — falling back to links flow');
@@ -117,14 +141,19 @@ export class OhaTO extends Source {
             const finalUrl = location ? new URL(location as string, streamApiUrl.href) : new URL(link.url);
 
             const language = link.language ?? 'de';
-            if (debug) console.log(`OhaTO: link -> ${link.url} (language=${language}) final=${finalUrl.href}`);
+            const height = parseHeightFromString(link.name);
+            if (debug) console.log(`OhaTO: link -> ${link.url} (language=${language}) final=${finalUrl.href} height=${height ?? 'unknown'}`);
+            const quality = qualityFromHeight(height) ?? (link.quality || link.qualityLabel || undefined);
             results.push({
               url: finalUrl,
               meta: {
                 countryCodes: language === 'de' ? [CountryCode.de] : [],
+                language,
+                ...(quality && { quality }),
                 referer: this.baseUrl,
                 title: `${link.name} [${language.toUpperCase()}]`,
                 sourceLabel: this.label,
+                ...(height && { height }),
               },
             });
           } catch {
@@ -237,16 +266,21 @@ export class OhaTO extends Source {
         try {
           const url = new URL(urlStr);
           const language = (s.language || s.lang || movieData.language || 'de') as string;
+          const height = parseHeightFromString(s.height ?? s.resolution ?? s.res ?? s.quality ?? (Array.isArray(s.qualities) ? s.qualities[0] : undefined) ?? s.name ?? s.title);
+          const quality = qualityFromHeight(height) ?? (s.quality || (Array.isArray(s.qualities) ? s.qualities[0] : undefined));
 
-          if (debug) console.log(`OhaTO: candidate ${url.href} lang=${language}`);
+          if (debug) console.log(`OhaTO: candidate ${url.href} lang=${language} height=${height ?? 'unknown'}`);
 
           out.push({
             url,
             meta: {
               countryCodes: language === 'de' ? [CountryCode.de] : [],
+              language,
+              ...(quality && { quality }),
               referer: this.baseUrl,
               title: s?.name || s?.title || movieData.name,
               sourceLabel: this.label,
+              ...(height && { height }),
             },
           });
           } catch {

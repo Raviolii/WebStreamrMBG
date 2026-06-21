@@ -79,6 +79,8 @@ export interface Meta {
   bytes?: number | undefined;
   countryCodes?: CountryCode[];
   extractorId?: string | undefined;
+  language?: string | undefined;
+  quality?: string | undefined;
   height?: number | undefined;
   priority?: number | undefined;
   referer?: string | undefined;
