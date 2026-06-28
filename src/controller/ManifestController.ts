@@ -2,22 +2,19 @@ import { Request, Response, Router } from 'express';
 import { Extractor } from '../extractor';
 import { Source } from '../source';
 import { Config } from '../types';
-import { buildManifest, getDefaultConfig, contextFromRequestAndResponse, Fetcher } from '../utils';
-import { BlockedError } from '../error';
+import { buildManifest, getDefaultConfig } from '../utils';
 
 export class ManifestController {
   public readonly router: Router;
 
   private readonly sources: Source[];
   private readonly extractors: Extractor[];
-  private readonly fetcher: Fetcher;
 
-  public constructor(sources: Source[], extractors: Extractor[], fetcher: Fetcher) {
+  public constructor(sources: Source[], extractors: Extractor[]) {
     this.router = Router();
 
     this.sources = sources;
     this.extractors = extractors;
-    this.fetcher = fetcher;
 
     this.router.get('/manifest.json', this.getManifest.bind(this));
     this.router.get('/:config/manifest.json', this.getManifest.bind(this));
@@ -33,8 +30,6 @@ export class ManifestController {
         return;
       }
     }
-
-    const ctx = contextFromRequestAndResponse(req, res);
 
     let visibleSources = this.sources;
 

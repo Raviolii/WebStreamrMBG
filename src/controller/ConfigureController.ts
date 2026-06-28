@@ -3,22 +3,19 @@ import { Extractor } from '../extractor';
 import { landingTemplate } from '../landingTemplate';
 import { Source } from '../source';
 import { Config } from '../types';
-import { buildManifest, getDefaultConfig, isElfHostedInstance, contextFromRequestAndResponse, Fetcher } from '../utils';
-import { BlockedError } from '../error';
+import { buildManifest, getDefaultConfig, isElfHostedInstance } from '../utils';
 
 export class ConfigureController {
   public readonly router: Router;
 
   private readonly sources: Source[];
   private readonly extractors: Extractor[];
-  private readonly fetcher: Fetcher;
 
-  public constructor(sources: Source[], extractors: Extractor[], fetcher: Fetcher) {
+  public constructor(sources: Source[], extractors: Extractor[]) {
     this.router = Router();
 
     this.sources = sources;
     this.extractors = extractors;
-    this.fetcher = fetcher;
 
     this.router.get('/configure', this.getConfigure.bind(this));
     this.router.get('/:config/configure', this.getConfigure.bind(this));
@@ -39,8 +36,6 @@ export class ConfigureController {
     if (!req.params['config'] && isElfHostedInstance(req)) {
       config.mediaFlowProxyUrl = `${req.protocol}://${req.host.replace('webstreamr-mbg', 'mediaflow-proxy')}`;
     }
-
-    const ctx = contextFromRequestAndResponse(req, res);
 
     let visibleSources = this.sources;
 

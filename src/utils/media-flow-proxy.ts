@@ -44,14 +44,14 @@ export const buildMediaFlowProxyExtractorStreamUrl = async (ctx: Context, fetche
   // Validate extract result — if the proxy returned an error or invalid URL,
   // surface as BlockedError so the `StreamResolver` will hide it from the UI.
   if (!extractResult || !extractResult.mediaflow_proxy_url) {
-    throw new BlockedError(url, BlockedReason.unknown, { details: extractResult });
+    throw new BlockedError(url, BlockedReason.unknown, {});
   }
 
   let streamUrl: URL;
   try {
     streamUrl = new URL(extractResult.mediaflow_proxy_url);
   } catch (e) {
-    throw new BlockedError(url, BlockedReason.unknown, { details: extractResult });
+    throw new BlockedError(url, BlockedReason.unknown, {});
   }
 
   for (const queryParamsKey in extractResult.query_params) {

@@ -147,7 +147,7 @@ export class OhaTO extends Source {
               : (link.language ?? 'de');
             const height = parseHeightFromString(link.name);
             if (debug) console.log(`OhaTO: link -> ${link.url} (language=${language}) final=${finalUrl.href} height=${height ?? 'unknown'}`);
-            const quality = qualityFromHeight(height) ?? (link.quality || link.qualityLabel || link.tag || undefined);
+            const quality = qualityFromHeight(height) ?? (link.quality || link.qualityLabel || undefined);
             results.push({
               url: finalUrl,
               meta: {
