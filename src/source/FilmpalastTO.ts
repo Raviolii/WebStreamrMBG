@@ -131,20 +131,56 @@ export class FilmpalastTO extends Source {
       return undefined;
     }
 
-    // For movies: try to match by year first
+    // For movies: try to match by year and title similarity
     if (!season) {
-      const yearMatch = streamLinks.find(link => link.title.includes(String(year)));
-      if (yearMatch) {
-        return resolveHref(yearMatch.href, this.baseUrl);
+      // First, try exact year match
+      const yearMatches = streamLinks.filter(link => link.title.includes(String(year)));
+      
+      if (yearMatches.length > 0) {
+        // If multiple year matches, pick the one with best title match
+        const bestMatch = yearMatches.reduce((best, current) => {
+          const bestSimilarity = this.calculateTitleSimilarity(best.title, name);
+          const currentSimilarity = this.calculateTitleSimilarity(current.title, name);
+          return currentSimilarity > bestSimilarity ? current : best;
+        });
+        return resolveHref(bestMatch.href, this.baseUrl);
+      }
+
+      // If no year match, try to find by title similarity
+      const bestTitleMatch = streamLinks.reduce((best, current) => {
+        const bestSimilarity = this.calculateTitleSimilarity(best.title, name);
+        const currentSimilarity = this.calculateTitleSimilarity(current.title, name);
+        return currentSimilarity > bestSimilarity ? current : best;
+      });
+
+      if (this.calculateTitleSimilarity(bestTitleMatch.title, name) > 0.5) {
+        return resolveHref(bestTitleMatch.href, this.baseUrl);
       }
     }
 
-    // Fallback: use the first result
+    // For series or fallback: use the first result
     const firstLink = streamLinks[0];
     /* istanbul ignore if */
     if (!firstLink) {
       return undefined;
     }
     return resolveHref(firstLink.href, this.baseUrl);
+  };
+
+  private readonly calculateTitleSimilarity = (title: string, name: string): number => {
+    // Simple similarity check - check how much of the search name appears in the result
+    const lowerTitle = title.toLowerCase();
+    const lowerName = name.toLowerCase();
+
+    // Exact match
+    if (lowerTitle.includes(lowerName)) {
+      return 1;
+    }
+
+    // Check for partial matches (word by word)
+    const nameWords = lowerName.split(/\s+/);
+    const matchedWords = nameWords.filter(word => lowerTitle.includes(word)).length;
+    
+    return matchedWords / nameWords.length;
   };
 }

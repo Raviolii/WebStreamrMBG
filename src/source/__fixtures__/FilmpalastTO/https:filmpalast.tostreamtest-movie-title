@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Movie Title</title></head>
+<body>
+<ul class="currentStreamLinks">
+  <li><span class="hostName">VOE</span>
+    <a data-player-url="https://voe.sx/embed/test123">VOE Player</a>
+  </li>
+  <li><span class="hostName">Streamtape</span>
+    <a href="https://streamtape.com/embed/abc123def">Streamtape</a>
+  </li>
+</ul>
+</body>
+</html>

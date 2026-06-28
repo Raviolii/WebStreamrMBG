@@ -60,4 +60,10 @@ describe('FilmpalastTO', () => {
     const streams = await source.handle(ctx, 'movie', new ImdbId('tt5555555', undefined, undefined));
     expect(streams).toMatchSnapshot();
   });
+
+  test('correctly selects movie by title similarity when multiple results exist', async () => {
+    const streams = await source.handle(ctx, 'movie', new ImdbId('tt17490712', undefined, undefined));
+    expect(streams).toHaveLength(2);
+    expect(streams.every(s => s.meta.title.includes('Test Movie Title'))).toBe(true);
+  });
 });

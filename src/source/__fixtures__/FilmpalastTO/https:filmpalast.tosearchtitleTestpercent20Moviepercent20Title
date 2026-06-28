@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head><title>Search Results</title></head>
+<body>
+<a href="/stream/test-movie-title" title="Test Movie Title (2024)">Test Movie Title</a>
+<a href="/stream/other-movie-title" title="Other Movie Title (2024)">Other Movie Title</a>
+<a href="/stream/different-movie" title="Different Movie (2023)">Different Movie</a>
+</body>
+</html>
