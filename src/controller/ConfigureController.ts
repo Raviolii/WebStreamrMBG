@@ -43,22 +43,6 @@ export class ConfigureController {
     const ctx = contextFromRequestAndResponse(req, res);
 
     let visibleSources = this.sources;
-    if (!('showErrors' in config)) {
-      const checks = await Promise.all(visibleSources.map(async (source) => {
-        try {
-          await this.fetcher.head(ctx, new URL(source.baseUrl));
-          return { source, blocked: false };
-        } catch (error) {
-          if (error instanceof BlockedError) {
-            return { source, blocked: true };
-          }
-
-          return { source, blocked: false };
-        }
-      }));
-
-      visibleSources = checks.filter(c => !c.blocked).map(c => c.source);
-    }
 
     const manifest = buildManifest(visibleSources, this.extractors, config);
 
