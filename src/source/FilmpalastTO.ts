@@ -58,9 +58,13 @@ export class FilmpalastTO extends Source {
 
     const results: SourceResult[] = [];
 
-    $('ul.currentStreamLinks').each((_i, streamBlock) => {
-      const hostName = $(streamBlock).find('.hostName').text().trim();
+    // Try to find stream links - handle multiple possible HTML structures
+    $('ul.currentStreamLinks, div.currentStreamLinks, div[class*="stream"]').each((_i, streamBlock) => {
+      const hostName = $(streamBlock).find('.hostName').text().trim() || 
+                       $(streamBlock).find('[class*="host"]').text().trim() ||
+                       'Unknown';
 
+      // Extract from data-player-url attributes
       $(streamBlock).find('a[data-player-url]').each((_j, el) => {
         const playerUrl = $(el).attr('data-player-url');
         if (playerUrl?.startsWith('http')) {
@@ -76,6 +80,7 @@ export class FilmpalastTO extends Source {
         }
       });
 
+      // Extract from href attributes
       $(streamBlock).find('a[href]').each((_j, el) => {
         const href = $(el).attr('href');
         if (!href || href === '#' || href.startsWith('javascript') || href.includes('filmpalast.to') || $(el).attr('data-player-url')) {
