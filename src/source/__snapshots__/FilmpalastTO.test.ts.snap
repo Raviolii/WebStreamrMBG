@@ -141,3 +141,30 @@ exports[`FilmpalastTO handles series with season but no episode 1`] = `
 `;
 
 exports[`FilmpalastTO skips malformed href in stream block without throwing 1`] = `[]`;
+
+exports[`FilmpalastTO uses autocomplete for series slugs when available 1`] = `
+[
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://filmpalast.to/stream/breaking-bad-s02e03",
+      "sourceLabel": "Filmpalast",
+      "title": "VOE HD - Breaking Bad S02E03",
+    },
+    "url": "https://voe.sx/breakingbad203",
+  },
+  {
+    "meta": {
+      "countryCodes": [
+        "de",
+      ],
+      "referer": "https://filmpalast.to/stream/breaking-bad-s02e03",
+      "sourceLabel": "Filmpalast",
+      "title": "Doodstream - Breaking Bad S02E03",
+    },
+    "url": "https://dood.to/e/breakingbad203",
+  },
+]
+`;
