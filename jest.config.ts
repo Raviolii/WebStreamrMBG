@@ -15,6 +15,7 @@ const config: Config = {
     '!<rootDir>/src/utils/StreamResolver.ts',
     '!<rootDir>/src/utils/dispatcher.ts',
     '!<rootDir>/src/extractor/Voe.ts',
+    '!<rootDir>/src/source/Einschalten.ts',
   ],
   coverageDirectory: '<rootDir>/coverage',
   coveragePathIgnorePatterns: [

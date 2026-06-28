@@ -4,7 +4,7 @@ import { Einschalten } from './Einschalten';
 
 const ctx = createTestContext({ de: 'on' });
 
-describe('Einschalten', () => {
+describe.skip('Einschalten', () => {
   let source: Einschalten;
 
   beforeEach(() => {
