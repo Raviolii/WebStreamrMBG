@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, getImdbId, Id } from '../utils';
 import { Source, SourceResult } from './Source';
 
 const STREAMING_HOSTS = [
@@ -41,7 +41,21 @@ export class FilmpalastTO extends Source {
 
     let streamPageUrl: URL | undefined;
     try {
-      streamPageUrl = await this.fetchStreamPageUrl(ctx, name, year, tmdbId.season, tmdbId.episode);
+      // Prefer using the original `id`'s IMDb value if provided to avoid extra TMDB calls
+      let imdbToUse: string | undefined;
+      if ((id as any)?.id && typeof (id as any).id === 'string' && (id as any).id.startsWith('tt')) {
+        imdbToUse = (id as any).id;
+      } else {
+        try {
+          const imdb = await getImdbId(ctx, this.fetcher, tmdbId);
+          imdbToUse = imdb.id;
+        } catch {
+          // ignore and fall back to name-based search
+          imdbToUse = undefined;
+        }
+      }
+
+      streamPageUrl = await this.fetchStreamPageUrl(ctx, imdbToUse ?? name, year, tmdbId.season, tmdbId.episode);
     } catch {
       return [];
     }
@@ -118,6 +132,27 @@ export class FilmpalastTO extends Source {
     season: number | undefined,
     episode: number | undefined,
   ): Promise<URL | undefined> => {
+    // If `name` looks like an IMDb id (tt####), prefer searching by that id
+    if (/^tt\d+$/i.test(name)) {
+      const searchUrl = new URL(`/search/title/${encodeURIComponent(name)}`, this.baseUrl);
+      const html = await this.fetcher.text(ctx, searchUrl);
+      const $ = cheerio.load(html);
+
+      // Try to find a direct stream page link on the search page
+      const firstAnchor = $('a[href*="/stream/"]').first();
+      if (firstAnchor.length > 0) {
+        const href = firstAnchor.attr('href') as string;
+        return resolveHref(href, this.baseUrl);
+      }
+
+      // If the search page already contains stream links, treat it as the stream page
+      if (html.includes('currentStreamLinks')) {
+        return searchUrl;
+      }
+
+      // Fall through to the original logic if no direct stream page was found
+    }
+
     const searchQuery = season
       ? `${name} S${String(season).padStart(2, '0')}E${String(episode ?? 1).padStart(2, '0')}`
       : name;
