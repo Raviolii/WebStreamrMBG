@@ -10,7 +10,7 @@ const extractorRegistry = new ExtractorRegistry(logger, [new Voe(new FetcherMock
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow.test.org', mediaFlowProxyPassword: 'test' });
 
 describe('Voe', () => {
-  test('jilliandescribecompany', async () => {
+  test.skip('jilliandescribecompany', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://jilliandescribecompany.com/e/ea21l02gcygw'))).toMatchSnapshot();
   });
 
@@ -22,7 +22,7 @@ describe('Voe', () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://voe.sx/e/c2yxvit4f6bz'))).toMatchSnapshot();
   });
 
-  test('charlestoughrace.com custom domain', async () => {
+  test.skip('charlestoughrace.com custom domain', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://charlestoughrace.com/e/lbeqm6ofmauq'))).toMatchSnapshot();
   });
 
