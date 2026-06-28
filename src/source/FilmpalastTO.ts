@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, getImdbId, Id } from '../utils';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
 import { Source, SourceResult } from './Source';
 
 const STREAMING_HOSTS = [
@@ -41,21 +41,7 @@ export class FilmpalastTO extends Source {
 
     let streamPageUrl: URL | undefined;
     try {
-      // Prefer using the original `id`'s IMDb value if provided to avoid extra TMDB calls
-      let imdbToUse: string | undefined;
-      if ((id as any)?.id && typeof (id as any).id === 'string' && (id as any).id.startsWith('tt')) {
-        imdbToUse = (id as any).id;
-      } else {
-        try {
-          const imdb = await getImdbId(ctx, this.fetcher, tmdbId);
-          imdbToUse = imdb.id;
-        } catch {
-          // ignore and fall back to name-based search
-          imdbToUse = undefined;
-        }
-      }
-
-      streamPageUrl = await this.fetchStreamPageUrl(ctx, imdbToUse ?? name, year, tmdbId.season, tmdbId.episode);
+      streamPageUrl = await this.fetchStreamPageUrl(ctx, name, year, tmdbId.season, tmdbId.episode);
     } catch {
       return [];
     }
@@ -72,14 +58,9 @@ export class FilmpalastTO extends Source {
 
     const results: SourceResult[] = [];
 
-    // Try to find stream links - handle multiple possible HTML structures
-    $('ul.currentStreamLinks, div.currentStreamLinks, div[class*="stream"]').each((_i, streamBlock) => {
-      /* istanbul ignore next: DOM variations exercised elsewhere in tests */
-      const hostName = $(streamBlock).find('.hostName').text().trim() || 
-                       $(streamBlock).find('[class*="host"]').text().trim() ||
-                       'Unknown';
+    $('ul.currentStreamLinks').each((_i, streamBlock) => {
+      const hostName = $(streamBlock).find('.hostName').text().trim();
 
-      // Extract from data-player-url attributes
       $(streamBlock).find('a[data-player-url]').each((_j, el) => {
         const playerUrl = $(el).attr('data-player-url');
         if (playerUrl?.startsWith('http')) {
@@ -95,7 +76,6 @@ export class FilmpalastTO extends Source {
         }
       });
 
-      // Extract from href attributes
       $(streamBlock).find('a[href]').each((_j, el) => {
         const href = $(el).attr('href');
         if (!href || href === '#' || href.startsWith('javascript') || href.includes('filmpalast.to') || $(el).attr('data-player-url')) {
@@ -132,27 +112,6 @@ export class FilmpalastTO extends Source {
     season: number | undefined,
     episode: number | undefined,
   ): Promise<URL | undefined> => {
-    // If `name` looks like an IMDb id (tt####), prefer searching by that id
-    if (/^tt\d+$/i.test(name)) {
-      const searchUrl = new URL(`/search/title/${encodeURIComponent(name)}`, this.baseUrl);
-      const html = await this.fetcher.text(ctx, searchUrl);
-      const $ = cheerio.load(html);
-
-      // Try to find a direct stream page link on the search page
-      const firstAnchor = $('a[href*="/stream/"]').first();
-      if (firstAnchor.length > 0) {
-        const href = firstAnchor.attr('href') as string;
-        return resolveHref(href, this.baseUrl);
-      }
-
-      // If the search page already contains stream links, treat it as the stream page
-      if (html.includes('currentStreamLinks')) {
-        return searchUrl;
-      }
-
-      // Fall through to the original logic if no direct stream page was found
-    }
-
     const searchQuery = season
       ? `${name} S${String(season).padStart(2, '0')}E${String(episode ?? 1).padStart(2, '0')}`
       : name;
@@ -172,59 +131,20 @@ export class FilmpalastTO extends Source {
       return undefined;
     }
 
-    // For movies: try to match by year and title similarity
+    // For movies: try to match by year first
     if (!season) {
-      // First, try exact year match
-      const yearMatches = streamLinks.filter(link => link.title.includes(String(year)));
-      
-      if (yearMatches.length > 0) {
-        // If multiple year matches, pick the one with best title match
-        /* istanbul ignore next: choose best by similarity; reduce branch ignored for coverage */
-        const bestMatch = yearMatches.reduce((best, current) => {
-          const bestSimilarity = this.calculateTitleSimilarity(best.title, name);
-          const currentSimilarity = this.calculateTitleSimilarity(current.title, name);
-          return currentSimilarity > bestSimilarity ? current : best;
-        });
-        return resolveHref(bestMatch.href, this.baseUrl);
-      }
-
-      // If no year match, try to find by title similarity
-      /* istanbul ignore next: exercised indirectly or unnecessary to test exact reduce branch */
-      const bestTitleMatch = streamLinks.reduce((best, current) => {
-        const bestSimilarity = this.calculateTitleSimilarity(best.title, name);
-        const currentSimilarity = this.calculateTitleSimilarity(current.title, name);
-        return currentSimilarity > bestSimilarity ? current : best;
-      });
-
-      /* istanbul ignore if: similarity threshold branch is exercised indirectly in other tests */
-      if (this.calculateTitleSimilarity(bestTitleMatch.title, name) > 0.5) {
-        return resolveHref(bestTitleMatch.href, this.baseUrl);
+      const yearMatch = streamLinks.find(link => link.title.includes(String(year)));
+      if (yearMatch) {
+        return resolveHref(yearMatch.href, this.baseUrl);
       }
     }
 
-    // For series or fallback: use the first result
+    // Fallback: use the first result
     const firstLink = streamLinks[0];
     /* istanbul ignore if */
     if (!firstLink) {
       return undefined;
     }
     return resolveHref(firstLink.href, this.baseUrl);
-  };
-
-  private readonly calculateTitleSimilarity = (title: string, name: string): number => {
-    // Simple similarity check - check how much of the search name appears in the result
-    const lowerTitle = title.toLowerCase();
-    const lowerName = name.toLowerCase();
-
-    // Exact match
-    if (lowerTitle.includes(lowerName)) {
-      return 1;
-    }
-
-    // Check for partial matches (word by word)
-    const nameWords = lowerName.split(/\s+/);
-    const matchedWords = nameWords.filter(word => lowerTitle.includes(word)).length;
-    
-    return matchedWords / nameWords.length;
   };
 }
