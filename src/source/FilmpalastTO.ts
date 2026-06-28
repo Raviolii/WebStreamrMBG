@@ -183,10 +183,11 @@ export class FilmpalastTO extends Source {
       }
 
       if (candidate && typeof candidate === 'object') {
-        const value = (candidate as Record<string, unknown>).value as string | undefined
-          ?? (candidate as Record<string, unknown>).title as string | undefined
-          ?? (candidate as Record<string, unknown>).label as string | undefined
-          ?? (candidate as Record<string, unknown>).name as string | undefined;
+        const objectCandidate = candidate as Record<string, unknown>;
+        const value = (objectCandidate['value'] as string | undefined)
+          ?? (objectCandidate['title'] as string | undefined)
+          ?? (objectCandidate['label'] as string | undefined)
+          ?? (objectCandidate['name'] as string | undefined);
 
         if (value && value.trim()) {
           return value.trim();
