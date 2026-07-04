@@ -65,7 +65,9 @@ function decryptPlayback(playback: Playback): string | null {
     const iv = playback.iv ?? '';
     const ivBytes = base64UrlDecode(iv);
 
-    const [cipherPayload, authTagPayload] = payload.split('.');
+    const payloadParts = payload.split('.');
+    const cipherPayload = payloadParts[0]!;
+    const authTagPayload = payloadParts[1];
     const cipherBytes = base64UrlDecode(cipherPayload);
     const decipher = require('node:crypto').createDecipheriv('aes-128-gcm', keyBytes.subarray(0, 16), ivBytes.subarray(0, 12));
 
@@ -91,7 +93,7 @@ export class Byse extends Extractor {
   }
 
   public supports(_ctx: Context, url: URL): boolean {
-    return ['byse.sx', 'bysezejataos.com', 'bysebuho.com', 'byvepoin.com', 'byseqekaho.com'].includes(url.host);
+    return ['byse.sx', 'bysezejataos.com', 'bysebuho.com', 'byvepoin.com', 'byseqekaho.com', 'moflix-stream.link'].includes(url.host);
   }
 
   public override normalize(url: URL): URL {
