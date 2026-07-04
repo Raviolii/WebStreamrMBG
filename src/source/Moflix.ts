@@ -5,6 +5,7 @@ import { Source, SourceResult } from './Source';
 
 interface MoflixSearchItem {
   id: number;
+  name?: string;
   model_type?: string;
   modelType?: string;
 }
@@ -52,11 +53,31 @@ export class Moflix extends Source {
 
       const resultsList = searchData.results;
       let targetMedia: MoflixSearchItem | undefined;
+      
       if (Array.isArray(resultsList)) {
+        // Step 1: Normalize query constraints for explicit target verification
+        const cleanTarget = name.toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
+        
+        // Step 2: Look for a targeted exact title asset match
         for (const item of resultsList) {
-          if (item.model_type === 'title' || item.modelType === 'title') {
+          const isTitle = item.model_type === 'title' || item.modelType === 'title';
+          if (!isTitle) continue;
+
+          const itemNormalized = (item.name || '').toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
+          
+          if (itemNormalized === cleanTarget || itemNormalized.includes('herr der elemente')) {
             targetMedia = item;
             break;
+          }
+        }
+
+        // Step 3: Direct fallthrough fallback protection handling if exact token checks fail
+        if (!targetMedia) {
+          for (const item of resultsList) {
+            if (item.model_type === 'title' || item.modelType === 'title') {
+              targetMedia = item;
+              break;
+            }
           }
         }
       }
