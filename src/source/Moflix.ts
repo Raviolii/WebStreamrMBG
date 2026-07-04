@@ -8,6 +8,7 @@ interface MoflixSearchItem {
   name?: string;
   model_type?: string;
   modelType?: string;
+  imdb_id?: string;
 }
 
 interface MoflixVideoItem {
@@ -55,23 +56,32 @@ export class Moflix extends Source {
       let targetMedia: MoflixSearchItem | undefined;
       
       if (Array.isArray(resultsList)) {
-        // Step 1: Normalize query constraints for explicit target verification
-        const cleanTarget = name.toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
-        
-        // Step 2: Look for a targeted exact title asset match
-        for (const item of resultsList) {
-          const isTitle = item.model_type === 'title' || item.modelType === 'title';
-          if (!isTitle) continue;
+        // Step 1: Match by IMDB ID if available in incoming id payload
+        if (id.imdb) {
+          targetMedia = resultsList.find(item => 
+            (item.model_type === 'title' || item.modelType === 'title') && 
+            item.imdb_id === id.imdb
+          );
+        }
 
-          const itemNormalized = (item.name || '').toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
+        // Step 2: Fallback to exact or contextual title asset match if IMDB match fails/is missing
+        if (!targetMedia) {
+          const cleanTarget = name.toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
           
-          if (itemNormalized === cleanTarget || itemNormalized.includes('herr der elemente')) {
-            targetMedia = item;
-            break;
+          for (const item of resultsList) {
+            const isTitle = item.model_type === 'title' || item.modelType === 'title';
+            if (!isTitle) continue;
+
+            const itemNormalized = (item.name || '').toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
+            
+            if (itemNormalized === cleanTarget || itemNormalized.includes('herr der elemente')) {
+              targetMedia = item;
+              break;
+            }
           }
         }
 
-        // Step 3: Direct fallthrough fallback protection handling if exact token checks fail
+        // Step 3: Direct fallthrough fallback protection handling if both checks fail
         if (!targetMedia) {
           for (const item of resultsList) {
             if (item.model_type === 'title' || item.modelType === 'title') {
