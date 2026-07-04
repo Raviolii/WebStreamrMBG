@@ -16,6 +16,7 @@ import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
 import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
+import { Moflix } from './Moflix';
 import { Source } from './Source';
 import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
@@ -50,6 +51,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new MeineCloud(fetcher),
     new FilmpalastTO(fetcher),
     new OhaTO(fetcher),
+    new Moflix(fetcher),
     // FR
     new Frembed(fetcher),
     new FrenchCloud(fetcher),

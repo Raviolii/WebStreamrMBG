@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`VidStack extracts an hls stream from a decrypted payload 1`] = `
+[
+  {
+    "format": "hls",
+    "label": "Moflix RPMPlay",
+    "meta": {
+      "extractorId": "moflix-rpmplay",
+      "title": "https://example.com/master.m3u8",
+    },
+    "requestHeaders": {
+      "Referer": "https://server1.uns.bio/",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
+    },
+    "ttl": 10800000,
+    "url": "https://example.com/master.m3u8",
+  },
+]
+`;
