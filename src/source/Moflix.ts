@@ -57,10 +57,11 @@ export class Moflix extends Source {
       
       if (Array.isArray(resultsList)) {
         // Step 1: Match by IMDB ID if available in incoming id payload
-        if (id.imdb) {
-          targetMedia = resultsList.find(item => 
-            (item.model_type === 'title' || item.modelType === 'title') && 
-            item.imdb_id === id.imdb
+        if (id instanceof Object && 'id' in id && typeof (id as { id?: string }).id === 'string') {
+          const incomingImdbId = (id as { id?: string }).id;
+          targetMedia = resultsList.find(item =>
+            (item.model_type === 'title' || item.modelType === 'title') &&
+            item.imdb_id === incomingImdbId,
           );
         }
 
