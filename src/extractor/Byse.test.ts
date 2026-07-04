@@ -311,6 +311,42 @@ describe('Byse', () => {
     expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/master.m3u8');
   });
 
+  test('falls back to embed path when details text contains an embed URL', async () => {
+    const detailsUrl = 'https://byse.sx/api/videos/321/embed/details';
+    const embedFrame = 'https://byse.sx/embed/xyz';
+    const playbackUrl = 'https://byse.sx/api/videos/xyz/embed/playback';
+
+    const fetcher = createFetcherWithText({
+      [playbackUrl]: { playback: { payload: 'https://cdn.example.com/frompath.m3u8' } },
+    }, {
+      [detailsUrl]: `some html with link https://byse.sx/embed/xyz here`,
+    });
+
+    const extractor = new Byse(fetcher, logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://byse.sx/videos/321'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/frompath.m3u8');
+    expect((fetcher.json as jest.Mock).mock.calls.length).toBeGreaterThan(0);
+    expect((fetcher.text as jest.Mock).mock.calls.length).toBeGreaterThan(0);
+  });
+
+  test('uses playback text when playback endpoint returns plain text', async () => {
+    const detailsUrl = 'https://byse.sx/api/videos/222/embed/details';
+    const playbackUrl = 'https://byse.sx/api/videos/abc/embed/playback';
+
+    const extractor = new Byse(createFetcherWithText({
+      [detailsUrl]: { embed_frame_url: 'https://byse.sx/embed/abc' },
+      // playback JSON missing so json() will throw
+    }, {
+      [playbackUrl]: 'https://cdn.example.com/text_fallback.m3u8',
+    }), logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://byse.sx/videos/222'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/text_fallback.m3u8');
+  });
+
   test('handles details that point to an external embed host (q8y5z.com)', async () => {
     const detailsUrl = 'https://moflix-stream.link/api/videos/u6kqvae6tfhg/embed/details';
     const embedFrame = 'https://q8y5z.com/7v1qz/u6kqvae6tfhg';
@@ -369,5 +405,92 @@ describe('Byse', () => {
     const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/u6kqvae6tfhg'));
     expect(result).toHaveLength(1);
     expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/fallback_master.m3u8');
+  });
+
+  test('throws NotFoundError when details endpoint and text both fail', async () => {
+    const detailsUrl = 'https://byse.sx/api/videos/999/embed/details';
+
+    const fetcher = {
+      json: jest.fn(async () => { throw new Error('Invalid JSON response'); }),
+      text: jest.fn(async () => { throw new Error('Network error'); }),
+    } as unknown as Fetcher;
+
+    const extractor = new Byse(fetcher, logger);
+
+    await expect(callExtractInternal(extractor, new URL('https://byse.sx/videos/999'))).rejects.toThrow(NotFoundError);
+  });
+
+  test('sets playback undefined when textPost throws and then fails via embed HTML', async () => {
+    const detailsUrl = 'https://q8y5z.com/api/videos/67w33mddatix/embed/details';
+    const embedFrame = 'https://q8y5z.com/67w33mddatix';
+    const playbackUrl = 'https://q8y5z.com/api/videos/67w33mddatix/embed/playback';
+
+    const fetcher = {
+      json: jest.fn(async (ctx: typeof ctx, url: URL) => {
+        if (url.href === detailsUrl) return { embed_frame_url: embedFrame };
+        throw new Error('Invalid JSON response');
+      }),
+      text: jest.fn(async (ctx: typeof ctx, url: URL) => {
+        if (url.href === embedFrame) throw new Error('embed page missing');
+        throw new Error('405');
+      }),
+      textPost: jest.fn(async () => { throw new Error('post failed'); }),
+    } as unknown as Fetcher;
+
+    const extractor = new Byse(fetcher, logger);
+
+    await expect(callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/67w33mddatix'))).rejects.toThrow(NotFoundError);
+  });
+
+  test('details text embed path (m2) is detected and used', async () => {
+    const detailsUrl = 'https://moflix-stream.link/api/videos/aaa/embed/details';
+    const embedFrame = 'https://moflix-stream.link/embed/ZZZ';
+    const playbackUrl = 'https://moflix-stream.link/api/videos/ZZZ/embed/playback';
+
+    const fetcher = createFetcherWithText({
+      [playbackUrl]: { playback: { payload: 'https://cdn.example.com/from_m2.m3u8' } },
+    }, {
+      [detailsUrl]: `something something https://moflix-stream.link/embed/ZZZ more`,
+    });
+
+    const extractor = new Byse(fetcher, logger);
+    const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/aaa'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/from_m2.m3u8');
+  });
+
+  test('playback text fallback on q8y5z host', async () => {
+    const detailsUrl = 'https://q8y5z.com/api/videos/one/embed/details';
+    const embedFrame = 'https://q8y5z.com/embed/one';
+    const playbackUrl = 'https://q8y5z.com/api/videos/one/embed/playback';
+
+    const fetcher = createFetcherWithText({
+      [detailsUrl]: { embed_frame_url: embedFrame },
+    }, {
+      [playbackUrl]: 'https://cdn.example.com/q8y5z_text_fallback.m3u8',
+    });
+
+    const extractor = new Byse(fetcher, logger);
+    const result = await callExtractInternal(extractor, new URL('https://q8y5z.com/videos/one'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/q8y5z_text_fallback.m3u8');
+  });
+
+  test('playback obtained via POST fallback when GET is rejected', async () => {
+    const detailsUrl = 'https://byse.sx/api/videos/posttest/embed/details';
+    const embedFrame = 'https://byse.sx/embed/posttest';
+    const playbackUrl = 'https://byse.sx/api/videos/posttest/embed/playback';
+
+    const extractor = new Byse(createFetcher405ThenPost({
+      [detailsUrl]: { embed_frame_url: embedFrame },
+    }, {
+      // GET text will throw 405
+    }, {
+      [playbackUrl]: `ok https://cdn.example.com/posted_fallback.m3u8 end`,
+    }), logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://byse.sx/videos/posttest'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/posted_fallback.m3u8');
   });
 });
