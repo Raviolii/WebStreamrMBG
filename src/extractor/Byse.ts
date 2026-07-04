@@ -120,8 +120,23 @@ export class Byse extends Extractor {
       'x-embed-parent': url.href,
     };
 
-    const playbackRoot = await this.fetcher.json(ctx, new URL(playbackUrl), { headers }) as PlaybackRoot;
-    const playback = playbackRoot.playback;
+    let playback: Playback | undefined;
+    try {
+      const playbackRoot = await this.fetcher.json(ctx, new URL(playbackUrl), { headers }) as PlaybackRoot;
+      playback = playbackRoot.playback;
+    } catch (err) {
+      // If the endpoint doesn't return valid JSON, try to fetch raw text
+      try {
+        const txt = await this.fetcher.text(ctx, new URL(playbackUrl), { headers });
+        const m = txt.match(/https?:\/\/[^"'\s>]+/);
+        if (m) {
+          playback = { payload: m[0] } as Playback;
+        }
+      } catch {
+        playback = undefined;
+      }
+    }
+
     if (!playback) {
       throw new NotFoundError();
     }
