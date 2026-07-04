@@ -20,6 +20,19 @@ function createFetcher(responses: Record<string, unknown>): Fetcher {
   } as unknown as Fetcher;
 }
 
+function createFetcherWithText(responses: Record<string, unknown>, texts: Record<string, string>): Fetcher {
+  return {
+    json: jest.fn(async (_ctx: typeof ctx, url: URL) => {
+      const resp = responses[url.href];
+      if (resp === undefined) {
+        throw new Error('Invalid JSON response');
+      }
+      return resp;
+    }),
+    text: jest.fn(async (_ctx: typeof ctx, url: URL) => texts[url.href]),
+  } as unknown as Fetcher;
+}
+
 describe('Byse', () => {
   test('supports and normalizes the expected hosts', () => {
     const extractor = new Byse(createFetcher({}), logger);
@@ -257,5 +270,38 @@ describe('Byse', () => {
     }), logger);
 
     await expect(callExtractInternal(extractor, new URL('https://byse.sx/videos/123'))).rejects.toThrow(NotFoundError);
+  });
+
+  test('falls back to text when details endpoint returns non-JSON containing embed_frame_url', async () => {
+    const detailsUrl = 'https://moflix-stream.link/api/videos/u6kqvae6tfhg/embed/details';
+    const embedFrame = 'https://moflix-stream.link/embed/abc';
+    const playbackUrl = 'https://moflix-stream.link/api/videos/abc/embed/playback';
+
+    const extractor = new Byse(createFetcherWithText({
+      // playback returns JSON
+      [playbackUrl]: { playback: { payload: 'https://cdn.example.com/master.m3u8' } },
+    }, {
+      // details returns non-JSON text containing embed_frame_url
+      [detailsUrl]: `some html... {"embed_frame_url":"${embedFrame}"} ...`,
+    }), logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/u6kqvae6tfhg'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/master.m3u8');
+  });
+
+  test('handles details that point to an external embed host (q8y5z.com)', async () => {
+    const detailsUrl = 'https://moflix-stream.link/api/videos/u6kqvae6tfhg/embed/details';
+    const embedFrame = 'https://q8y5z.com/7v1qz/u6kqvae6tfhg';
+    const playbackUrl = 'https://q8y5z.com/api/videos/u6kqvae6tfhg/embed/playback';
+
+    const extractor = new Byse(createFetcher({
+      [detailsUrl]: { embed_frame_url: embedFrame },
+      [playbackUrl]: { playback: { payload: 'https://cdn.example.com/master.m3u8' } },
+    }), logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/u6kqvae6tfhg'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/master.m3u8');
   });
 });

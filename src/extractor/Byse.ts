@@ -102,9 +102,28 @@ export class Byse extends Extractor {
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
     const detailsUrl = `${getBaseUrl(url.href)}/api/videos/${getCodeFromUrl(url.href)}/embed/details`;
-    const details = await this.fetcher.json(ctx, new URL(detailsUrl)) as DetailsRoot;
+    let embedFrameUrl: string | undefined;
+    try {
+      const details = await this.fetcher.json(ctx, new URL(detailsUrl)) as DetailsRoot;
+      embedFrameUrl = details.embed_frame_url;
+    } catch (err) {
+      // If details endpoint returns non-JSON, try to extract an embed URL from the raw text
+      try {
+        const txt = await this.fetcher.text(ctx, new URL(detailsUrl));
+        const m1 = txt.match(/embed_frame_url"\s*:\s*"([^\"]+)"/);
+        if (m1) {
+          embedFrameUrl = m1[1];
+        } else {
+          const m2 = txt.match(/https?:\/\/[^"'\s>]+\/embed\/[A-Za-z0-9_-]+/);
+          if (m2) {
+            embedFrameUrl = m2[0];
+          }
+        }
+      } catch {
+        embedFrameUrl = undefined;
+      }
+    }
 
-    const embedFrameUrl = details.embed_frame_url;
     if (!embedFrameUrl) {
       throw new NotFoundError();
     }
