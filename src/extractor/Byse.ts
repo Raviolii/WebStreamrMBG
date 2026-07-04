@@ -151,8 +151,20 @@ export class Byse extends Extractor {
         if (m) {
           playback = { payload: m[0] } as Playback;
         }
-      } catch {
-        playback = undefined;
+      } catch (err2) {
+        // If the server rejects GET (405), some endpoints accept POST — try POST as a last resort
+        try {
+          // @ts-expect-error some Fetcher implementations expose textPost
+          const postTxt = await (this.fetcher as unknown as { textPost?: (ctx: Context, url: URL, data: string, cfg?: unknown) => Promise<string> }).textPost?.(ctx, new URL(playbackUrl), '', { headers });
+          if (postTxt) {
+            const m2 = postTxt.match(/https?:\/\/[^"'\s>]+/);
+            if (m2) {
+              playback = { payload: m2[0] } as Playback;
+            }
+          }
+        } catch {
+          playback = undefined;
+        }
       }
     }
 

@@ -33,6 +33,27 @@ function createFetcherWithText(responses: Record<string, unknown>, texts: Record
   } as unknown as Fetcher;
 }
 
+function createFetcher405ThenPost(responses: Record<string, unknown>, texts: Record<string, string>, postTexts: Record<string, string>) {
+  return {
+    json: jest.fn(async (_ctx: typeof ctx, url: URL) => {
+      const resp = responses[url.href];
+      if (resp === undefined) {
+        // simulate 405
+        throw new (require('../error').HttpError)(url, 405, 'Method Not Allowed', {});
+      }
+      return resp;
+    }),
+    text: jest.fn(async (_ctx: typeof ctx, url: URL) => {
+      const txt = texts[url.href];
+      if (txt === undefined) {
+        throw new (require('../error').HttpError)(url, 405, 'Method Not Allowed', {});
+      }
+      return txt;
+    }),
+    textPost: jest.fn(async (_ctx: typeof ctx, url: URL) => postTexts[url.href]),
+  } as unknown as Fetcher;
+}
+
 describe('Byse', () => {
   test('supports and normalizes the expected hosts', () => {
     const extractor = new Byse(createFetcher({}), logger);
@@ -303,5 +324,24 @@ describe('Byse', () => {
     const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/u6kqvae6tfhg'));
     expect(result).toHaveLength(1);
     expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/master.m3u8');
+  });
+
+  test('retries playback with POST when GET returns 405', async () => {
+    const detailsUrl = 'https://moflix-stream.link/api/videos/u6kqvae6tfhg/embed/details';
+    const embedFrame = 'https://q8y5z.com/7v1qz/u6kqvae6tfhg';
+    const playbackUrl = 'https://q8y5z.com/api/videos/u6kqvae6tfhg/embed/playback';
+
+    const extractor = new Byse(createFetcher405ThenPost({
+      [detailsUrl]: { embed_frame_url: embedFrame },
+    }, {
+      // text GET will throw 405
+    }, {
+      // textPost returns text containing URL
+      [playbackUrl]: `some response https://cdn.example.com/posted_master.m3u8 end`,
+    }), logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/u6kqvae6tfhg'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/posted_master.m3u8');
   });
 });
