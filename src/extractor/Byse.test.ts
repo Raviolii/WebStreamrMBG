@@ -344,4 +344,30 @@ describe('Byse', () => {
     expect(result).toHaveLength(1);
     expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/posted_master.m3u8');
   });
+
+  test('falls back to embed HTML when playback endpoints return 405', async () => {
+    const detailsUrl = 'https://moflix-stream.link/api/videos/u6kqvae6tfhg/embed/details';
+    const embedFrame = 'https://q8y5z.com/7v1qz/u6kqvae6tfhg';
+    const playbackUrl = 'https://q8y5z.com/api/videos/u6kqvae6tfhg/embed/playback';
+
+    const fetcher = createFetcher405ThenPost({
+      [detailsUrl]: { embed_frame_url: embedFrame },
+    }, {
+      // text GET will throw 405
+    }, {
+      // textPost also not available in this scenario
+    });
+
+    // simulate embed page containing .m3u8
+    (fetcher as unknown as { text?: jest.Mock }).text = jest.fn(async (_ctx: typeof ctx, url: URL) => {
+      if (url.href === embedFrame) return `... source: https://cdn.example.com/fallback_master.m3u8 ...`;
+      throw new (require('../error').HttpError)(url, 405, 'Method Not Allowed', {});
+    });
+
+    const extractor = new Byse(fetcher, logger);
+
+    const result = await callExtractInternal(extractor, new URL('https://moflix-stream.link/videos/u6kqvae6tfhg'));
+    expect(result).toHaveLength(1);
+    expect((result[0] as { url: URL }).url.href).toBe('https://cdn.example.com/fallback_master.m3u8');
+  });
 });

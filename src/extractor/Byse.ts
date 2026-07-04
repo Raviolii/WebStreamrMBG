@@ -168,6 +168,19 @@ export class Byse extends Extractor {
     }
 
     if (!playback) {
+      // As a last resort, try to fetch the embed frame page and extract a URL
+      try {
+        const embedHtml = await this.fetcher.text(ctx, new URL(embedFrameUrl), { headers });
+        const m = embedHtml.match(/https?:\/\/[^"'\s>]+\.m3u8/);
+        if (m) {
+          playback = { payload: m[0] } as Playback;
+        }
+      } catch {
+        // ignore and rethrow below
+      }
+    }
+
+    if (!playback) {
       throw new NotFoundError();
     }
 
