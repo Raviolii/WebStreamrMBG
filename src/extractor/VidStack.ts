@@ -1,8 +1,20 @@
 import crypto from 'node:crypto';
+import winston from 'winston';
 import { NotFoundError } from '../error';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { Fetcher } from '../utils';
 import { Extractor } from './Extractor';
+
+declare module '../types' {
+  interface Context {
+    logger?: {
+      error?: (...args: unknown[]) => void;
+      info?: (...args: unknown[]) => void;
+      warn?: (...args: unknown[]) => void;
+      debug?: (...args: unknown[]) => void;
+    };
+  }
+}
 
 const DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0';
 const AES_KEY = 'kiemtienmua911ca';
@@ -46,9 +58,9 @@ function parseVideoPayload(payloadText: string): VidStackDecryptedPayload {
 }
 
 export class VidStack extends Extractor {
-  public readonly id = 'vidstack';
+  public readonly id: string = 'vidstack';
 
-  public readonly label = 'VidStack';
+  public readonly label: string = 'VidStack';
 
   public override readonly ttl: number = 10800000; // 3h
 

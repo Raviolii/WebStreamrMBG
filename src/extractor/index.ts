@@ -23,7 +23,7 @@ import { Uqload } from './Uqload';
 import { Vidara } from './Vidara';
 import { Vidsonic } from './Vidsonic';
 import { VidSrc } from './VidSrc';
-import { MoflixRpmplay, VidStack } from './VidStack';
+import { VidStack } from './VidStack';
 import { Vidzee } from './Vidzee';
 import { VixSrc } from './VixSrc';
 import { Voe } from './Voe';
@@ -58,7 +58,6 @@ export const createExtractors = (fetcher: Fetcher, logger: winston.Logger): Extr
     new Uqload(fetcher, logger),
     new Vidara(fetcher, logger),
     new Vidsonic(fetcher, logger),
-    new MoflixRpmplay(fetcher, logger),
     new VidStack(fetcher, logger),
     new Vidzee(fetcher, logger),
     new VidSrc(fetcher, logger, [ // https://vidsrc.domains/
