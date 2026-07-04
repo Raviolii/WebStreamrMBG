@@ -22,6 +22,7 @@ import { SuperVideo } from './SuperVideo';
 import { Uqload } from './Uqload';
 import { Vidara } from './Vidara';
 import { Vidsonic } from './Vidsonic';
+import { Byse } from './Byse';
 import { VidSrc } from './VidSrc';
 import { VidStack } from './VidStack';
 import { Vidzee } from './Vidzee';
@@ -58,6 +59,7 @@ export const createExtractors = (fetcher: Fetcher, logger: winston.Logger): Extr
     new Uqload(fetcher, logger),
     new Vidara(fetcher, logger),
     new Vidsonic(fetcher, logger),
+    new Byse(fetcher, logger),
     new VidStack(fetcher, logger),
     new Vidzee(fetcher, logger),
     new VidSrc(fetcher, logger, [ // https://vidsrc.domains/
