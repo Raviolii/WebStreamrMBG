@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import winston from 'winston';
 import { NotFoundError } from '../error';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { buildMediaFlowProxyExtractorStreamUrl, supportsMediaFlowProxy, Fetcher } from '../utils';
+import { Fetcher } from '../utils';
 import { Extractor } from './Extractor';
 
 export class Byse extends Extractor {
@@ -10,18 +10,16 @@ export class Byse extends Extractor {
 
   public readonly label = 'Byse';
 
-  public override viaMediaFlowProxy = true;
-
   private readonly UA = 'Mozilla/5.0 (Linux; Android 10; TX6s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36';
 
   public constructor(fetcher: Fetcher, logger: winston.Logger) {
     super(fetcher, logger);
   }
 
-  public supports(ctx: Context, url: URL): boolean {
+  public supports(_ctx: Context, url: URL): boolean {
     const supportedDomain = null !== url.host.match(/(?:filemoon|cinegrab|moonmov|kerapoxy|furher|1azayf9w|81u6xl9d|f16px|sb1254w9megshle|smdfs40r|bf0skv|z1ekv717|l1afav|222i8x|8mhlloqo|96ar|xcoic|f51rm|c1z39|boosteradx|vepoin|streamlyplayero?|(?:embedplay)?byse(?:sayeveum|tayico|zejataos|koze|sukior|jikuar|fujedu|dikamoum|buho|wihe|lapuix)?)/);
 
-    return supportedDomain !== null && supportsMediaFlowProxy(ctx);
+    return supportedDomain !== null;
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
@@ -151,9 +149,10 @@ export class Byse extends Extractor {
 
         return [
           {
-            url: await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Byse', new URL(sourceUrl), headers),
+            url: new URL(sourceUrl),
             format: Format.hls,
             label: selectedSource.label || 'Byse',
+            requestHeaders: headers,
             meta,
           },
         ];
@@ -182,9 +181,10 @@ export class Byse extends Extractor {
 
           return [
             {
-              url: await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Byse', new URL(sourceUrl), headers),
+              url: new URL(sourceUrl),
               format: Format.hls,
               label: selectedSource.label || 'Byse',
+              requestHeaders: headers,
               meta,
             },
           ];
