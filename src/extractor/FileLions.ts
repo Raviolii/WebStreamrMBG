@@ -11,7 +11,7 @@ export class FileLions extends Extractor {
 
   public readonly label = 'FileLions';
 
-  public override viaMediaFlowProxy = true;
+  public override viaMediaFlowProxy = false;
 
   public supports(ctx: Context, url: URL): boolean {
     const supportedDomain = null !== url.host.match(/.*lions?/)
