@@ -6,7 +6,6 @@ import { ExternalUrl } from './ExternalUrl';
 import { Extractor } from './Extractor';
 import { Fastream } from './Fastream';
 import { FileLions } from './FileLions';
-import { FileMoon } from './FileMoon';
 import { Fsst } from './Fsst';
 import { HBLinks } from './HBLinks';
 import { HDStream4U } from './HDStream4U';
@@ -43,7 +42,6 @@ export const createExtractors = (fetcher: Fetcher, logger: winston.Logger): Extr
     new Dropload(fetcher, logger),
     new Fastream(fetcher, logger),
     new FileLions(fetcher, logger),
-    new FileMoon(fetcher, logger),
     new Fsst(fetcher, logger),
     new HBLinks(fetcher, logger, hubExtractor),
     new HDStream4U(fetcher, logger),

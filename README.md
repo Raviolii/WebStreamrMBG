@@ -37,7 +37,6 @@ The following hosters can be used only with MediaFlow Proxy:
 
 - Fastream
 - FileLions
-- FileMoon
 - LuluStream
 - Mixdrop
 - Streamtape

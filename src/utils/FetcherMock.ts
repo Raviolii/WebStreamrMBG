@@ -34,7 +34,13 @@ export class FetcherMock extends Fetcher {
   };
 
   public override async text(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<string> {
-    const path = `${this.fixturePath}/${this.slugifyUrl(url)}`;
+    const requestData = typeof requestConfig?.data === 'string'
+      ? requestConfig.data
+      : JSON.stringify(requestConfig?.data ?? '');
+
+    const path = requestConfig?.method === 'POST'
+      ? `${this.fixturePath}/post-${this.slugifyUrl(url)}-${slugify(requestData)}`
+      : `${this.fixturePath}/${this.slugifyUrl(url)}`;
 
     return (await this.fetchInternal(path, ctx, url, requestConfig)).data;
   };
