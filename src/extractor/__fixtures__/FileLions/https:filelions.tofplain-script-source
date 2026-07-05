@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Example video title">
+    <title>Example video title</title>
+  </head>
+  <body>
+    <script>
+      window.playerConfig = {
+        sources: [{ file: "https://cdn.example.com/direct-video.mp4" }]
+      };
+    </script>
+  </body>
+</html>

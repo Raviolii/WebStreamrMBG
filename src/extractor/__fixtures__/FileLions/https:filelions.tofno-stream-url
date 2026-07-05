@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Missing stream</title>
+  </head>
+  <body>
+    <script>
+      window.playerConfig = {
+        title: "No stream here"
+      };
+    </script>
+  </body>
+</html>

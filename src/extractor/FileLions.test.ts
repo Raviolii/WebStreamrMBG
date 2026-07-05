@@ -22,6 +22,18 @@ describe('FileLions', () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://filelions.to/v/ylcp2cu5qanb'))).toMatchSnapshot();
   });
 
+  test('extracts direct stream URLs from plain script blocks', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://filelions.to/f/plain-script-source'))).toMatchSnapshot();
+  });
+
+  test('returns no results when no stream URL is present', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://filelions.to/f/no-stream-url'))).toEqual([]);
+  });
+
+  test('uses size metadata when title is absent', async () => {
+    expect(await extractorRegistry.handle(ctx, new URL('https://filelions.to/f/size-and-no-title'))).toMatchSnapshot();
+  });
+
   test('deleted by administration', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://callistanise.com/f/cy4t5nkerjrt'))).toMatchSnapshot();
   });

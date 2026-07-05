@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Size-only fixture</title>
+  </head>
+  <body>
+    <script>
+      window.playerConfig = {
+        file: "https://cdn.example.com/size-only.mp4"
+      };
+    </script>
+    <p>File size: 1.2 GB</p>
+  </body>
+</html>
