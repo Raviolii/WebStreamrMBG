@@ -12,7 +12,7 @@ class ByseFetcherMock extends Fetcher {
     super(axios, logger);
   }
 
-  public override async json(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<any> {
+  public override async json(_ctx: Context, url: URL, _requestConfig?: CustomRequestConfig): Promise<any> {
     if (url.pathname === '/extractor/video') {
       return {
         destination_url: url.searchParams.get('d') ?? '',
@@ -59,15 +59,18 @@ const extractorRegistry = new ExtractorRegistry(logger, [new Byse(new ByseFetche
 const ctx = createTestContext({ mediaFlowProxyUrl: 'https://mediaflow-proxy.test', mediaFlowProxyPassword: 'asdfg' });
 
 describe('Byse', () => {
-  test('extracts a stream via media flow proxy', async () => {
+  test('extracts a stream with request headers', async () => {
     const result = await extractorRegistry.handle(ctx, new URL('https://filemoon.sx/e/test123'));
 
     expect(result).toHaveLength(1);
     expect(result[0]?.format).toBe('hls');
-    expect(result[0]?.label).toBe('720 (MFP)');
-    expect(result[0]?.url.href).toContain('https://mediaflow-proxy.test/proxy/hls/manifest.m3u8');
-    expect(result[0]?.url.searchParams.get('proxy')).toBe('true');
-    expect(result[0]?.url.searchParams.get('d')).toBe('https://cdn.example/test-720.m3u8');
+    expect(result[0]?.label).toBe('720');
+    expect(result[0]?.url.href).toBe('https://cdn.example/test-720.m3u8');
+    expect(result[0]?.requestHeaders).toEqual({
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 10; TX6s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36',
+      'Referer': 'https://filemoon.sx/',
+      'Origin': 'https://filemoon.sx',
+    });
   });
 
   test('returns no results for missing videos', async () => {

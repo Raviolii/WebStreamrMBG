@@ -81,52 +81,56 @@ export class Byse extends Extractor {
 
     let data: any;
     if (settings?.captcha_required) {
-      const challenge = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/access/challenge`), {
-        method: 'POST',
-        headers: jsonHeaders,
-        data: {},
-      });
+      try {
+        const challenge = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/access/challenge`), {
+          method: 'POST',
+          headers: jsonHeaders,
+          data: {},
+        });
 
-      const attest = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/access/attest`), {
-        method: 'POST',
-        headers: jsonHeaders,
-        data: this.wn(challenge),
-      });
+        const attest = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/access/attest`), {
+          method: 'POST',
+          headers: jsonHeaders,
+          data: this.wn(challenge),
+        });
 
-      const fingerprint = {
-        token: attest.token,
-        viewer_id: attest.viewer_id,
-        device_id: attest.device_id,
-        confidence: attest.confidence,
-      };
+        const fingerprint = {
+          token: attest.token,
+          viewer_id: attest.viewer_id,
+          device_id: attest.device_id,
+          confidence: attest.confidence,
+        };
 
-      const captcha = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}captcha`), {
-        method: 'POST',
-        headers: jsonHeaders,
-        data: { fingerprint },
-      });
+        const captcha = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}captcha`), {
+          method: 'POST',
+          headers: jsonHeaders,
+          data: { fingerprint },
+        });
 
-      const solution = this.er(captcha.pow_nonce, captcha.pow_difficulty);
-      if (solution === null) {
+        const solution = this.er(captcha.pow_nonce, captcha.pow_difficulty);
+        if (solution === null) {
+          throw new NotFoundError();
+        }
+
+        const verify = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}captcha/verify`), {
+          method: 'POST',
+          headers: jsonHeaders,
+          data: {
+            pow_token: captcha.pow_token,
+            solution,
+            fingerprint,
+          },
+        });
+
+        headers['X-Captcha-Token'] = verify.token;
+        data = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}playback`), {
+          method: 'POST',
+          headers: jsonHeaders,
+          data: { fingerprint },
+        });
+      } catch {
         throw new NotFoundError();
       }
-
-      const verify = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}captcha/verify`), {
-        method: 'POST',
-        headers: jsonHeaders,
-        data: {
-          pow_token: captcha.pow_token,
-          solution,
-          fingerprint,
-        },
-      });
-
-      headers['X-Captcha-Token'] = verify.token;
-      data = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}playback`), {
-        method: 'POST',
-        headers: jsonHeaders,
-        data: { fingerprint },
-      });
     } else {
       data = await this.fetcher.json(ctx, new URL(`${baseRef}api/videos/${mediaId}/${embed}playback`), {
         method: 'POST',
