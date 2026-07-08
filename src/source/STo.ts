@@ -18,7 +18,7 @@ export const isStreamingHost = (hostname: string): boolean =>
 export class STo extends Source {
   public readonly id = 's-to';
   public readonly label = 'S.to';
-  public readonly baseUrl = 'https://serienstream.to/';
+  public readonly baseUrl = 'https://serienstream.to';
 
   public override readonly contentTypes: ContentType[] = ['series' as ContentType];
   public override readonly countryCodes = [CountryCode.de];
