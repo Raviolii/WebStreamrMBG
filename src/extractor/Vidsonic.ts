@@ -20,30 +20,39 @@ export class Vidsonic extends Extractor {
   public override readonly ttl: number = 43200000; // 12h
 
   public supports(_ctx: Context, url: URL): boolean {
-    return null !== url.host.match(/vidsonic/);
+    return /vidsonic\.net/.test(url.host);
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
-    const html = await this.fetcher.text(ctx, url);
+    // Mimic the headers from the Python script
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Referer': `${url.origin}/`,
+      'Origin': url.origin,
+    };
+
+    const html = await this.fetcher.text(ctx, url, { headers });
 
     const $ = cheerio.load(html);
     const title = $('title').text().trim().replace(/^Watch /, '').trim();
 
-    const hexMatch = html.match(/const _0x1\s*=\s*'([^']+)'/);
+    // Regex matches the Python logic: const _0x1 = '...
+    const hexMatch = html.match(/const\s*_0x1\s*=\s*'([^']+)/);
     if (!hexMatch || !hexMatch[1]) {
       throw new Error('Could not find hex-encoded video URL in Vidsonic page');
     }
 
     const m3u8Url = new URL(decodeHexUrl(hexMatch[1]));
-    const headers = { Origin: url.origin };
 
-    // Compute a dynamic TTL based on the expires parameter in the m3u8 URL.
+    // Compute a dynamic TTL based on the expires parameter
     const expiresParam = m3u8Url.searchParams.get('expires');
-    const tokenTtl = Math.max(900000, Number(expiresParam) * 1000 - Date.now() - 120000); // 2min safety buffer
+    const tokenTtl = expiresParam 
+        ? Math.max(900000, Number(expiresParam) * 1000 - Date.now() - 120000) 
+        : this.ttl;
 
     return [
       {
-        url: m3u8Url,
+        url: m3u8Url.toString(),
         format: Format.hls,
         ttl: Math.min(tokenTtl, this.ttl),
         meta: {
