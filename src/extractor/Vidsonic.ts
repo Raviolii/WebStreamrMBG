@@ -42,6 +42,7 @@ export class Vidsonic extends Extractor {
       throw new Error('Could not find hex-encoded video URL in Vidsonic page');
     }
 
+    // Creating the URL object for the M3U8 source
     const m3u8Url = new URL(decodeHexUrl(hexMatch[1]));
 
     // Compute a dynamic TTL based on the expires parameter
@@ -52,7 +53,7 @@ export class Vidsonic extends Extractor {
 
     return [
       {
-        url: m3u8Url.toString(),
+        url: m3u8Url, // Passing the URL object directly to satisfy the TS interface
         format: Format.hls,
         ttl: Math.min(tokenTtl, this.ttl),
         meta: {
