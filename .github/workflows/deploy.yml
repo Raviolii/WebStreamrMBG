@@ -17,7 +17,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.BEAMUP_HOST }} >> ~/.ssh/known_hosts
+          
+          # Disable strict host key checking for baby-beamup.club
+          echo -e "Host ${{ secrets.BEAMUP_HOST }}\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" >> ~/.ssh/config
 
       - name: Push to BeamUp Dokku
         run: |
