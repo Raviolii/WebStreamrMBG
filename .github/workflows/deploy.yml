@@ -1,0 +1,25 @@
+name: Deploy to BeamUp
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.BEAMUP_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Push to BeamUp Dokku
+        run: |
+          git remote add beamup dokku@${{ secrets.BEAMUP_HOST }}:${{ secrets.PROJECT_NAME }}
+          git push beamup main:main --force
