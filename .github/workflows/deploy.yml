@@ -18,10 +18,13 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           
-          # Disable strict host key checking for baby-beamup.club
-          echo -e "Host ${{ secrets.BEAMUP_HOST }}\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" >> ~/.ssh/config
+          # Disable strict host key checking globally to avoid config errors
+          echo "Host *" > ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "  UserKnownHostsFile /dev/null" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
 
       - name: Push to BeamUp Dokku
         run: |
-          git remote add beamup dokku@${{ secrets.BEAMUP_HOST }}:${{ secrets.PROJECT_NAME }}
+          git remote add beamup dokku@baby-beamup.club:${{ secrets.PROJECT_NAME }}
           git push beamup main:main --force
