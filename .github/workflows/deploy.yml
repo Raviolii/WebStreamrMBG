@@ -12,20 +12,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          
-          echo "Host *" > ~/.ssh/config
-          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
-          echo "  UserKnownHostsFile /dev/null" >> ~/.ssh/config
-          echo "  IPQoS none" >> ~/.ssh/config
-          chmod 600 ~/.ssh/config
-
-      - name: Push to BeamUp Dokku
-        run: |
-          # Force IPv4 resolution (-4) to prevent routing/network unreachable issues on GitHub runners
-          git remote add beamup ssh://dokku@baby-beamup.club:22/${{ secrets.PROJECT_NAME }}
-          git -c core.sshCommand="ssh -4 -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" push beamup main:main --force
+      - name: Deploy to BeamUp
+        uses: Stremio/beamup-deploy-action@v1.0.1
+        with:
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          beamup_host: ${{ secrets.BEAMUP_HOST }}
+          username_github: ${{ secrets.USERNAME_GITHUB }}
+          project_name: ${{ secrets.PROJECT_NAME }}
