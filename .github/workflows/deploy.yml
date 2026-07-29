@@ -12,20 +12,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Deploy to BeamUp via Git
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install BeamUp CLI & Deploy
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           BEAMUP_HOST: ${{ secrets.BEAMUP_HOST }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          USERNAME_GITHUB: ${{ secrets.USERNAME_GITHUB }}
         run: |
+          # Install the official Stremio BeamUp CLI globally
+          npm install -g beamup-cli
+
+          # Write out the private SSH key safely
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          
-          echo "Host *" > ~/.ssh/config
-          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
-          echo "  UserKnownHostsFile /dev/null" >> ~/.ssh/config
-          chmod 600 ~/.ssh/config
 
-          git remote add beamup dokku@$BEAMUP_HOST:$PROJECT_NAME
-          git -c core.sshCommand="ssh -i ~/.ssh/id_ed25519" push beamup HEAD:master --force
+          # Configure BeamUp CLI non-interactively
+          # (Beamup CLI manages keys and pushes via its standard supported mechanism)
+          echo "Host $BEAMUP_HOST" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/id_ed25519" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+
+          # Run the beamup deployment command
+          beamup
