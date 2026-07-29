@@ -18,13 +18,14 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           
-          # Disable strict host key checking globally to avoid config errors
           echo "Host *" > ~/.ssh/config
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
           echo "  UserKnownHostsFile /dev/null" >> ~/.ssh/config
+          echo "  IPQoS none" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
       - name: Push to BeamUp Dokku
         run: |
-          git remote add beamup dokku@baby-beamup.club:${{ secrets.PROJECT_NAME }}
-          git push beamup main:main --force
+          # Force IPv4 resolution (-4) to prevent routing/network unreachable issues on GitHub runners
+          git remote add beamup ssh://dokku@baby-beamup.club:22/${{ secrets.PROJECT_NAME }}
+          git -c core.sshCommand="ssh -4 -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" push beamup main:main --force
