@@ -1,9 +1,9 @@
 import { createCipheriv } from 'node:crypto';
 import winston from 'winston';
-import { createTestContext } from '../test';
-import { Fetcher, FetcherMock } from '../utils';
-import { ExtractorRegistry } from './ExtractorRegistry';
-import { apiKeyCache, decryptApiKey, Vidzee } from './Vidzee';
+import { createTestContext } from '../test/index.js';
+import { Fetcher, FetcherMock } from '../utils/index.js';
+import { ExtractorRegistry } from './ExtractorRegistry.js';
+import { apiKeyCache, decryptApiKey, Vidzee } from './Vidzee.js';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 const extractorRegistry = new ExtractorRegistry(logger, [new Vidzee(new FetcherMock(`${__dirname}/__fixtures__/Vidzee`), logger)]);

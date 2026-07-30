@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { contextFromRequestAndResponse } from './context';
+import { contextFromRequestAndResponse } from './context.js';
 
 describe('contextFromRequest', () => {
   test('with config and ip', () => {

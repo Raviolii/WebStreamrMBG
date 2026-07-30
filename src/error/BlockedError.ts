@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { BlockedReason } from '../types';
+import { BlockedReason } from '../types.js';
 
 export class BlockedError extends Error {
   public readonly url: URL;

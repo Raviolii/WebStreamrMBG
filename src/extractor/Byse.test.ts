@@ -1,11 +1,11 @@
 import axios from 'axios';
 import winston from 'winston';
-import { NotFoundError } from '../error';
-import { createTestContext } from '../test';
-import { Context } from '../types';
-import { CustomRequestConfig, Fetcher } from '../utils';
-import { Byse } from './Byse';
-import { ExtractorRegistry } from './ExtractorRegistry';
+import { NotFoundError } from '../error/index.js';
+import { createTestContext } from '../test/index.js';
+import { Context } from '../types.js';
+import { CustomRequestConfig, Fetcher } from '../utils/index.js';
+import { Byse } from './Byse.js';
+import { ExtractorRegistry } from './ExtractorRegistry.js';
 
 class ByseFetcherMock extends Fetcher {
   public constructor(logger: winston.Logger) {

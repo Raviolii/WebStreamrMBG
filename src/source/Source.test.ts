@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { ContentType } from 'stremio-addon-sdk';
 import winston from 'winston';
-import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError, TooManyRequestsError, TooManyTimeoutsError } from '../error';
-import { createTestContext } from '../test';
-import { BlockedReason, CountryCode } from '../types';
-import { Fetcher, ImdbId } from '../utils';
-import { Source, SourceResult } from './Source';
+import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError, TooManyRequestsError, TooManyTimeoutsError } from '../error/index.js';
+import { createTestContext } from '../test/index.js';
+import { BlockedReason, CountryCode } from '../types.js';
+import { Fetcher, ImdbId } from '../utils/index.js';
+import { Source, SourceResult } from './Source.js';
 
 const ctx = createTestContext();
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });

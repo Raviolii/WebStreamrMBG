@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { guessHeightFromPlaylist } from '../utils';
-import { Extractor } from './Extractor';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { guessHeightFromPlaylist } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 function decodeHexUrl(hexString: string): string {
   const joined = hexString.split('|').join('');

@@ -1,6 +1,6 @@
-import { Context } from '../types';
-import { Fetcher } from '../utils';
-import { decodeString, extractEncryptedString, extractFallbackLink } from './RedirectDecoder';
+import { Context } from '../types.js';
+import { Fetcher } from '../utils/index.js';
+import { decodeString, extractEncryptedString, extractFallbackLink } from './RedirectDecoder.js';
 
 const WP_HTTP_MAX_RETRIES = 5;
 const WP_HTTP_RETRY_DELAY_MS = 2000;

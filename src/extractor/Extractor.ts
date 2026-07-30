@@ -1,7 +1,7 @@
 import winston from 'winston';
-import { NotFoundError } from '../error';
-import { Context, Format, InternalUrlResult, Meta, UrlResult } from '../types';
-import { Fetcher } from '../utils';
+import { NotFoundError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta, UrlResult } from '../types.js';
+import { Fetcher } from '../utils/index.js';
 
 export abstract class Extractor {
   public abstract readonly id: string;

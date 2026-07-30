@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { TmdbId } from '../utils';
-import { Vidzee } from './Vidzee';
+import { createTestContext } from '../test/index.js';
+import { TmdbId } from '../utils/index.js';
+import { Vidzee } from './Vidzee.js';
 
 const ctx = createTestContext({ multi: 'on' });
 

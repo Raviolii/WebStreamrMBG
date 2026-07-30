@@ -1,8 +1,8 @@
 import { Cacheable, CacheableMemory, Keyv } from 'cacheable';
 import winston from 'winston';
-import { Context, Format, Meta, UrlResult } from '../types';
-import { createKeyvSqlite, isExtractorDisabled } from '../utils';
-import { Extractor } from './Extractor';
+import { Context, Format, Meta, UrlResult } from '../types.js';
+import { createKeyvSqlite, isExtractorDisabled } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class ExtractorRegistry {
   private readonly logger: winston.Logger;

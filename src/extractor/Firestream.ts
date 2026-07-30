@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio';
 import winston from 'winston';
-import { NotFoundError } from '../error';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { Fetcher } from '../utils';
-import { Extractor } from './Extractor';
+import { NotFoundError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { Fetcher } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class Firestream extends Extractor {
   public readonly id = 'firestream';

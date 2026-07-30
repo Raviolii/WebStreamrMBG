@@ -9,9 +9,9 @@ import { minimatch } from 'minimatch';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import { Cookie, CookieJar } from 'tough-cookie';
 import winston from 'winston';
-import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError, TooManyRequestsError, TooManyTimeoutsError } from '../error';
-import { BlockedReason, Context } from '../types';
-import { envGet, envGetAppId } from './env';
+import { BlockedError, HttpError, NotFoundError, QueueIsFullError, TimeoutError, TooManyRequestsError, TooManyTimeoutsError } from '../error/index.js';
+import { BlockedReason, Context } from '../types.js';
+import { envGet, envGetAppId } from './env.js';
 
 interface FlareSolverrSolution {
   url: string;

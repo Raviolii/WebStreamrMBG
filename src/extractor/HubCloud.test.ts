@@ -1,9 +1,9 @@
 import axios from 'axios';
 import winston from 'winston';
-import { createTestContext } from '../test';
-import { Fetcher, FetcherMock } from '../utils';
-import { ExtractorRegistry } from './ExtractorRegistry';
-import { HubCloud } from './HubCloud';
+import { createTestContext } from '../test/index.js';
+import { Fetcher, FetcherMock } from '../utils/index.js';
+import { ExtractorRegistry } from './ExtractorRegistry.js';
+import { HubCloud } from './HubCloud.js';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 const extractorRegistry = new ExtractorRegistry(logger, [new HubCloud(new FetcherMock(`${__dirname}/__fixtures__/HubCloud`), logger)]);

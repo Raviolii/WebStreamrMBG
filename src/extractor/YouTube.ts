@@ -1,5 +1,5 @@
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { Extractor } from './Extractor';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { Extractor } from './Extractor.js';
 
 export class YouTube extends Extractor {
   public readonly id = 'youtube';

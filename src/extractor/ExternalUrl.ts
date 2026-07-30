@@ -1,6 +1,6 @@
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { showExternalUrls } from '../utils';
-import { Extractor } from './Extractor';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { showExternalUrls } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class ExternalUrl extends Extractor {
   public readonly id = 'external';

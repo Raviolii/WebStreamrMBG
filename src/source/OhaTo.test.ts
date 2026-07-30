@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, ImdbId, TmdbId } from '../utils';
-import { OhaTO } from './OhaTo';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, ImdbId, TmdbId } from '../utils/index.js';
+import { OhaTO } from './OhaTo.js';
 
 const ctx = createTestContext({ de: 'on' });
 

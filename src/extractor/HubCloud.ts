@@ -1,8 +1,8 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { findCountryCodes, findHeight, HUBCLOUD_CACHE_TTL } from '../utils';
-import { Extractor } from './Extractor';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { findCountryCodes, findHeight, HUBCLOUD_CACHE_TTL } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 /** Delay before retrying Hop 1 after a failed Hop 2 (ms). */
 const RETRY_DELAY_MS = 2500;

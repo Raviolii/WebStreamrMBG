@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, TmdbId } from '../utils';
-import { HDFilme } from './HDFilme';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, TmdbId } from '../utils/index.js';
+import { HDFilme } from './HDFilme.js';
 
 const ctx = createTestContext({ de: 'on' });
 

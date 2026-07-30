@@ -7,14 +7,14 @@ import express, { NextFunction, Request, Response } from 'express';
 // eslint-disable-next-line 
 import rateLimit from 'express-rate-limit';
 import winston from 'winston';
-import { ConfigureController, ExtractController, ManifestController, StreamController } from './controller';
-import { BlockedError, logErrorAndReturnNiceString } from './error';
-import { createExtractors, ExtractorRegistry } from './extractor';
-import { createSources, Source } from './source';
-import { HomeCine } from './source/HomeCine';
-import { MeineCloud } from './source/MeineCloud';
-import { MostraGuarda } from './source/MostraGuarda';
-import { clearCache, contextFromRequestAndResponse, envGet, envIsProd, Fetcher, StreamResolver } from './utils';
+import { ConfigureController, ExtractController, ManifestController, StreamController } from './controller/index.js';
+import { BlockedError, logErrorAndReturnNiceString } from './error/index.js';
+import { createExtractors, ExtractorRegistry } from './extractor/index.js';
+import { createSources, Source } from './source/index.js';
+import { HomeCine } from './source/HomeCine.js';
+import { MeineCloud } from './source/MeineCloud.js';
+import { MostraGuarda } from './source/MostraGuarda.js';
+import { clearCache, contextFromRequestAndResponse, envGet, envIsProd, Fetcher, StreamResolver } from './utils/index.js';
 
 if (envIsProd()) {
   console.log = console.warn = console.error = console.info = console.debug = () => { /* disable in favor of logger */ };

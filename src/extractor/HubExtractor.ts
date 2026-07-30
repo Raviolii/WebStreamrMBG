@@ -1,10 +1,10 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
 import winston from 'winston';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, findHeight, HUB_HOST_PATTERN, HUBCLOUD_CACHE_TTL } from '../utils';
-import { Extractor } from './Extractor';
-import { HubCloud } from './HubCloud';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, findHeight, HUB_HOST_PATTERN, HUBCLOUD_CACHE_TTL } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
+import { HubCloud } from './HubCloud.js';
 
 interface ResolutionCacheEntry {
   url: URL;

@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, ImdbId } from '../utils';
-import { VixSrc } from './VixSrc';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, ImdbId } from '../utils/index.js';
+import { VixSrc } from './VixSrc.js';
 
 const ctx = createTestContext({ mediaFlowProxyUrl: 'http://localhost:8080' });
 

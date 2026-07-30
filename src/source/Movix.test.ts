@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, TmdbId } from '../utils';
-import { Movix } from './Movix';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, TmdbId } from '../utils/index.js';
+import { Movix } from './Movix.js';
 
 const ctx = createTestContext({ fr: 'on' });
 

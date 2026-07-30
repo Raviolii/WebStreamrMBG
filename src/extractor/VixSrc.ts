@@ -1,10 +1,10 @@
-import { NotFoundError } from '../error';
-import { Context, CountryCode, Format, InternalUrlResult, Meta } from '../types';
+import { NotFoundError } from '../error/index.js';
+import { Context, CountryCode, Format, InternalUrlResult, Meta } from '../types.js';
 import {
   buildMediaFlowProxyExtractorRedirectUrl, CustomRequestConfig, guessHeightFromPlaylist,
   hasMultiEnabled, iso639FromCountryCode, supportsMediaFlowProxy,
-} from '../utils';
-import { Extractor } from './Extractor';
+} from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class VixSrc extends Extractor {
   public readonly id = 'vixsrc';

@@ -8,7 +8,7 @@ import { glob } from 'glob';
 import { KeyvStoreAdapter } from 'keyv';
 import * as sqlite3 from 'sqlite3';
 import winston from 'winston';
-import { envGet, envIsTest } from './env';
+import { envGet, envIsTest } from './env.js';
 
 const getCacheDir = (): string => envGet('CACHE_DIR') ?? os.tmpdir();
 

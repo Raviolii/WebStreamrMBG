@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio';
 import levenshtein from 'fast-levenshtein';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id, TmdbId } from '../utils';
-import { Source, SourceResult } from './Source';
+import { Context, CountryCode } from '../types.js';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id, TmdbId } from '../utils/index.js';
+import { Source, SourceResult } from './Source.js';
 
 interface DooplayerResponse {
   embed_url: string | null;

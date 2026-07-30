@@ -1,15 +1,15 @@
-import { Extractor } from '../extractor';
-import { Source } from '../source';
-import { Config, CountryCode, CustomManifest } from '../types';
+import { Extractor } from '../extractor/index.js';
+import { Source } from '../source/index.js';
+import { Config, CountryCode, CustomManifest } from '../types.js';
 import {
   disableExtractorConfigKey,
   excludeResolutionConfigKey,
   isExtractorDisabled,
   isResolutionExcluded,
-} from './config';
-import { envGetAppId, envGetAppName } from './env';
-import { flagFromCountryCode, languageFromCountryCode } from './language';
-import { RESOLUTIONS } from './resolution';
+} from './config.js';
+import { envGetAppId, envGetAppName } from './env.js';
+import { flagFromCountryCode, languageFromCountryCode } from './language.js';
+import { RESOLUTIONS } from './resolution.js';
 
 const typedEntries = <T extends object>(obj: T): [keyof T, T[keyof T]][] => (Object.entries(obj) as [keyof T, T[keyof T]][]);
 

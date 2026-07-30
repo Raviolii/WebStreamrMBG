@@ -1,5 +1,5 @@
-import { Context } from '../types';
-import { Fetcher } from './Fetcher';
+import { Context } from '../types.js';
+import { Fetcher } from './Fetcher.js';
 
 // Parse HLS master playlist and return the highest variant height found
 export const inferHeightFromHls = async (ctx: Context, fetcher: Fetcher, url: URL): Promise<number | undefined> => {

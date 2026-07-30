@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { Fetcher, FetcherMock, ImdbId } from '../utils';
-import { MeineCloud } from './MeineCloud';
+import { createTestContext } from '../test/index.js';
+import { Fetcher, FetcherMock, ImdbId } from '../utils/index.js';
+import { MeineCloud } from './MeineCloud.js';
 const ctx = createTestContext({ de: 'on' });
 describe('MeineCloud', () => {
   let source: MeineCloud;

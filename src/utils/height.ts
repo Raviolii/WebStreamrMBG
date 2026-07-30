@@ -1,5 +1,5 @@
-import { Context } from '../types';
-import { CustomRequestConfig, Fetcher } from './Fetcher';
+import { Context } from '../types.js';
+import { CustomRequestConfig, Fetcher } from './Fetcher.js';
 
 export const guessHeightFromPlaylist = async (ctx: Context, fetcher: Fetcher, playlistUrl: URL, init?: CustomRequestConfig): Promise<number | undefined> => {
   const m3u8Data = await fetcher.text(ctx, playlistUrl, init);

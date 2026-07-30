@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio';
-import { createTestContext } from '../test';
-import { CountryCode } from '../types';
-import { FetcherMock, TmdbId } from '../utils';
-import { FourKHDHub } from './FourKHDHub';
-import { Source } from './Source';
+import { createTestContext } from '../test/index.js';
+import { CountryCode } from '../types.js';
+import { FetcherMock, TmdbId } from '../utils/index.js';
+import { FourKHDHub } from './FourKHDHub.js';
+import { Source } from './Source.js';
 
 const ctx = createTestContext();
 

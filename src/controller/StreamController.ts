@@ -2,8 +2,8 @@ import { Mutex } from 'async-mutex';
 import { Request, Response, Router } from 'express';
 import { ContentType } from 'stremio-addon-sdk';
 import winston from 'winston';
-import { Source } from '../source';
-import { contextFromRequestAndResponse, envIsProd, Id, ImdbId, StreamResolver, TmdbId } from '../utils';
+import { Source } from '../source/index.js';
+import { contextFromRequestAndResponse, envIsProd, Id, ImdbId, StreamResolver, TmdbId } from '../utils/index.js';
 
 export class StreamController {
   public readonly router: Router;

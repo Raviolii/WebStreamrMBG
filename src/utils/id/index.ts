@@ -1,11 +1,11 @@
-import { Context } from '../../types';
-import { Fetcher } from '../Fetcher';
-import { getImdbIdFromTmdbId, getTmdbIdFromImdbId } from '../tmdb';
-import { ImdbId } from './ImdbId';
-import { TmdbId } from './TmdbId';
+import { Context } from '../../types.js';
+import { Fetcher } from '../Fetcher.js';
+import { getImdbIdFromTmdbId, getTmdbIdFromImdbId } from '../tmdb.js';
+import { ImdbId } from './ImdbId.js';
+import { TmdbId } from './TmdbId.js';
 
-export * from './ImdbId';
-export * from './TmdbId';
+export * from './ImdbId.js';
+export * from './TmdbId.js';
 
 export type Id = ImdbId | TmdbId;
 

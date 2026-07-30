@@ -1,7 +1,7 @@
 import rot13Cipher from 'rot13-cipher';
-import { createTestContext } from '../test';
-import { Fetcher } from '../utils';
-import { resolveRedirectUrl } from './hd-hub-helper';
+import { createTestContext } from '../test/index.js';
+import { Fetcher } from '../utils/index.js';
+import { resolveRedirectUrl } from './hd-hub-helper.js';
 
 const ctx = createTestContext();
 

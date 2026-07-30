@@ -1,4 +1,4 @@
-import { parseQualityFromUrl, qualityLabelFromUrl } from './quality';
+import { parseQualityFromUrl, qualityLabelFromUrl } from './quality.js';
 
 describe('parseQualityFromUrl', () => {
   test('parses 1080p token', () => {

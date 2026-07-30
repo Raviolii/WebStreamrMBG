@@ -1,7 +1,7 @@
 import winston from 'winston';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { Fetcher } from '../utils';
-import { Extractor } from './Extractor';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { Fetcher } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class HDStream4U extends Extractor {
   public readonly id = 'hdstream4u';

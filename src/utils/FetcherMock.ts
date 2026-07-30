@@ -4,10 +4,10 @@ import fs from 'node:fs';
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import slugify from 'slugify';
 import winston from 'winston';
-import { NotFoundError } from '../error';
-import { Context } from '../types';
-import { envGet } from './env';
-import { CustomRequestConfig, Fetcher } from './Fetcher';
+import { NotFoundError } from '../error/index.js';
+import { Context } from '../types.js';
+import { envGet } from './env.js';
+import { CustomRequestConfig, Fetcher } from './Fetcher.js';
 
 export class FetcherMock extends Fetcher {
   private readonly fixturePath: string;

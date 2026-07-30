@@ -1,6 +1,6 @@
-import { Context } from '../types';
-import { Fetcher } from './Fetcher';
-import { inferHeightFromHls } from './hls';
+import { Context } from '../types.js';
+import { Fetcher } from './Fetcher.js';
+import { inferHeightFromHls } from './hls.js';
 
 const ctx = {} as Context;
 

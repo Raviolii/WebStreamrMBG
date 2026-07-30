@@ -1,19 +1,19 @@
 import winston from 'winston';
-import { BlockedReason, Context } from '../types';
-import { BlockedError } from './BlockedError';
-import { HttpError } from './HttpError';
-import { QueueIsFullError } from './QueueIsFullError';
-import { TimeoutError } from './TimeoutError';
-import { TooManyRequestsError } from './TooManyRequestsError';
-import { TooManyTimeoutsError } from './TooManyTimeoutsError';
+import { BlockedReason, Context } from '../types.js';
+import { BlockedError } from './BlockedError.js';
+import { HttpError } from './HttpError.js';
+import { QueueIsFullError } from './QueueIsFullError.js';
+import { TimeoutError } from './TimeoutError.js';
+import { TooManyRequestsError } from './TooManyRequestsError.js';
+import { TooManyTimeoutsError } from './TooManyTimeoutsError.js';
 
-export * from './BlockedError';
-export * from './HttpError';
-export * from './NotFoundError';
-export * from './QueueIsFullError';
-export * from './TimeoutError';
-export * from './TooManyRequestsError';
-export * from './TooManyTimeoutsError';
+export * from './BlockedError.js';
+export * from './HttpError.js';
+export * from './NotFoundError.js';
+export * from './QueueIsFullError.js';
+export * from './TimeoutError.js';
+export * from './TooManyRequestsError.js';
+export * from './TooManyTimeoutsError.js';
 
 export const logErrorAndReturnNiceString = (ctx: Context, logger: winston.Logger, source: string, error: unknown): string => {
   if (error instanceof BlockedError) {

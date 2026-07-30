@@ -1,4 +1,4 @@
-import { getDefaultConfig } from './config';
+import { getDefaultConfig } from './config.js';
 
 describe('getDefaultConfig', () => {
   test('has English enabled', () => {

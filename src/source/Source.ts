@@ -1,8 +1,8 @@
 import { Cacheable, CacheableMemory, Keyv } from 'cacheable';
 import { ContentType } from 'stremio-addon-sdk';
-import { BlockedError, HttpError, NotFoundError, TooManyRequestsError, TooManyTimeoutsError } from '../error';
-import { Context, CountryCode, Meta } from '../types';
-import { createKeyvSqlite, Fetcher, Id } from '../utils';
+import { BlockedError, HttpError, NotFoundError, TooManyRequestsError, TooManyTimeoutsError } from '../error/index.js';
+import { Context, CountryCode, Meta } from '../types.js';
+import { createKeyvSqlite, Fetcher, Id } from '../utils/index.js';
 
 export interface SourceResult {
   url: URL;

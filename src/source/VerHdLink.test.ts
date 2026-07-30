@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, ImdbId } from '../utils';
-import { VerHdLink } from './VerHdLink';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, ImdbId } from '../utils/index.js';
+import { VerHdLink } from './VerHdLink.js';
 
 const ctx = createTestContext({ es: 'on', mx: 'on' });
 

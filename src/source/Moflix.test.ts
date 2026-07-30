@@ -1,8 +1,8 @@
-import { createTestContext } from '../test';
-import { CountryCode } from '../types';
-import { FetcherMock, ImdbId, TmdbId } from '../utils';
-import { Moflix } from './Moflix';
-import { Source } from './Source';
+import { createTestContext } from '../test/index.js';
+import { CountryCode } from '../types.js';
+import { FetcherMock, ImdbId, TmdbId } from '../utils/index.js';
+import { Moflix } from './Moflix.js';
+import { Source } from './Source.js';
 
 const ctx = createTestContext({ de: 'on' });
 

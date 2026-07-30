@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { envGet, envGetAppId, envGetAppName, envGetRequired, envIsProd, isElfHostedInstance } from './env';
+import { envGet, envGetAppId, envGetAppName, envGetRequired, envIsProd, isElfHostedInstance } from './env.js';
 
 describe('env', () => {
   test('envGet', () => {

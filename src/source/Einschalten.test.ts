@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, TmdbId } from '../utils';
-import { Einschalten } from './Einschalten';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, TmdbId } from '../utils/index.js';
+import { Einschalten } from './Einschalten.js';
 
 const ctx = createTestContext({ de: 'on' });
 

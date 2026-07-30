@@ -1,9 +1,9 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
-import { NotFoundError } from '../error';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { unpackEval } from '../utils';
-import { Extractor } from './Extractor';
+import { NotFoundError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { unpackEval } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 /** @see https://github.com/Gujal00/ResolveURL/commits/master/script.module.resolveurl/lib/resolveurl/plugins/filelions.py */
 export class FileLions extends Extractor {

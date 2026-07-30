@@ -1,10 +1,10 @@
 import winston from 'winston';
-import { createTestContext } from '../test';
-import { CountryCode, Meta } from '../types';
-import { DEAD_HUBCLOUD_HOSTS, FetcherMock } from '../utils';
-import { ExtractorRegistry } from './ExtractorRegistry';
-import { HubCloud } from './HubCloud';
-import { cdnHash, HubExtractor } from './HubExtractor';
+import { createTestContext } from '../test/index.js';
+import { CountryCode, Meta } from '../types.js';
+import { DEAD_HUBCLOUD_HOSTS, FetcherMock } from '../utils/index.js';
+import { ExtractorRegistry } from './ExtractorRegistry.js';
+import { HubCloud } from './HubCloud.js';
+import { cdnHash, HubExtractor } from './HubExtractor.js';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 

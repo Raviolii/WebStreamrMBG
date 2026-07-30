@@ -1,8 +1,8 @@
 import winston from 'winston';
-import { createTestContext } from '../test';
-import { FetcherMock } from '../utils';
-import { ExtractorRegistry } from './ExtractorRegistry';
-import { MoflixRpmplay, VidStack } from './VidStack';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock } from '../utils/index.js';
+import { ExtractorRegistry } from './ExtractorRegistry.js';
+import { MoflixRpmplay, VidStack } from './VidStack.js';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 const extractorRegistry = new ExtractorRegistry(logger, [new MoflixRpmplay(new FetcherMock(`${__dirname}/__fixtures__/VidStack`), logger), new VidStack(new FetcherMock(`${__dirname}/__fixtures__/VidStack`), logger)]);

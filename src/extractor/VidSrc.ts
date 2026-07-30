@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio';
 import winston from 'winston';
-import { BlockedError, NotFoundError, TooManyRequestsError } from '../error';
-import { Context, Format, InternalUrlResult, Meta, NonEmptyArray } from '../types';
-import { Fetcher, guessHeightFromPlaylist } from '../utils';
-import { Extractor } from './Extractor';
+import { BlockedError, NotFoundError, TooManyRequestsError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta, NonEmptyArray } from '../types.js';
+import { Fetcher, guessHeightFromPlaylist } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class VidSrc extends Extractor {
   public readonly id = 'vidsrc';

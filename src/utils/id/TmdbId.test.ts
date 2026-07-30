@@ -1,4 +1,4 @@
-import { TmdbId } from './TmdbId';
+import { TmdbId } from './TmdbId.js';
 
 describe('can be created from string', () => {
   test('splits id properly', () => {

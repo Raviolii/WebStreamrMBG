@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
 import winston from 'winston';
-import { NotFoundError } from '../error';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { Fetcher } from '../utils';
-import { Extractor } from './Extractor';
+import { NotFoundError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { Fetcher } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 declare module '../types' {
   interface Context {

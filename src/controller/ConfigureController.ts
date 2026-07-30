@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
-import { Extractor } from '../extractor';
-import { landingTemplate } from '../landingTemplate';
-import { Source } from '../source';
-import { Config } from '../types';
-import { buildManifest, getDefaultConfig, isElfHostedInstance } from '../utils';
+import { Extractor } from '../extractor/index.js';
+import { landingTemplate } from '../landingTemplate.js';
+import { Source } from '../source/index.js';
+import { Config } from '../types.js';
+import { buildManifest, getDefaultConfig, isElfHostedInstance } from '../utils/index.js';
 
 export class ConfigureController {
   public readonly router: Router;

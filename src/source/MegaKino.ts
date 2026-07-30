@@ -2,9 +2,9 @@ import * as cheerio from 'cheerio';
 import memoize from 'memoizee';
 import { ContentType } from 'stremio-addon-sdk';
 import { Cookie } from 'tough-cookie';
-import { Context, CountryCode } from '../types';
-import { Fetcher, getImdbId, Id, ImdbId } from '../utils';
-import { Source, SourceResult } from './Source';
+import { Context, CountryCode } from '../types.js';
+import { Fetcher, getImdbId, Id, ImdbId } from '../utils/index.js';
+import { Source, SourceResult } from './Source.js';
 
 export class MegaKino extends Source {
   public readonly id = 'megakino';

@@ -1,12 +1,12 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
-import { NotFoundError } from '../error';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { NotFoundError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
 import {
   buildMediaFlowProxyExtractorStreamUrl, guessHeightFromPlaylist,
   supportsMediaFlowProxy,
-} from '../utils';
-import { Extractor } from './Extractor';
+} from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 // TypeScript Interfaces
 interface LokkeResponse {

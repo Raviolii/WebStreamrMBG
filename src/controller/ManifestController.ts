@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
-import { Extractor } from '../extractor';
-import { Source } from '../source';
-import { Config } from '../types';
-import { buildManifest, getDefaultConfig } from '../utils';
+import { Extractor } from '../extractor/index.js';
+import { Source } from '../source/index.js';
+import { Config } from '../types.js';
+import { buildManifest, getDefaultConfig } from '../utils/index.js';
 
 export class ManifestController {
   public readonly router: Router;

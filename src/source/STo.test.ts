@@ -1,6 +1,6 @@
-import { createTestContext } from '../test';
-import { FetcherMock, ImdbId } from '../utils';
-import { STo } from './STo';
+import { createTestContext } from '../test/index.js';
+import { FetcherMock, ImdbId } from '../utils/index.js';
+import { STo } from './STo.js';
 
 const ctx = createTestContext({ de: 'on' });
 

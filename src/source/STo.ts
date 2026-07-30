@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types';
-import { Fetcher, Id } from '../utils';
-import { Source, SourceResult } from './Source';
+import { Context, CountryCode } from '../types.js';
+import { Fetcher, Id } from '../utils/index.js';
+import { Source, SourceResult } from './Source.js';
 
 /* istanbul ignore next */
 export const STREAMING_HOSTS = [

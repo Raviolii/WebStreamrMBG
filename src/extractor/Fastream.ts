@@ -1,8 +1,8 @@
 import bytes from 'bytes';
-import { NotFoundError } from '../error';
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { buildMediaFlowProxyExtractorStreamUrl, supportsMediaFlowProxy } from '../utils';
-import { Extractor } from './Extractor';
+import { NotFoundError } from '../error/index.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { buildMediaFlowProxyExtractorStreamUrl, supportsMediaFlowProxy } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 export class Fastream extends Extractor {
   public readonly id = 'fastream';

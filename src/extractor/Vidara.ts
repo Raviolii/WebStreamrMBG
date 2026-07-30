@@ -1,6 +1,6 @@
-import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { guessHeightFromPlaylist } from '../utils';
-import { Extractor } from './Extractor';
+import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { guessHeightFromPlaylist } from '../utils/index.js';
+import { Extractor } from './Extractor.js';
 
 interface VidaraStreamResponse {
   streaming_url: string;
