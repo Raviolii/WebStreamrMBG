@@ -23,7 +23,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "useUnknownInCatchVariables": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "NodeNext"
   },
   "include": [
     "src/**/*"
