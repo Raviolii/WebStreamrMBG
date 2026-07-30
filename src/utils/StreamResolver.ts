@@ -2,18 +2,18 @@ import { Mutex } from 'async-mutex';
 import bytes from 'bytes';
 import { ContentType, Stream } from 'stremio-addon-sdk';
 import winston from 'winston';
-import { logErrorAndReturnNiceString, BlockedError } from '../error';
+import { BlockedError, logErrorAndReturnNiceString } from '../error';
 import { ExtractorRegistry } from '../extractor';
 import { Source } from '../source';
 import { Context, CountryCode, Format, UrlResult } from '../types';
 import { isResolutionExcluded, showErrors, showExternalUrls } from './config';
 import { envGetAppName } from './env';
-import { Id } from './id';
-import { flagFromCountryCode } from './language';
-import { getClosestResolution } from './resolution';
-import { parseQualityFromUrl, qualityLabelFromUrl, parseQualityLabelToHeight } from './quality';
 import { Fetcher } from './Fetcher';
 import { inferHeightFromHls } from './hls';
+import { Id } from './id';
+import { flagFromCountryCode } from './language';
+import { parseQualityFromUrl, parseQualityLabelToHeight, qualityLabelFromUrl } from './quality';
+import { getClosestResolution } from './resolution';
 
 interface ResolveResponse {
   streams: Stream[];
@@ -210,7 +210,7 @@ export class StreamResolver {
     this.logger.info(`Got ${urlResults.length} url results, including ${errorCount} errors`, ctx);
 
     streams.push(
-      ...urlResults.filter(urlResult => {
+      ...urlResults.filter((urlResult) => {
         // Always hide blocked results (e.g. Cloudflare challenge, unknown) from app display
         if (urlResult.error instanceof BlockedError) {
           return false;

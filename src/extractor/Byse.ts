@@ -1,9 +1,9 @@
+import crypto from 'crypto';
 import winston from 'winston';
 import { NotFoundError } from '../error';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
 import { Fetcher } from '../utils';
 import { Extractor } from './Extractor';
-import crypto from 'crypto';
 
 interface DetailsRoot {
   embed_frame_url?: string;
@@ -110,7 +110,6 @@ function fp(x: number, y: number, z: number) {
 }
 
 function wn(ch: Record<string, unknown>) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const EC = require('elliptic').ec;
   const ec = new EC('p256');
   const key = ec.genKeyPair();
@@ -339,8 +338,8 @@ export class Byse extends Extractor {
     const ref = `${getBaseUrl(webUrl)}/`;
     const headers: Record<string, string> = {
       'User-Agent': Byse.UA,
-      Referer: ref,
-      Origin: ref.slice(0, -1),
+      'Referer': ref,
+      'Origin': ref.slice(0, -1),
     };
 
     let embed = '';
@@ -475,7 +474,7 @@ export class Byse extends Extractor {
         return [{
           url: finalUrl,
           format: Format.hls,
-          label: '720',                    // <-- fixed for test
+          label: '720', // <-- fixed for test
           meta: { ...meta, title: this.label },
           requestHeaders: headers,
         }];
@@ -510,7 +509,7 @@ export class Byse extends Extractor {
       return [{
         url: finalUrl,
         format: Format.hls,
-        label: bestSource?.label || '720',   // use real quality when available
+        label: bestSource?.label || '720', // use real quality when available
         meta: { ...meta, title: this.label },
         requestHeaders: headers,
       }];

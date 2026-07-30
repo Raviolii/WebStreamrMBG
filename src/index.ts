@@ -4,7 +4,7 @@ import axios from 'axios';
 import { buildMemoryStorage, setupCache } from 'axios-cache-interceptor';
 import axiosRetry from 'axios-retry';
 import express, { NextFunction, Request, Response } from 'express';
-// eslint-disable-next-line import/no-named-as-default
+// eslint-disable-next-line 
 import rateLimit from 'express-rate-limit';
 import winston from 'winston';
 import { ConfigureController, ExtractController, ManifestController, StreamController } from './controller';

@@ -108,8 +108,8 @@ export class OhaTO extends Source {
         if (language !== 'de') continue;
 
         const height = parseHeightFromString(
-          s.height ?? s.resolution ?? s.res ?? s.quality ?? s.tag ??
-          (Array.isArray(s.qualities) ? s.qualities[0] : undefined) ?? s.name ?? s.title,
+          s.height ?? s.resolution ?? s.res ?? s.quality ?? s.tag
+          ?? (Array.isArray(s.qualities) ? s.qualities[0] : undefined) ?? s.name ?? s.title,
         );
         const quality = qualityFromHeight(height) ?? (s.quality || s.tag || (Array.isArray(s.qualities) ? s.qualities[0] : undefined));
 

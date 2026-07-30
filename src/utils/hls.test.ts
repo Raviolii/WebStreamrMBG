@@ -1,6 +1,6 @@
-import { inferHeightFromHls } from './hls';
 import { Context } from '../types';
 import { Fetcher } from './Fetcher';
+import { inferHeightFromHls } from './hls';
 
 const ctx = {} as Context;
 
@@ -9,6 +9,7 @@ class FakeFetcher implements Partial<Fetcher> {
   constructor(payload: string) {
     this.payload = payload;
   }
+
   public async text(_ctx: Context, _url: URL): Promise<string> {
     return this.payload;
   }

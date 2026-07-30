@@ -164,10 +164,10 @@ export class Voe extends Extractor {
     const voeSxUrl = `https://voe.sx${targetUrl.pathname}${targetUrl.search}`;
 
     const inputPayload = {
-      language: "de",
-      region: "CH",
+      language: 'de',
+      region: 'CH',
       url: voeSxUrl,
-      clientVersion: "3.0.2"
+      clientVersion: '3.0.2',
     };
 
     const lokkeHandshakePayload = {
@@ -190,9 +190,9 @@ export class Voe extends Extractor {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
+        'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)',
       },
-      body: JSON.stringify(lokkeHandshakePayload)
+      body: JSON.stringify(lokkeHandshakePayload),
     }).then(res => res.json() as Promise<LokkeResponse>);
 
     const lokkeData = await lokkePromise;
@@ -204,13 +204,13 @@ export class Voe extends Extractor {
       'mediaurl-signature': signature,
       'User-Agent': 'MediaUrl/2',
       'Accept-Language': 'de-DE,de;q=0.9',
-      'Accept': '*/*'
+      'Accept': '*/*',
     };
 
-    let resolveResponse = await fetch(OHA_RESOLVE_URL, {
+    const resolveResponse = await fetch(OHA_RESOLVE_URL, {
       method: 'POST',
       headers: ohaHeaders,
-      body: JSON.stringify(inputPayload)
+      body: JSON.stringify(inputPayload),
     });
 
     let ohaResult = (await resolveResponse.json()) as OhaResponse;
@@ -226,33 +226,33 @@ export class Voe extends Extractor {
         headers: {
           ...targetHeaders,
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7'
-        }
+          'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
+        },
       });
 
       fallbackHtml = await clientFetchResponse.text();
       const responseHeaders: Record<string, string> = {};
-      
+
       for (const [key, value] of clientFetchResponse.headers.entries()) {
         responseHeaders[key] = value;
       }
 
       const taskResponsePayload = {
-        kind: "taskResponse",
+        kind: 'taskResponse',
         id: taskRequest.id,
         data: {
-          type: "fetch",
+          type: 'fetch',
           status: clientFetchResponse.status,
           url: clientFetchResponse.url,
           headers: responseHeaders,
-          text: fallbackHtml
-        }
+          text: fallbackHtml,
+        },
       };
 
       const loopResolveResponse = await fetch(OHA_RESOLVE_URL, {
         method: 'POST',
         headers: ohaHeaders,
-        body: JSON.stringify(taskResponsePayload)
+        body: JSON.stringify(taskResponsePayload),
       });
 
       ohaResult = (await loopResolveResponse.json()) as OhaResponse;
@@ -263,7 +263,7 @@ export class Voe extends Extractor {
 
     return {
       playlistUrl: streamUrl,
-      html: fallbackHtml
+      html: fallbackHtml,
     };
   }
 
@@ -277,17 +277,17 @@ export class Voe extends Extractor {
     try {
       const ohaResolution = await this.resolveOhaThroughLoop(url);
       html = ohaResolution.html;
-      
+
       // Fix 1: Map string to formal URL structure safely if present
       if (ohaResolution.playlistUrl) {
         playlistUrl = new URL(ohaResolution.playlistUrl);
       }
       /* istanbul ignore next */
-      } catch (error) {
-        /* istanbul ignore next */
-        fallbackToProxy = true;
-        /* istanbul ignore next */
-        if (error instanceof NotFoundError && !url.href.includes('/e/')) {
+    } catch (error) {
+      /* istanbul ignore next */
+      fallbackToProxy = true;
+      /* istanbul ignore next */
+      if (error instanceof NotFoundError && !url.href.includes('/e/')) {
         return await this.extractInternal(ctx, new URL(`/e${url.pathname}`, url.origin), meta);
       }
     }

@@ -50,9 +50,9 @@ export class DoodStream extends Extractor {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)'
+          'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)',
         },
-        data: lokkeHandshakePayload 
+        data: lokkeHandshakePayload,
       }) as any;
 
       const signature = lokkeRes?.addonSig;
@@ -64,7 +64,7 @@ export class DoodStream extends Extractor {
         language: 'de',
         region: 'CH',
         url: url.href,
-        clientVersion: '3.0.2'
+        clientVersion: '3.0.2',
       };
 
       // FIX: Changed data from JSON.stringify string to a raw object
@@ -74,9 +74,9 @@ export class DoodStream extends Extractor {
           'Content-Type': 'application/json; charset=utf-8',
           'User-Agent': 'MediaUrl/2',
           'Accept-Language': 'de-DE,de;q=0.9',
-          'mediaurl-signature': signature
+          'mediaurl-signature': signature,
         },
-        data: ohaInputPayload 
+        data: ohaInputPayload,
       }) as any;
 
       // Verify response integrity from oha
@@ -87,14 +87,13 @@ export class DoodStream extends Extractor {
             format: Format.mp4,
             meta: {
               ...meta,
-              title: ohaResult.title || 'DoodStream Video'
-            }
-          }
+              title: ohaResult.title || 'DoodStream Video',
+            },
+          },
         ];
       }
 
       throw new Error('Oha API did not return a direct stream URL.');
-
     } catch (error) {
       // --- STRATEGY 2: Fallback to MediaFlow Proxy ---
       // This part executes ONLY when the try block breaks due to an API error.

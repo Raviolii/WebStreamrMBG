@@ -47,9 +47,9 @@ export class Vidsonic extends Extractor {
 
     // Compute a dynamic TTL based on the expires parameter
     const expiresParam = m3u8Url.searchParams.get('expires');
-    const tokenTtl = expiresParam 
-        ? Math.max(900000, Number(expiresParam) * 1000 - Date.now() - 120000) 
-        : this.ttl;
+    const tokenTtl = expiresParam
+      ? Math.max(900000, Number(expiresParam) * 1000 - Date.now() - 120000)
+      : this.ttl;
 
     return [
       {

@@ -823,4 +823,4 @@ describe('Moflix', () => {
 
     expect(streams).toHaveLength(1);
   });
-});;
+}); ;

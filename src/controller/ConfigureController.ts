@@ -37,7 +37,7 @@ export class ConfigureController {
       config.mediaFlowProxyUrl = `${req.protocol}://${req.host.replace('webstreamr-mbg', 'mediaflow-proxy')}`;
     }
 
-    let visibleSources = this.sources;
+    const visibleSources = this.sources;
 
     const manifest = buildManifest(visibleSources, this.extractors, config);
 

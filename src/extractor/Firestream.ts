@@ -32,7 +32,7 @@ export class Firestream extends Extractor {
     const html = await this.fetcher.text(ctx, pageUrl, {
       headers: {
         'User-Agent': this.UA,
-        Referer: this.mainUrl,
+        'Referer': this.mainUrl,
       },
     });
 
@@ -46,7 +46,7 @@ export class Firestream extends Extractor {
       method: 'POST',
       headers: {
         'User-Agent': this.UA,
-        Referer: pageUrl.href,
+        'Referer': pageUrl.href,
         'Content-Type': 'application/json',
       },
       data: { blob: token },

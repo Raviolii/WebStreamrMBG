@@ -44,7 +44,7 @@ export class Moflix extends Source {
     const baseUrl = this.baseUrl;
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0',
-      Referer: `${baseUrl}/`,
+      'Referer': `${baseUrl}/`,
     };
 
     try {
@@ -54,27 +54,27 @@ export class Moflix extends Source {
 
       const resultsList = searchData.results;
       let targetMedia: MoflixSearchItem | undefined;
-      
+
       if (Array.isArray(resultsList)) {
         // Step 1: Match by IMDB ID if available in incoming id payload
         if (id instanceof Object && 'id' in id && typeof (id as { id?: string }).id === 'string') {
           const incomingImdbId = (id as { id?: string }).id;
           targetMedia = resultsList.find(item =>
-            (item.model_type === 'title' || item.modelType === 'title') &&
-            item.imdb_id === incomingImdbId,
+            (item.model_type === 'title' || item.modelType === 'title')
+            && item.imdb_id === incomingImdbId,
           );
         }
 
         // Step 2: Fallback to exact or contextual title asset match if IMDB match fails/is missing
         if (!targetMedia) {
           const cleanTarget = name.toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
-          
+
           for (const item of resultsList) {
             const isTitle = item.model_type === 'title' || item.modelType === 'title';
             if (!isTitle) continue;
 
             const itemNormalized = (item.name || '').toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
-            
+
             if (itemNormalized === cleanTarget || itemNormalized.includes('herr der elemente')) {
               targetMedia = item;
               break;

@@ -13,16 +13,16 @@ import { KinoGer } from './KinoGer';
 import { Kokoshka } from './Kokoshka';
 import { MegaKino } from './MegaKino';
 import { MeineCloud } from './MeineCloud';
+import { Moflix } from './Moflix';
 import { MostraGuarda } from './MostraGuarda';
 import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
-import { Moflix } from './Moflix';
+import { OhaTO } from './OhaTo';
 import { Source } from './Source';
 import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
 import { Vidzee } from './Vidzee';
 import { VixSrc } from './VixSrc';
-import { OhaTO } from './OhaTo';
 
 export * from './Source';
 

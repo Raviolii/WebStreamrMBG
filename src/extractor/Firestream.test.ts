@@ -1,8 +1,8 @@
 import axios from 'axios';
 import winston from 'winston';
 import { NotFoundError } from '../error';
-import { Context, Format } from '../types';
 import { createTestContext } from '../test';
+import { Context, Format } from '../types';
 import { CustomRequestConfig, Fetcher } from '../utils';
 import { ExtractorRegistry } from './ExtractorRegistry';
 import { Firestream } from './Firestream';

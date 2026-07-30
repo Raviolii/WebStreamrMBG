@@ -1,7 +1,6 @@
-import { Context } from '../types';
-import { Fetcher } from './Fetcher';
 import { BlockedError } from '../error';
-import { BlockedReason } from '../types';
+import { BlockedReason, Context } from '../types';
+import { Fetcher } from './Fetcher';
 
 interface ExtractResult {
   destination_url: string;

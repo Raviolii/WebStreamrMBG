@@ -1,11 +1,11 @@
 import axios from 'axios';
 import winston from 'winston';
 import { NotFoundError } from '../error';
-import { Context } from '../types';
 import { createTestContext } from '../test';
+import { Context } from '../types';
 import { CustomRequestConfig, Fetcher } from '../utils';
-import { ExtractorRegistry } from './ExtractorRegistry';
 import { Byse } from './Byse';
+import { ExtractorRegistry } from './ExtractorRegistry';
 
 class ByseFetcherMock extends Fetcher {
   public constructor(logger: winston.Logger) {

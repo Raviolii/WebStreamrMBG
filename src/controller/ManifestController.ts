@@ -31,7 +31,7 @@ export class ManifestController {
       }
     }
 
-    let visibleSources = this.sources;
+    const visibleSources = this.sources;
 
     const manifest = buildManifest(visibleSources, this.extractors, config);
 

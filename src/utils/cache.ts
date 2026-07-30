@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import fs from 'node:fs';
 import * as os from 'node:os';
-// eslint-disable-next-line import/no-named-as-default
+// eslint-disable-next-line 
 import KeyvSqlite from '@keyv/sqlite';
 import { KeyvCacheableMemory } from 'cacheable';
 import { glob } from 'glob';

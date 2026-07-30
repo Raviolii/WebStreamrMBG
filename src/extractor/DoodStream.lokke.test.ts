@@ -21,7 +21,7 @@ const lokkeFetcher: any = {
     return '';
   },
   async head() { return {}; },
-  textPost: async () => ''
+  textPost: async () => '',
 };
 
 const extractorRegistry = new ExtractorRegistry(logger, [new DoodStream(lokkeFetcher, logger)]);
@@ -49,7 +49,7 @@ describe('DoodStream Lokke flow', () => {
       },
       async text() { return ''; },
       async head() { return {}; },
-      textPost: async () => ''
+      textPost: async () => '',
     };
 
     const registry = new ExtractorRegistry(logger, [new DoodStream(fetcherNoTitle, logger)]);
@@ -75,7 +75,7 @@ describe('DoodStream Lokke flow', () => {
         return '';
       },
       async head() { return {}; },
-      textPost: async () => ''
+      textPost: async () => '',
     };
 
     const registry = new ExtractorRegistry(logger, [new DoodStream(fetcherNoSig, logger)]);
@@ -101,7 +101,7 @@ describe('DoodStream Lokke flow', () => {
         return '';
       },
       async head() { return {}; },
-      textPost: async () => ''
+      textPost: async () => '',
     };
 
     const registry = new ExtractorRegistry(logger, [new DoodStream(fetcherNoUrl, logger)]);
