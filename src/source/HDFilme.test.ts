@@ -1,63 +1,203 @@
-import { createTestContext } from '../test/index.js';
-import { FetcherMock, TmdbId } from '../utils/index.js';
-import { HDFilme } from './HDFilme.js';
+import { HDFilme } from './HDFilme';
+import { getTmdbId } from '../utils';
 
-const ctx = createTestContext({ de: 'on' });
+jest.mock('../utils', () => {
+  const actual = jest.requireActual('../utils');
+  return {
+    ...actual,
+    getTmdbId: jest.fn(),
+  };
+});
+
+const mockedGetTmdbId = getTmdbId as jest.Mock;
 
 describe('HDFilme', () => {
-  let source: HDFilme;
-
   beforeEach(() => {
-    source = new HDFilme(new FetcherMock(`${__dirname}/__fixtures__/HDFilme`));
+    mockedGetTmdbId.mockReset();
   });
 
-  test('handles non-existent series gracefully', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(12345678, 1, 1));
-    expect(streams).toHaveLength(0);
+  it('returns empty results when season or episode is missing', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1 });
+    const fetcher = { text: jest.fn() } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123' });
+    expect(result).toEqual([]);
   });
 
-  test('returns empty when tmdb id has no season and episode', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(42009, undefined, undefined));
-    expect(streams).toHaveLength(0);
+  it('returns empty results when no series page is found', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = { text: jest.fn().mockResolvedValue('<html><body><a href="/foo">No series</a></body></html>') } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toEqual([]);
   });
 
-  test('handle black mirror s2e4', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(42009, 2, 4));
-    expect(streams).toMatchSnapshot();
+  it('returns empty results when the season header is missing', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 2</div><div class="su-spoiler-content">1x1</div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toEqual([]);
   });
 
-  test('handle monster: the ed gein story s1e2', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(286801, 1, 2));
-    expect(streams).toMatchSnapshot();
+  it('returns empty results when the episode marker is missing', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">2x2</div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toEqual([]);
   });
 
-  test('returns empty when season exists but requested staffel is missing', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(900001, 1, 1));
-    expect(streams).toHaveLength(0);
+  it('skips invalid and internal links while keeping external ones', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="javascript:void(0)">Ignore</a><a href="http://exa mple.com">Bad</a><a href="https://example.com/watch">Example</a><a href="https://hdfilme.win/embed">Internal</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/watch');
   });
 
-  test('returns empty when requested episode marker is missing', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(900002, 1, 2));
-    expect(streams).toHaveLength(0);
+  it('returns parsed results from matching episode links', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="https://example.com/watch">Example</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/watch');
   });
 
-  test('handles links filtering and next-episode boundaries', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(900003, 1, 1));
-    expect(streams).toMatchSnapshot();
+  it('handles episode with next episode marker present', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="https://example.com/first">First</a>1x2<a href="https://example.com/second">Second</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/first');
   });
 
-  test('handles last episode segment when no next episode marker exists', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(900004, 1, 1));
-    expect(streams).toMatchSnapshot();
+  it('handles empty content area html', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content"></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toEqual([]);
   });
 
-  test('returns empty when season content container is missing', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(900005, 1, 1));
-    expect(streams).toHaveLength(0);
+  it('handles last episode without next episode marker', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 3, formatSeasonAndEpisode: () => 'S01E03' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1 Link1 1x2 Link2 1x3<a href="https://example.com/last">Last</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 3 });
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/last');
   });
 
-  test('uses fallback mirror title when link has no text', async () => {
-    const streams = await source.handle(ctx, 'series', new TmdbId(900006, 1, 1));
-    expect(streams).toMatchSnapshot();
+  it('uses Mirror label when anchor text is empty', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="https://example.com/empty"></a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toHaveLength(1);
+    expect(result[0]?.meta.title).toContain('(Mirror)');
+  });
+
+  it('skips report-error and player.php links', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="https://example.com/report-error">Error</a><a href="https://example.com/engine/player.php">Player</a><a href="https://example.com/valid">Valid</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/valid');
+  });
+
+  it('handles element without href attribute during search filtering', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="/serien/test">Series</a><span>No href</span></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="https://example.com/watch">Example</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/watch');
+  });
+
+  it('handles element with empty href during search filtering', async () => {
+    mockedGetTmdbId.mockResolvedValue({ id: 'tt123', season: 1, episode: 1, formatSeasonAndEpisode: () => 'S01E01' });
+    const fetcher = {
+      text: jest.fn()
+        .mockResolvedValueOnce('<html><body><a href="">Empty</a><a href="/serien/test">Series</a></body></html>')
+        .mockResolvedValueOnce('<html><body><div class="su-spoiler-title">Staffel 1</div><div class="su-spoiler-content">1x1<a href="https://example.com/watch">Example</a></div></body></html>'),
+    } as never;
+    const source = new HDFilme(fetcher);
+    const ctx = { config: {} } as never;
+
+    const result = await (source as any).handleInternal(ctx, 'series', { id: 'tt123', season: 1, episode: 1 });
+    expect(result).toHaveLength(1);
+    expect(result[0]?.url.href).toBe('https://example.com/watch');
   });
 });

@@ -1,11 +1,11 @@
 import axios from 'axios';
 import winston from 'winston';
-import { createTestContext } from '../test/index.js';
-import { CountryCode } from '../types.js';
-import { Fetcher, FetcherMock, ImdbId } from '../utils/index.js';
-import { resolveRedirectUrl } from './hd-hub-helper.js';
-import { HDHub4u, resetCdnCache } from './HDHub4u.js';
-import { Source, SourceResult } from './Source.js';
+import { createTestContext } from '../test';
+import { CountryCode } from '../types';
+import { Fetcher, FetcherMock, ImdbId } from '../utils';
+import { resolveRedirectUrl } from './hd-hub-helper';
+import { HDHub4u, resetCdnCache } from './HDHub4u';
+import { Source, SourceResult } from './Source';
 
 jest.mock('./hd-hub-helper', () => ({
   resolveRedirectUrl: jest.fn(),

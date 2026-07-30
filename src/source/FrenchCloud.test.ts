@@ -1,6 +1,6 @@
-import { createTestContext } from '../test/index.js';
-import { FetcherMock, ImdbId } from '../utils/index.js';
-import { FrenchCloud } from './FrenchCloud.js';
+import { createTestContext } from '../test';
+import { FetcherMock, ImdbId } from '../utils';
+import { FrenchCloud } from './FrenchCloud';
 
 const ctx = createTestContext({ fr: 'on' });
 

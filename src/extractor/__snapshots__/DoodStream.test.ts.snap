@@ -4,7 +4,7 @@ exports[`DoodStream can guess height from title 1`] = `
 [
   {
     "format": "mp4",
-    "label": "DoodStream",
+    "label": "DoodStream (MFP)",
     "meta": {
       "bytes": 549139251,
       "extractorId": "doodstream",
@@ -20,7 +20,7 @@ exports[`DoodStream dood.to 1`] = `
 [
   {
     "format": "mp4",
-    "label": "DoodStream",
+    "label": "DoodStream (MFP)",
     "meta": {
       "bytes": 1395864371,
       "extractorId": "doodstream",

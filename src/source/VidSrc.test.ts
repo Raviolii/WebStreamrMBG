@@ -1,6 +1,6 @@
-import { createTestContext } from '../test/index.js';
-import { ImdbId } from '../utils/index.js';
-import { VidSrc } from './VidSrc.js';
+import { createTestContext } from '../test';
+import { ImdbId } from '../utils';
+import { VidSrc } from './VidSrc';
 
 const ctx = createTestContext();
 

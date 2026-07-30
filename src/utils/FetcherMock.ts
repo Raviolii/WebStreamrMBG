@@ -4,10 +4,10 @@ import fs from 'node:fs';
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import slugify from 'slugify';
 import winston from 'winston';
-import { NotFoundError } from '../error/index.js';
-import { Context } from '../types.js';
-import { envGet } from './env.js';
-import { CustomRequestConfig, Fetcher } from './Fetcher.js';
+import { NotFoundError } from '../error';
+import { Context } from '../types';
+import { envGet } from './env';
+import { CustomRequestConfig, Fetcher } from './Fetcher';
 
 export class FetcherMock extends Fetcher {
   private readonly fixturePath: string;
@@ -34,13 +34,7 @@ export class FetcherMock extends Fetcher {
   };
 
   public override async text(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<string> {
-    const requestData = typeof requestConfig?.data === 'string'
-      ? requestConfig.data
-      : JSON.stringify(requestConfig?.data ?? '');
-
-    const path = requestConfig?.method === 'POST'
-      ? `${this.fixturePath}/post-${this.slugifyUrl(url)}-${slugify(requestData)}`
-      : `${this.fixturePath}/${this.slugifyUrl(url)}`;
+    const path = `${this.fixturePath}/${this.slugifyUrl(url)}`;
 
     return (await this.fetchInternal(path, ctx, url, requestConfig)).data;
   };
@@ -70,10 +64,6 @@ export class FetcherMock extends Fetcher {
     }
 
     return url;
-  }
-
-  public override async getFinalRedirectUrlGet(ctx: Context, url: URL, requestConfig?: CustomRequestConfig, maxCount = 10, count?: number): Promise<URL> {
-    return await this.getFinalRedirectUrl(ctx, url, requestConfig, maxCount, count);
   }
 
   private readonly slugifyUrl = (url: URL): string => {

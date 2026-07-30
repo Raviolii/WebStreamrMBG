@@ -1,5 +1,5 @@
-import { Context, CountryCode, Format, InternalUrlResult, Meta } from '../types.js';
-import { Extractor } from './Extractor.js';
+import { Context, CountryCode, Format, InternalUrlResult, Meta } from '../types';
+import { Extractor } from './Extractor';
 
 interface MovieBoxDownload {
   format: string;

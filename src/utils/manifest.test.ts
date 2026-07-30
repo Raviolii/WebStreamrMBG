@@ -1,13 +1,13 @@
 import winston from 'winston';
-import { DoodStream } from '../extractor/DoodStream.js';
-import { ExternalUrl } from '../extractor/ExternalUrl.js';
-import { SuperVideo } from '../extractor/SuperVideo.js';
-import { createSources } from '../source/index.js';
-import { MeineCloud } from '../source/MeineCloud.js';
-import { VerHdLink } from '../source/VerHdLink.js';
-import { VixSrc } from '../source/VixSrc.js';
-import { FetcherMock } from './FetcherMock.js';
-import { buildManifest } from './manifest.js';
+import { DoodStream } from '../extractor/DoodStream';
+import { ExternalUrl } from '../extractor/ExternalUrl';
+import { SuperVideo } from '../extractor/SuperVideo';
+import { createSources } from '../source';
+import { MeineCloud } from '../source/MeineCloud';
+import { VerHdLink } from '../source/VerHdLink';
+import { VixSrc } from '../source/VixSrc';
+import { FetcherMock } from './FetcherMock';
+import { buildManifest } from './manifest';
 
 const fetcher = new FetcherMock('/dev/null');
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });

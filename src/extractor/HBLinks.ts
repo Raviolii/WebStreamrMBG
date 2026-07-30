@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio';
 import winston from 'winston';
-import { Context, InternalUrlResult, Meta } from '../types.js';
-import { Fetcher, findCountryCodes, findHeight, HUB_HOST_PATTERN } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
-import { HubExtractor } from './HubExtractor.js';
+import { Context, InternalUrlResult, Meta } from '../types';
+import { Fetcher, findCountryCodes, findHeight, HUB_HOST_PATTERN } from '../utils';
+import { Extractor } from './Extractor';
+import { HubExtractor } from './HubExtractor';
 
 export class HBLinks extends Extractor {
   public readonly id = 'hblinks';

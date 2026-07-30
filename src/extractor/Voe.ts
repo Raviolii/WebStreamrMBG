@@ -1,41 +1,12 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
 import {
   buildMediaFlowProxyExtractorStreamUrl, guessHeightFromPlaylist,
   supportsMediaFlowProxy,
-} from '../utils/index.js';
-import { Extractor } from './Extractor.js';
-
-// TypeScript Interfaces
-interface LokkeResponse {
-  addonSig?: string;
-}
-
-interface OhaTaskRequest {
-  kind: 'taskRequest';
-  id: string;
-  data: {
-    url: string;
-    params?: {
-      method?: string;
-      headers?: Record<string, string>;
-    };
-  };
-}
-
-interface OhaFinalResponse {
-  kind?: string;
-  url?: string;
-  data?: {
-    playlistUrl?: string;
-    url?: string;
-  };
-  [key: string]: any;
-}
-
-type OhaResponse = OhaTaskRequest | OhaFinalResponse;
+} from '../utils';
+import { Extractor } from './Extractor';
 
 /** @see https://github.com/Gujal00/ResolveURL/blob/master/script.module.resolveurl/lib/resolveurl/plugins/voesx.py */
 export class Voe extends Extractor {
@@ -156,153 +127,20 @@ export class Voe extends Extractor {
     return new URL(`/${url.pathname.replace(/\/+$/, '').split('/').at(-1)}`, url);
   }
 
-  /* istanbul ignore next */
-  private async resolveOhaThroughLoop(targetUrl: URL): Promise<{ playlistUrl: string | null; html: string }> {
-    const LOKKE_PING_URL = 'https://www.lokke.app/api/app/ping';
-    const OHA_RESOLVE_URL = 'https://oha.to/mediaurl-resolve.json';
-
-    const voeSxUrl = `https://voe.sx${targetUrl.pathname}${targetUrl.search}`;
-
-    const inputPayload = {
-      language: 'de',
-      region: 'CH',
-      url: voeSxUrl,
-      clientVersion: '3.0.2',
-    };
-
-    const lokkeHandshakePayload = {
-      token: 'VKm7XwPbumwb9aeGoVi1fHa6ut1v41a5s6t-yzVQ4qZfN-VwHrdLcD18xPpL4qdzY92xAJiWD_7UZshSngIn_GTbU1uPRTuGFqYQCOBkXzu9YOUPV-u-EbB1WaSZjd6srGhQ',
-      reason: 'app-blur', locale: 'de', theme: 'dark',
-      metadata: {
-        device: { type: 'Handset', brand: 'Apple', model: 'iPhone 12 Pro', name: 'iPhone', uniqueId: '433C3F78-A264-4096-AF20-28BFF3AB4474' },
-        os: { name: 'ios', version: '18.7.7', abis: ['ARM64E'], host: 'unknown' },
-        app: { platform: 'ios', version: '1.0.2', buildId: '1.0.2', engine: 'jsc', installer: 'TestFlight' },
-        version: { package: 'app.lokke.main', binary: '1.0.2', js: '1.0.4' },
-      },
-      appFocusTime: 0, playerActive: false, playDuration: 0, devMode: true, hasAddon: true, castConnected: false,
-      package: 'app.lokke.main', version: '1.0.4', process: 'app',
-      firstAppStart: Date.now(), lastAppStart: Date.now(), ipLocation: null, adblockEnabled: true,
-      proxy: { supported: ['openvpn'], engine: 'openvpn', enabled: false, autoServer: true, id: 'fi-hel' },
-      iap: { supported: true, error: 'No in-app payment subscriptions found' },
-    };
-
-    const lokkePromise = fetch(LOKKE_PING_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Lokke/1.0.2 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X)',
-      },
-      body: JSON.stringify(lokkeHandshakePayload),
-    }).then(res => res.json() as Promise<LokkeResponse>);
-
-    const lokkeData = await lokkePromise;
-    const signature = lokkeData?.addonSig;
-    if (!signature) throw new Error('Signature generation failed.');
-
-    const ohaHeaders = {
-      'Content-Type': 'application/json',
-      'mediaurl-signature': signature,
-      'User-Agent': 'MediaUrl/2',
-      'Accept-Language': 'de-DE,de;q=0.9',
-      'Accept': '*/*',
-    };
-
-    const resolveResponse = await fetch(OHA_RESOLVE_URL, {
-      method: 'POST',
-      headers: ohaHeaders,
-      body: JSON.stringify(inputPayload),
-    });
-
-    let ohaResult = (await resolveResponse.json()) as OhaResponse;
-    let fallbackHtml = '';
-
-    while (ohaResult?.kind === 'taskRequest') {
-      const taskRequest = ohaResult as OhaTaskRequest;
-      const taskData = taskRequest.data;
-      const targetHeaders = taskData.params?.headers || {};
-
-      const clientFetchResponse = await fetch(taskData.url, {
-        method: taskData.params?.method || 'GET',
-        headers: {
-          ...targetHeaders,
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
-        },
-      });
-
-      fallbackHtml = await clientFetchResponse.text();
-      const responseHeaders: Record<string, string> = {};
-
-      for (const [key, value] of clientFetchResponse.headers.entries()) {
-        responseHeaders[key] = value;
-      }
-
-      const taskResponsePayload = {
-        kind: 'taskResponse',
-        id: taskRequest.id,
-        data: {
-          type: 'fetch',
-          status: clientFetchResponse.status,
-          url: clientFetchResponse.url,
-          headers: responseHeaders,
-          text: fallbackHtml,
-        },
-      };
-
-      const loopResolveResponse = await fetch(OHA_RESOLVE_URL, {
-        method: 'POST',
-        headers: ohaHeaders,
-        body: JSON.stringify(taskResponsePayload),
-      });
-
-      ohaResult = (await loopResolveResponse.json()) as OhaResponse;
-    }
-
-    const finalData = ohaResult as OhaFinalResponse;
-    const streamUrl = finalData?.url || finalData?.data?.url || finalData?.data?.playlistUrl || null;
-
-    return {
-      playlistUrl: streamUrl,
-      html: fallbackHtml,
-    };
-  }
-
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
     const headers = { Referer: meta.referer ?? url.href };
 
-    let html = '';
-    let playlistUrl: URL | null = null;
-    let fallbackToProxy = false;
-
+    let html: string;
     try {
-      const ohaResolution = await this.resolveOhaThroughLoop(url);
-      html = ohaResolution.html;
-
-      // Fix 1: Map string to formal URL structure safely if present
-      if (ohaResolution.playlistUrl) {
-        playlistUrl = new URL(ohaResolution.playlistUrl);
-      }
-      /* istanbul ignore next */
+      html = await this.fetcher.text(ctx, url, { headers });
     } catch (error) {
-      /* istanbul ignore next */
-      fallbackToProxy = true;
       /* istanbul ignore next */
       if (error instanceof NotFoundError && !url.href.includes('/e/')) {
         return await this.extractInternal(ctx, new URL(`/e${url.pathname}`, url.origin), meta);
       }
-    }
 
-    if (fallbackToProxy || !playlistUrl) {
-      try {
-        html = await this.fetcher.text(ctx, url, { headers });
-      } catch (error) {
-        /* istanbul ignore next */
-        if (error instanceof NotFoundError && !url.href.includes('/e/')) {
-          return await this.extractInternal(ctx, new URL(`/e${url.pathname}`, url.origin), meta);
-        }
-        /* istanbul ignore next */
-        throw error;
-      }
+      /* istanbul ignore next */
+      throw error;
     }
 
     const redirectMatch = html.match(/window\.location\.href\s*=\s*'([^']+)/);
@@ -320,22 +158,12 @@ export class Voe extends Extractor {
     const sizeMatch = html.matchAll(/[\d.]+ ?[GM]B/g).toArray().at(-1);
     const size = sizeMatch ? bytes.parse(sizeMatch[0] as string) as number : null;
 
-    // Fix 2: Explicitly confirm playlistUrl exists before querying utility methods
-    if (!playlistUrl) {
-      playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
-    }
+    const playlistUrl = await buildMediaFlowProxyExtractorStreamUrl(ctx, this.fetcher, 'Voe', url, headers);
 
     const heightMatch = html.match(/<b>(\d{3,})p<\/b>/);
     const height = heightMatch
       ? parseInt(heightMatch[1] as string)
       : meta.height ?? await guessHeightFromPlaylist(ctx, this.fetcher, playlistUrl);
-
-    // In tests, strip query params from playlist URL to avoid snapshot churn
-    if (playlistUrl && process.env['JEST_WORKER_ID']) {
-      const stripped = new URL(playlistUrl.href);
-      stripped.search = '';
-      playlistUrl = stripped;
-    }
 
     return [
       {
@@ -349,5 +177,5 @@ export class Voe extends Extractor {
         },
       },
     ];
-  }
+  };
 }

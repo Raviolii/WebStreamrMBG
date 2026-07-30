@@ -22,16 +22,8 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "useUnknownInCatchVariables": true,
-    "moduleResolution": "bundler",
-    "module": "ESNext"
+    "useUnknownInCatchVariables": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/test",
-    "**/*.test.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "src/test", "**/*.test.ts"]
 }

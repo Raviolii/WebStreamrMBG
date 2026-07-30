@@ -1,5 +1,5 @@
-import { Extractor } from '../extractor/index.js';
-import { Config } from '../types.js';
+import { Extractor } from '../extractor';
+import { Config } from '../types';
 
 export const getDefaultConfig = (): Config => {
   return { multi: 'on', en: 'on' };

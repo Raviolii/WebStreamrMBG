@@ -1,10 +1,10 @@
 import winston from 'winston';
-import { createTestContext } from '../test/index.js';
-import { Format } from '../types.js';
-import { FetcherMock } from '../utils/index.js';
-import { ExtractorRegistry } from './ExtractorRegistry.js';
-import { HBLinks } from './HBLinks.js';
-import { HubExtractor } from './HubExtractor.js';
+import { createTestContext } from '../test';
+import { Format } from '../types';
+import { FetcherMock } from '../utils';
+import { ExtractorRegistry } from './ExtractorRegistry';
+import { HBLinks } from './HBLinks';
+import { HubExtractor } from './HubExtractor';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 const fixtureBase = `${__dirname}/__fixtures__/HBLinks`;

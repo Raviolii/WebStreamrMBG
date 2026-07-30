@@ -1,5 +1,5 @@
-import { Config, Context } from '../types.js';
-import { getDefaultConfig } from '../utils/index.js';
+import { Config, Context } from '../types';
+import { getDefaultConfig } from '../utils';
 
 export const createTestContext = (config?: Config): Context => {
   return {

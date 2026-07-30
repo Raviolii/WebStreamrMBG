@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Fetcher, Id } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Fetcher, Id } from '../utils';
+import { Source, SourceResult } from './Source';
 
 /* istanbul ignore next */
 export const STREAMING_HOSTS = [
@@ -34,56 +34,31 @@ export class STo extends Source {
   protected override async handleInternal(ctx: Context, type: ContentType, id: Id): Promise<SourceResult[]> {
     if (type !== 'series') return [];
 
-    // 1. Search by IMDb ID
-    const searchUrl = `${this.baseUrl}/suche?term=${id.id}`;
-    const searchHtml = await this.fetcher.text(ctx, new URL(searchUrl));
+    const searchUrl = new URL('/suche', this.baseUrl);
+    searchUrl.searchParams.set('term', String(id.id));
+    const searchHtml = await this.fetcher.text(ctx, searchUrl);
     const $search = cheerio.load(searchHtml);
 
-    // 2. Get the series path (e.g., /serie/the-boys)
-    const relativeSeriesLink = $search('.col-6.col-md-4.col-lg-2 a.show-cover').attr('href');
+    const relativeSeriesLink = $search('a.show-cover[href], a[href*="/serie/"], a[href*="/serien/"]').first().attr('href');
     if (!relativeSeriesLink) return [];
 
-    // 3. Build the Staffel/Episode URL
     const season = id.season ?? 1;
     const episode = id.episode ?? 1;
     const targetUrl = new URL(`${relativeSeriesLink}/staffel-${season}/episode-${episode}`, this.baseUrl).href;
 
-    // 4. Fetch the specific episode page
     const episodeHtml = await this.fetcher.text(ctx, new URL(targetUrl));
     const $episode = cheerio.load(episodeHtml);
 
     const results: SourceResult[] = [];
 
-    // 5. Target only German links
-    // S.to uses data-language-id="1" for German
-    const linkBoxes = $episode('button.link-box[data-language-id="1"]').toArray();
+    const linkBoxes = $episode('button.link-box[data-language-id="1"], a.link-box[data-language-id="1"], [data-play-url]').toArray();
     for (const el of linkBoxes) {
-      const playPath = $episode(el).attr('data-play-url');
+      const playPath = $episode(el).attr('data-play-url') ?? $episode(el).attr('href');
       const hostname = $episode(el).attr('data-provider-name') || 'Unknown';
 
       if (!playPath) continue;
 
-      // Construct the full redirect URL: https://s.to/r?t=... then follow it so Voe/DoodStream
-      // extractors (and MediaFlow proxy) see the real host, not s.to.
-      let streamUrl = new URL(playPath, this.baseUrl);
-      try {
-        streamUrl = await this.fetcher.getFinalRedirectUrl(ctx, streamUrl, {
-          headers: { Referer: targetUrl },
-        });
-      } catch {
-        streamUrl = new URL(playPath, this.baseUrl);
-      }
-
-      // s.to often responds to HEAD with 200 and no Location; GET returns the real 302 chain.
-      if (streamUrl.hostname === 's.to' && streamUrl.pathname.startsWith('/r')) {
-        try {
-          streamUrl = await this.fetcher.getFinalRedirectUrlGet(ctx, new URL(playPath, this.baseUrl), {
-            headers: { Referer: targetUrl },
-          });
-        } catch {
-          streamUrl = new URL(playPath, this.baseUrl);
-        }
-      }
+      const streamUrl = await this.resolveStreamUrl(ctx, playPath, targetUrl);
 
       results.push({
         url: streamUrl,
@@ -97,5 +72,39 @@ export class STo extends Source {
     }
 
     return results;
+  }
+
+  private async resolveStreamUrl(ctx: Context, playPath: string, targetUrl: string): Promise<URL> {
+    const initialUrl = new URL(playPath, this.baseUrl);
+
+    try {
+      const redirectedUrl = await this.fetcher.getFinalRedirectUrl(ctx, initialUrl, {
+        headers: { Referer: targetUrl },
+      });
+      if (redirectedUrl.hostname !== 's.to' || !redirectedUrl.pathname.startsWith('/r')) {
+        return redirectedUrl;
+      }
+    } catch {
+      // fall through to a GET-based fallback
+    }
+
+    try {
+      const response = await this.fetcher.fetch(ctx, initialUrl, {
+        headers: { Referer: targetUrl },
+        method: 'GET',
+        maxRedirects: 10,
+      });
+      const finalUrlValue = response.request?.res?.responseUrl ?? response.config.url;
+      if (finalUrlValue) {
+        const finalUrl = new URL(finalUrlValue, this.baseUrl);
+        if (finalUrl.hostname !== 's.to' || !finalUrl.pathname.startsWith('/r')) {
+          return finalUrl;
+        }
+      }
+    } catch {
+      // fall back to the initial URL
+    }
+
+    return initialUrl;
   }
 }

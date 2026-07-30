@@ -4,10 +4,10 @@ import { BasicAcceptedElems, CheerioAPI } from 'cheerio';
 import { AnyNode } from 'domhandler';
 import Fuse from 'fuse.js';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode, Meta } from '../types.js';
-import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getTmdbId, getTmdbNameAndYear, HUB_HOST_PATTERN, Id, TmdbId } from '../utils/index.js';
-import { resolveRedirectUrl } from './hd-hub-helper.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode, Meta } from '../types';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getTmdbId, getTmdbNameAndYear, HUB_HOST_PATTERN, Id, TmdbId } from '../utils';
+import { resolveRedirectUrl } from './hd-hub-helper';
+import { Source, SourceResult } from './Source';
 
 const PIXEL_PATTERNS = /pixel\.(hubcdn|rohitkiskk)/;
 

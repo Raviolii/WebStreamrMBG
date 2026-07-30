@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id, TmdbId } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id, TmdbId } from '../utils';
+import { Source, SourceResult } from './Source';
 
 export class Cuevana extends Source {
   public readonly id = 'cuevana';

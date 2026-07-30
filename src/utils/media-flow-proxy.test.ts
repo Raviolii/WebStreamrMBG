@@ -1,11 +1,11 @@
-import { createTestContext } from '../test/index.js';
-import { FetcherMock } from './FetcherMock.js';
+import { createTestContext } from '../test';
+import { FetcherMock } from './FetcherMock';
 import {
   buildMediaFlowProxyExtractorRedirectUrl,
   buildMediaFlowProxyExtractorStreamUrl,
   buildMediaFlowProxyHlsUrl,
   supportsMediaFlowProxy,
-} from './media-flow-proxy.js';
+} from './media-flow-proxy';
 
 const ctxWithProxy = createTestContext({ mediaFlowProxyUrl: 'proxy.example.com', mediaFlowProxyPassword: 'secret' });
 const ctxWithProxyNoPassword = createTestContext({ mediaFlowProxyUrl: 'proxy.example.com' });

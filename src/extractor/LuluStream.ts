@@ -1,12 +1,12 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
 import {
   buildMediaFlowProxyExtractorStreamUrl,
   supportsMediaFlowProxy,
-} from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+} from '../utils';
+import { Extractor } from './Extractor';
 
 /** @see https://github.com/Gujal00/ResolveURL/blob/master/script.module.resolveurl/lib/resolveurl/plugins/lulustream.py */
 export class LuluStream extends Extractor {

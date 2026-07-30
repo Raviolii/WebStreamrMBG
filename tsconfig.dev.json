@@ -1,6 +1,7 @@
 {
+  "extends": "./tsconfig",
+  "exclude": ["node_modules"],
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "isolatedModules": true,
   }
 }

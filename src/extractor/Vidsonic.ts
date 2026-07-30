@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { guessHeightFromPlaylist } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { guessHeightFromPlaylist } from '../utils';
+import { Extractor } from './Extractor';
 
 function decodeHexUrl(hexString: string): string {
   const joined = hexString.split('|').join('');
@@ -20,40 +20,30 @@ export class Vidsonic extends Extractor {
   public override readonly ttl: number = 43200000; // 12h
 
   public supports(_ctx: Context, url: URL): boolean {
-    return /vidsonic\.net/.test(url.host);
+    return null !== url.host.match(/vidsonic/);
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
-    // Mimic the headers from the Python script
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Referer': `${url.origin}/`,
-      'Origin': url.origin,
-    };
-
-    const html = await this.fetcher.text(ctx, url, { headers });
+    const html = await this.fetcher.text(ctx, url);
 
     const $ = cheerio.load(html);
     const title = $('title').text().trim().replace(/^Watch /, '').trim();
 
-    // Regex matches the Python logic: const _0x1 = '...
-    const hexMatch = html.match(/const\s*_0x1\s*=\s*'([^']+)/);
+    const hexMatch = html.match(/const _0x1\s*=\s*'([^']+)'/);
     if (!hexMatch || !hexMatch[1]) {
       throw new Error('Could not find hex-encoded video URL in Vidsonic page');
     }
 
-    // Creating the URL object for the M3U8 source
     const m3u8Url = new URL(decodeHexUrl(hexMatch[1]));
+    const headers = { Origin: url.origin };
 
-    // Compute a dynamic TTL based on the expires parameter
+    // Compute a dynamic TTL based on the expires parameter in the m3u8 URL.
     const expiresParam = m3u8Url.searchParams.get('expires');
-    const tokenTtl = expiresParam
-      ? Math.max(900000, Number(expiresParam) * 1000 - Date.now() - 120000)
-      : this.ttl;
+    const tokenTtl = Math.max(900000, Number(expiresParam) * 1000 - Date.now() - 120000); // 2min safety buffer
 
     return [
       {
-        url: m3u8Url, // Passing the URL object directly to satisfy the TS interface
+        url: m3u8Url,
         format: Format.hls,
         ttl: Math.min(tokenTtl, this.ttl),
         meta: {

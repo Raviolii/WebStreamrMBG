@@ -2,18 +2,15 @@ import { Mutex } from 'async-mutex';
 import bytes from 'bytes';
 import { ContentType, Stream } from 'stremio-addon-sdk';
 import winston from 'winston';
-import { BlockedError, logErrorAndReturnNiceString } from '../error/index.js';
-import { ExtractorRegistry } from '../extractor/index.js';
-import { Source } from '../source/index.js';
-import { Context, CountryCode, Format, UrlResult } from '../types.js';
-import { isResolutionExcluded, showErrors, showExternalUrls } from './config.js';
-import { envGetAppName } from './env.js';
-import { Fetcher } from './Fetcher.js';
-import { inferHeightFromHls } from './hls.js';
-import { Id } from './id/index.js';
-import { flagFromCountryCode } from './language.js';
-import { parseQualityFromUrl, parseQualityLabelToHeight, qualityLabelFromUrl } from './quality.js';
-import { getClosestResolution } from './resolution.js';
+import { logErrorAndReturnNiceString } from '../error';
+import { ExtractorRegistry } from '../extractor';
+import { Source } from '../source';
+import { Context, CountryCode, Format, UrlResult } from '../types';
+import { isResolutionExcluded, showErrors, showExternalUrls } from './config';
+import { envGetAppName } from './env';
+import { Id } from './id';
+import { flagFromCountryCode } from './language';
+import { getClosestResolution } from './resolution';
 
 interface ResolveResponse {
   streams: Stream[];
@@ -24,12 +21,9 @@ export class StreamResolver {
   private readonly logger: winston.Logger;
   private readonly extractorRegistry: ExtractorRegistry;
 
-  private readonly fetcher: Fetcher;
-
-  public constructor(logger: winston.Logger, extractorRegistry: ExtractorRegistry, fetcher: Fetcher) {
+  public constructor(logger: winston.Logger, extractorRegistry: ExtractorRegistry) {
     this.logger = logger;
     this.extractorRegistry = extractorRegistry;
-    this.fetcher = fetcher;
   }
 
   public async resolve(ctx: Context, sources: Source[], type: ContentType, id: Id): Promise<ResolveResponse> {
@@ -51,20 +45,6 @@ export class StreamResolver {
     const sourceErrorCountMutex = new Mutex();
 
     const urlResults: UrlResult[] = [];
-
-    // Infer quality/height from the URL when metadata is missing.
-    // This helps when extractors don't provide `meta.quality` or `meta.height`.
-    const inferQualityFromUrlIfMissing = (ur: UrlResult) => {
-      if (!ur.meta) ur.meta = {};
-      if (!ur.meta.height) {
-        const inferred = parseQualityFromUrl(ur.url);
-        if (inferred) ur.meta.height = inferred;
-      }
-      if (!ur.meta.quality) {
-        const qLabel = qualityLabelFromUrl(ur.url);
-        if (qLabel) ur.meta.quality = qLabel;
-      }
-    };
 
     const urlResultsCountByCountryCode = new Map<CountryCode, number>();
     const urlResultsCountByCountryCodeMutex = new Mutex();
@@ -100,11 +80,7 @@ export class StreamResolver {
           sourceErrorCount++;
         });
 
-        // Do not show BlockedError entries in the UI even when showErrors is enabled
-        if (error instanceof BlockedError) {
-          // log at debug level to keep diagnostics but avoid UI noise
-          this.logger.debug(`${source.id}: blocked (${(error as BlockedError).reason}) — suppressed from UI`, ctx);
-        } else if (showErrors(ctx.config)) {
+        if (showErrors(ctx.config)) {
           streams.push({
             name: envGetAppName(),
             title: [`🔗 ${source.label}`, logErrorAndReturnNiceString(ctx, this.logger, source.id, error)].join('\n'),
@@ -140,25 +116,6 @@ export class StreamResolver {
     });
     await Promise.all(skippedFallbackSourcePromises);
 
-    // Run inference on collected url results (URL-based inference enabled)
-    urlResults.forEach(inferQualityFromUrlIfMissing);
-
-    // For HLS streams, fetch the master playlist and infer variant resolutions
-    await Promise.all(urlResults.map(async (ur) => {
-      if (ur.format === Format.hls && (!ur.meta?.height || !ur.meta?.quality)) {
-        try {
-          const h = await inferHeightFromHls(ctx, this.fetcher, ur.url);
-          if (h) {
-            if (!ur.meta) ur.meta = {};
-            ur.meta.height = h;
-            if (!ur.meta.quality) ur.meta.quality = `${h}p`;
-          }
-        } catch (e) {
-          this.logger.debug(`Failed to infer HLS height for ${ur.url}: ${e}`, ctx);
-        }
-      }
-    }));
-
     urlResults.sort((a, b) => {
       if (a.error || b.error) {
         return a.error ? -1 : 1;
@@ -166,26 +123,6 @@ export class StreamResolver {
 
       if (a.isExternal || b.isExternal) {
         return a.isExternal ? 1 : -1;
-      }
-
-      const parseQualityToHeight = (q?: string, h?: number) => {
-        if (q) {
-          const m = q.match(/(\d{3,4})/);
-          if (m) return Number(m[1]);
-          const ql = q.toLowerCase();
-          if (ql.includes('4k') || ql.includes('2160')) return 2160;
-          if (ql.includes('1440')) return 1440;
-          if (ql.includes('1080') || ql.includes('fhd') || ql === 'hd') return 1080;
-          if (ql.includes('720')) return 720;
-          if (ql.includes('480') || ql === 'sd') return 480;
-        }
-
-        return h ?? 0;
-      };
-
-      const qualityComparison = parseQualityToHeight(b.meta?.quality, b.meta?.height) - parseQualityToHeight(a.meta?.quality, a.meta?.height);
-      if (qualityComparison !== 0) {
-        return qualityComparison;
       }
 
       const heightComparison = (b.meta?.height ?? 0) - (a.meta?.height ?? 0);
@@ -210,14 +147,7 @@ export class StreamResolver {
     this.logger.info(`Got ${urlResults.length} url results, including ${errorCount} errors`, ctx);
 
     streams.push(
-      ...urlResults.filter((urlResult) => {
-        // Always hide blocked results (e.g. Cloudflare challenge, unknown) from app display
-        if (urlResult.error instanceof BlockedError) {
-          return false;
-        }
-
-        return (!urlResult.error || showErrors(ctx.config)) && !isResolutionExcluded(ctx.config, getClosestResolution(urlResult.meta?.height));
-      })
+      ...urlResults.filter(urlResult => (!urlResult.error || showErrors(ctx.config)) && !isResolutionExcluded(ctx.config, getClosestResolution(urlResult.meta?.height)))
         .filter((urlResult, index, self) =>
           // Remove duplicate URLs
           index === self.findIndex(t => t.url.href === urlResult.url.href),
@@ -277,21 +207,8 @@ export class StreamResolver {
     const flags = urlResult.meta?.countryCodes?.map(cc => flagFromCountryCode(cc)).join(' ');
     if (flags) lines.push(flags);
 
-    // Compute a single, consistent quality label to avoid duplicate/conflicting
-    // badges (e.g. file name says 1080p but stream is 720p). Prefer numeric
-    // quality in `meta.quality`, then `meta.height`, then URL-inferred value.
-    const inferredFromUrl = parseQualityFromUrl(urlResult.url);
-    const primaryHeight = parseQualityLabelToHeight(urlResult.meta?.quality, urlResult.meta?.height ?? inferredFromUrl);
-    if (primaryHeight) {
-      lines.push(getClosestResolution(primaryHeight));
-    } else if (urlResult.meta?.quality) {
-      // non-numeric quality label (e.g. 'HD')
-      lines.push(urlResult.meta.quality);
-    }
-
-    // Show language code when available (e.g. "de", "en")
-    if (urlResult.meta?.language) {
-      lines.push(urlResult.meta.language);
+    if (urlResult.meta?.height) {
+      lines.push(getClosestResolution(urlResult.meta.height));
     }
 
     if (urlResult.isExternal && showExternalUrls(ctx.config)) {
@@ -311,28 +228,15 @@ export class StreamResolver {
     if (urlResult.meta?.bytes) {
       titleLines.push(`💾 ${bytes.format(urlResult.meta.bytes, { unitSeparator: ' ' })}`);
     }
-
-    // Remove duplicated quality tokens from labels when we already show quality
-    // in the stream name (to avoid e.g. "1440p" appearing twice).
-    const stripQualityTokens = (s?: string) => {
-      if (!s) return s;
-      const cleaned = s.replace(/\b(\d{3,4}p|4k|2160p|1440p|1080p|720p|480p|hd|fhd|sd)\b/gi, '').replace(/\s{2,}/g, ' ').trim();
-      return cleaned || s;
-    };
-
     const sourceLabel = urlResult.meta?.sourceLabel;
-    const cleanedLabel = stripQualityTokens(urlResult.label);
-    const cleanedSourceLabel = stripQualityTokens(sourceLabel);
-
     if (sourceLabel && sourceLabel !== urlResult.label) {
-      titleLines.push(`🔗 ${cleanedLabel} from ${cleanedSourceLabel}`);
+      titleLines.push(`🔗 ${urlResult.label} from ${urlResult.meta?.sourceLabel}`);
     } else {
-      titleLines.push(`🔗 ${cleanedLabel}`);
+      titleLines.push(`🔗 ${urlResult.label}`);
     }
 
     if (urlResult.error) {
-      const errorMsg = logErrorAndReturnNiceString(ctx, this.logger, urlResult.meta?.sourceId ?? '', urlResult.error);
-      if (errorMsg) titleLines.push(errorMsg);
+      titleLines.push(logErrorAndReturnNiceString(ctx, this.logger, urlResult.meta?.sourceId ?? '', urlResult.error));
     }
 
     return titleLines.join('\n');

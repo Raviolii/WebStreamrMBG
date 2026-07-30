@@ -1,7 +1,7 @@
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Source, SourceResult } from './Source';
 
 interface MovieBoxSearchItem {
   subjectId: string;

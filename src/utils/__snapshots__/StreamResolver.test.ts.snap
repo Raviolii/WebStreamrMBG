@@ -142,6 +142,50 @@ exports[`resolve adds error info 2`] = `
         "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
         "notWebReady": true,
       },
+      "externalUrl": "https://example5.com/",
+      "name": "WebStreamrMBG
+🇩🇪",
+      "title": "🔗 hoster.com
+⚠️ Request to example5.com was blocked. Reason: unknown",
+    },
+    {
+      "behaviorHints": {
+        "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
+        "notWebReady": true,
+      },
+      "externalUrl": "https://example4.com/",
+      "name": "WebStreamrMBG
+🇩🇪",
+      "title": "🔗 hoster.com
+⚠️ MediaFlow Proxy authentication failed. Please set the correct password.",
+    },
+    {
+      "behaviorHints": {
+        "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
+        "notWebReady": true,
+      },
+      "externalUrl": "https://example3.com/",
+      "name": "WebStreamrMBG
+🇩🇪",
+      "title": "🔗 hoster.com
+⚠️ Request to example3.com was blocked. Reason: cloudflare_censor",
+    },
+    {
+      "behaviorHints": {
+        "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
+        "notWebReady": true,
+      },
+      "externalUrl": "https://example2.com/",
+      "name": "WebStreamrMBG
+🇩🇪",
+      "title": "🔗 hoster.com
+⚠️ Request to example2.com was blocked. Reason: cloudflare_challenge",
+    },
+    {
+      "behaviorHints": {
+        "bingeGroup": "webstreamr-mbg-undefined-undefined-de",
+        "notWebReady": true,
+      },
       "name": "WebStreamrMBG
 🇩🇪",
       "title": "🔗 working1",
@@ -222,7 +266,7 @@ exports[`resolve returns sorted results 1`] = `
     },
     "name": "WebStreamrMBG
 🇩🇪
-1440p",
+1080p",
     "title": "des-teufels-bad-2024
 💾 1.3 GB
 🔗 Dropload from MeineCloud",
@@ -241,7 +285,7 @@ exports[`resolve returns sorted results 1`] = `
     },
     "name": "WebStreamrMBG
 🇮🇹
-1440p",
+720p",
     "title": "the-devils-bath-2024-sd-sub-ita
 💾 1.1 GB
 🔗 Dropload from MostraGuarda",
@@ -303,7 +347,7 @@ exports[`resolve returns sorted results 2`] = `
     },
     "name": "WebStreamrMBG
 🇩🇪
-1440p",
+1080p",
     "title": "des-teufels-bad-2024
 💾 1.3 GB
 🔗 Dropload from MeineCloud",
@@ -322,7 +366,7 @@ exports[`resolve returns sorted results 2`] = `
     },
     "name": "WebStreamrMBG
 🇮🇹
-1440p",
+720p",
     "title": "the-devils-bath-2024-sd-sub-ita
 💾 1.1 GB
 🔗 Dropload from MostraGuarda",

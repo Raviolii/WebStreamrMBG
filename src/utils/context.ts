@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Context } from '../types.js';
-import { getDefaultConfig } from './config.js';
-import { envGet } from './env.js';
+import { Context } from '../types';
+import { getDefaultConfig } from './config';
+import { envGet } from './env';
 
 function readBeamupHost(): string | undefined {
   try {

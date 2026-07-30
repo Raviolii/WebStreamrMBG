@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
-import { Extractor } from '../extractor/index.js';
-import { Source } from '../source/index.js';
-import { Config } from '../types.js';
-import { buildManifest, getDefaultConfig } from '../utils/index.js';
+import { Extractor } from '../extractor';
+import { Source } from '../source';
+import { Config } from '../types';
+import { buildManifest, getDefaultConfig } from '../utils';
 
 export class ManifestController {
   public readonly router: Router;
@@ -20,7 +20,7 @@ export class ManifestController {
     this.router.get('/:config/manifest.json', this.getManifest.bind(this));
   }
 
-  private async getManifest(req: Request, res: Response) {
+  private getManifest(req: Request, res: Response) {
     let config: Config = getDefaultConfig();
     if (req.params['config']) {
       try {
@@ -31,9 +31,7 @@ export class ManifestController {
       }
     }
 
-    const visibleSources = this.sources;
-
-    const manifest = buildManifest(visibleSources, this.extractors, config);
+    const manifest = buildManifest(this.sources, this.extractors, config);
 
     res.setHeader('Content-Type', 'application/json');
     res.send(manifest);

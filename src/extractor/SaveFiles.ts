@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { Extractor } from './Extractor.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { Extractor } from './Extractor';
 
 export class SaveFiles extends Extractor {
   public readonly id = 'savefiles';

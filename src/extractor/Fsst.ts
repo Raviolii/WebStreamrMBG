@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { Extractor } from './Extractor.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { Extractor } from './Extractor';
 
 export class Fsst extends Extractor {
   public readonly id = 'fsst';

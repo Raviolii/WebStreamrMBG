@@ -1,5 +1,5 @@
 import { unpack } from 'unpacker';
-import { extractUrlFromPacked } from './embed.js';
+import { extractUrlFromPacked } from './embed';
 
 jest.mock('unpacker', () => ({
   unpack: jest.fn(),

@@ -1,10 +1,10 @@
 import winston from 'winston';
-import { createTestContext } from '../test/index.js';
-import { Context, Format, InternalUrlResult, Meta, UrlResult } from '../types.js';
-import { FetcherMock } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
-import { ExtractorRegistry } from './ExtractorRegistry.js';
-import { createExtractors } from './index.js';
+import { createTestContext } from '../test';
+import { Context, Format, InternalUrlResult, Meta, UrlResult } from '../types';
+import { FetcherMock } from '../utils';
+import { Extractor } from './Extractor';
+import { ExtractorRegistry } from './ExtractorRegistry';
+import { createExtractors } from './index';
 
 const logger = winston.createLogger({ transports: [new winston.transports.Console({ level: 'nope' })] });
 const extractorRegistry = new ExtractorRegistry(logger, createExtractors(new FetcherMock(`${__dirname}/__fixtures__/ExtractorRegistry`), logger));

@@ -1,4 +1,4 @@
-import { CountryCode } from '../types.js';
+import { CountryCode } from '../types';
 
 const countryCodeMap: Record<CountryCode, { language: string; flag: string; iso639: string | undefined }> = {
   multi: { language: 'Multi', flag: '🌐', iso639: undefined },

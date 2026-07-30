@@ -1,4 +1,4 @@
-import { ImdbId } from './ImdbId.js';
+import { ImdbId } from './ImdbId';
 
 describe('can be created from string', () => {
   test('splits id properly', () => {

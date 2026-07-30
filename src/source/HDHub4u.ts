@@ -1,9 +1,9 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode, Meta } from '../types.js';
-import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getImdbId, HUB_HOST_PATTERN, Id, ImdbId } from '../utils/index.js';
-import { resolveRedirectUrl } from './hd-hub-helper.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode, Meta } from '../types';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getImdbId, HUB_HOST_PATTERN, Id, ImdbId } from '../utils';
+import { resolveRedirectUrl } from './hd-hub-helper';
+import { Source, SourceResult } from './Source';
 
 interface CdnHostResponse {
   h?: string;

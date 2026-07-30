@@ -4,17 +4,17 @@ import axios from 'axios';
 import { buildMemoryStorage, setupCache } from 'axios-cache-interceptor';
 import axiosRetry from 'axios-retry';
 import express, { NextFunction, Request, Response } from 'express';
-// eslint-disable-next-line 
+// eslint-disable-next-line import/no-named-as-default
 import rateLimit from 'express-rate-limit';
 import winston from 'winston';
-import { ConfigureController, ExtractController, ManifestController, StreamController } from './controller/index.js';
-import { BlockedError, logErrorAndReturnNiceString } from './error/index.js';
-import { createExtractors, ExtractorRegistry } from './extractor/index.js';
-import { createSources, Source } from './source/index.js';
-import { HomeCine } from './source/HomeCine.js';
-import { MeineCloud } from './source/MeineCloud.js';
-import { MostraGuarda } from './source/MostraGuarda.js';
-import { clearCache, contextFromRequestAndResponse, envGet, envIsProd, Fetcher, StreamResolver } from './utils/index.js';
+import { ConfigureController, ExtractController, ManifestController, StreamController } from './controller';
+import { BlockedError, logErrorAndReturnNiceString } from './error';
+import { createExtractors, ExtractorRegistry } from './extractor';
+import { createSources, Source } from './source';
+import { HomeCine } from './source/HomeCine';
+import { MeineCloud } from './source/MeineCloud';
+import { MostraGuarda } from './source/MostraGuarda';
+import { clearCache, contextFromRequestAndResponse, envGet, envIsProd, Fetcher, StreamResolver } from './utils';
 
 if (envIsProd()) {
   console.log = console.warn = console.error = console.info = console.debug = () => { /* disable in favor of logger */ };
@@ -101,7 +101,7 @@ addon.use('/', (new ExtractController(logger, fetcher, extractorRegistry)).route
 addon.use('/', (new ConfigureController(sources, extractors)).router);
 addon.use('/', (new ManifestController(sources, extractors)).router);
 
-const streamResolver = new StreamResolver(logger, extractorRegistry, fetcher);
+const streamResolver = new StreamResolver(logger, extractorRegistry);
 addon.use('/', (new StreamController(logger, sources, streamResolver)).router);
 
 // error handler needs to stay at the end of the stack

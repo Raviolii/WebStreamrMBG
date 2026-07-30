@@ -1,5 +1,5 @@
 import rot13Cipher from 'rot13-cipher';
-import { decodeString, extractEncryptedString, extractFallbackLink } from './RedirectDecoder.js';
+import { decodeString, extractEncryptedString, extractFallbackLink } from './RedirectDecoder';
 
 // Encodes using chain 1: b64→b64→rot13→b64
 function buildPayload(json: Record<string, string>): string {

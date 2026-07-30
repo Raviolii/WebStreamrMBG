@@ -1,8 +1,8 @@
 import { Mutex } from 'async-mutex';
 import { Request, Response, Router } from 'express';
 import winston from 'winston';
-import { ExtractorRegistry } from '../extractor/index.js';
-import { contextFromRequestAndResponse, Fetcher } from '../utils/index.js';
+import { ExtractorRegistry } from '../extractor';
+import { contextFromRequestAndResponse, Fetcher } from '../utils';
 
 const EXTRACT_TIMEOUT_MS = 30_000;
 

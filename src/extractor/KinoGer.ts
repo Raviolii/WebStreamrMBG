@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { guessHeightFromPlaylist } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { guessHeightFromPlaylist } from '../utils';
+import { Extractor } from './Extractor';
 
 /** @see https://github.com/Gujal00/ResolveURL/blob/master/script.module.resolveurl/lib/resolveurl/plugins/kinoger.py */
 export class KinoGer extends Extractor {

@@ -1,11 +1,11 @@
 import axios from 'axios';
 import winston from 'winston';
-import { NotFoundError } from '../error/index.js';
-import { createTestContext } from '../test/index.js';
-import { Context, Format } from '../types.js';
-import { CustomRequestConfig, Fetcher } from '../utils/index.js';
-import { ExtractorRegistry } from './ExtractorRegistry.js';
-import { Firestream } from './Firestream.js';
+import { NotFoundError } from '../error';
+import { createTestContext } from '../test';
+import { Context, Format } from '../types';
+import { CustomRequestConfig, Fetcher } from '../utils';
+import { ExtractorRegistry } from './ExtractorRegistry';
+import { Firestream } from './Firestream';
 
 class FirestreamFetcherMock extends Fetcher {
   public constructor(logger: winston.Logger) {

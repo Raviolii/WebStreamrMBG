@@ -1,9 +1,9 @@
 import { Mutex } from 'async-mutex';
-import { NotFoundError } from '../error/index.js';
-import { Context } from '../types.js';
-import { envGetRequired } from './env.js';
-import { CustomRequestConfig, Fetcher } from './Fetcher.js';
-import { ImdbId, TmdbId } from './id/index.js';
+import { NotFoundError } from '../error';
+import { Context } from '../types';
+import { envGetRequired } from './env';
+import { CustomRequestConfig, Fetcher } from './Fetcher';
+import { ImdbId, TmdbId } from './id';
 
 interface FindResponsePartial {
   movie_results: {

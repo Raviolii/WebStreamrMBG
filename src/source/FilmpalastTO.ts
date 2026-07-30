@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Source, SourceResult } from './Source';
 
 const STREAMING_HOSTS = [
   'voe', 'dood', 'streamtape', 'veev', 'vinovo', 'vidhide', 'dhtpre',
@@ -116,31 +116,7 @@ export class FilmpalastTO extends Source {
       ? `${name} S${String(season).padStart(2, '0')}E${String(episode ?? 1).padStart(2, '0')}`
       : name;
 
-    const autocompleteUrl = new URL('/autocomplete.php', this.baseUrl);
-    let searchResult: string | undefined;
-
-    try {
-      const formBody = new URLSearchParams({ term: searchQuery }).toString();
-      const autocompleteText = await this.fetcher.textPost(ctx, autocompleteUrl, formBody, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-
-      const autocompleteCandidates = JSON.parse(autocompleteText);
-      searchResult = this.extractAutocompleteResult(autocompleteCandidates);
-    } catch {
-      searchResult = undefined;
-    }
-
-    if (searchResult && season && episode) {
-      const seriesSlug = this.createSeriesSlug(searchResult);
-      if (seriesSlug) {
-        return new URL(`/stream/${seriesSlug}-s${String(season).padStart(2, '0')}e${String(episode).padStart(2, '0')}`, this.baseUrl);
-      }
-    }
-
-    const searchUrl = new URL(`/search/title/${encodeURIComponent(searchResult ?? searchQuery)}`, this.baseUrl);
+    const searchUrl = new URL(`/search/title/${encodeURIComponent(searchQuery)}`, this.baseUrl);
     const html = await this.fetcher.text(ctx, searchUrl);
     const $ = cheerio.load(html);
 
@@ -170,40 +146,5 @@ export class FilmpalastTO extends Source {
       return undefined;
     }
     return resolveHref(firstLink.href, this.baseUrl);
-  };
-
-  private readonly extractAutocompleteResult = (candidates: unknown): string | undefined => {
-    if (!Array.isArray(candidates) || candidates.length === 0) {
-      return undefined;
-    }
-
-    for (const candidate of candidates) {
-      if (typeof candidate === 'string' && candidate.trim()) {
-        return candidate.trim();
-      }
-
-      if (candidate && typeof candidate === 'object') {
-        const objectCandidate = candidate as Record<string, unknown>;
-        const value = (objectCandidate['value'] as string | undefined)
-          ?? (objectCandidate['title'] as string | undefined)
-          ?? (objectCandidate['label'] as string | undefined)
-          ?? (objectCandidate['name'] as string | undefined);
-
-        if (value && value.trim()) {
-          return value.trim();
-        }
-      }
-    }
-
-    return undefined;
-  };
-
-  private readonly createSeriesSlug = (text: string): string | undefined => {
-    const candidate = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-
-    return candidate || undefined;
   };
 }

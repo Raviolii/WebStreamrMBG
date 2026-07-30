@@ -1,7 +1,7 @@
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { buildMediaFlowProxyHlsUrl, supportsMediaFlowProxy } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { buildMediaFlowProxyHlsUrl, supportsMediaFlowProxy } from '../utils';
+import { Extractor } from './Extractor';
 
 export class StreamEmbed extends Extractor {
   public readonly id = 'streamembed';

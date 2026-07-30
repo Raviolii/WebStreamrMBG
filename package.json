@@ -2,7 +2,7 @@
   "name": "webstreamr-mbg",
   "description": "Provides HTTP URLs from streaming websites.",
   "version": "0.73.2",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "analyse": "tsc --noEmit --project ./tsconfig.dev.json",
     "build": "rm -rf ./dist && tsc",
@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@keyv/sqlite": "^4.0.5",
-    "all": "^0.0.0",
     "async-mutex": "^0.5.0",
     "axios": "^1.13.2",
     "axios-cache-interceptor": "^1.8.3",
@@ -68,8 +67,7 @@
     "sqlite3": "^5.1.7",
     "tough-cookie": "^6.0.0",
     "unpacker": "^1.0.1",
-    "winston": "^3.17.0",
-    "elliptic": "^6.5.4"
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",

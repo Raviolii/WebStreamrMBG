@@ -1,9 +1,9 @@
 import { createDecipheriv, createHash } from 'node:crypto';
 import { Cacheable, CacheableMemory, Keyv } from 'cacheable';
 import winston from 'winston';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { Fetcher, guessHeightFromPlaylist } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { Fetcher, guessHeightFromPlaylist } from '../utils';
+import { Extractor } from './Extractor';
 
 const API_KEY_URL = 'https://core.vidzee.wtf/api-key';
 const SERVER_API_URL = 'https://player.vidzee.wtf/api/server';

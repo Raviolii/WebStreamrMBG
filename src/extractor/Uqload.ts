@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { buildMediaFlowProxyExtractorRedirectUrl, supportsMediaFlowProxy } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { buildMediaFlowProxyExtractorRedirectUrl, supportsMediaFlowProxy } from '../utils';
+import { Extractor } from './Extractor';
 
 export class Uqload extends Extractor {
   public readonly id = 'uqload';

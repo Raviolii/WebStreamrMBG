@@ -1,8 +1,8 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { buildMediaFlowProxyExtractorRedirectUrl, supportsMediaFlowProxy } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { buildMediaFlowProxyExtractorRedirectUrl, supportsMediaFlowProxy } from '../utils';
+import { Extractor } from './Extractor';
 
 export class Streamtape extends Extractor {
   public readonly id = 'streamtape';

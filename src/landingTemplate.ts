@@ -1,6 +1,6 @@
 // Adapted from https://github.com/Stremio/stremio-addon-sdk/blob/v1.6.2/src/landingTemplate.js
-import { CustomManifest } from './types.js';
-import { envGet } from './utils/index.js';
+import { CustomManifest } from './types';
+import { envGet } from './utils';
 
 export function landingTemplate(manifest: CustomManifest) {
   const logo = manifest.logo || 'https://dl.strem.io/addon-logo.png';

@@ -1,10 +1,10 @@
-import { createTestContext } from '../test/index.js';
-import { FetcherMock, TmdbId } from '../utils/index.js';
-import { Einschalten } from './Einschalten.js';
+import { createTestContext } from '../test';
+import { FetcherMock, TmdbId } from '../utils';
+import { Einschalten } from './Einschalten';
 
 const ctx = createTestContext({ de: 'on' });
 
-describe.skip('Einschalten', () => {
+describe('Einschalten', () => {
   let source: Einschalten;
 
   beforeEach(() => {

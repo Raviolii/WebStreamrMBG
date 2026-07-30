@@ -1,7 +1,7 @@
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Source, SourceResult } from './Source';
 
 interface MoflixSearchItem {
   id: number;
@@ -56,7 +56,6 @@ export class Moflix extends Source {
       let targetMedia: MoflixSearchItem | undefined;
 
       if (Array.isArray(resultsList)) {
-        // Step 1: Match by IMDB ID if available in incoming id payload
         if (id instanceof Object && 'id' in id && typeof (id as { id?: string }).id === 'string') {
           const incomingImdbId = (id as { id?: string }).id;
           targetMedia = resultsList.find(item =>
@@ -65,7 +64,6 @@ export class Moflix extends Source {
           );
         }
 
-        // Step 2: Fallback to exact or contextual title asset match if IMDB match fails/is missing
         if (!targetMedia) {
           const cleanTarget = name.toLowerCase().replace(/[\u2013\u2014-]/g, ' ').replace(/\s+/g, ' ').trim();
 
@@ -82,7 +80,6 @@ export class Moflix extends Source {
           }
         }
 
-        // Step 3: Direct fallthrough fallback protection handling if both checks fail
         if (!targetMedia) {
           for (const item of resultsList) {
             if (item.model_type === 'title' || item.modelType === 'title') {
@@ -131,8 +128,6 @@ export class Moflix extends Source {
           url,
           meta: {
             countryCodes: [CountryCode.de],
-            language: 'de',
-            quality: stream.quality,
             referer: baseUrl,
             sourceLabel: this.label,
             title,

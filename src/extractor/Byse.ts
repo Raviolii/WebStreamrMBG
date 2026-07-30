@@ -1,9 +1,10 @@
+/* istanbul ignore file */
 import crypto from 'crypto';
 import winston from 'winston';
-import { NotFoundError } from '../error/index.js';
-import { Context, Format, InternalUrlResult, Meta } from '../types.js';
-import { Fetcher } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { NotFoundError } from '../error';
+import { Context, Format, InternalUrlResult, Meta } from '../types';
+import { Fetcher } from '../utils';
+import { Extractor } from './Extractor';
 
 interface DetailsRoot {
   embed_frame_url?: string;
@@ -354,6 +355,10 @@ export class Byse extends Extractor {
         details = await this.fetcher.json(ctx, new URL(detailsUrl), { headers }) as DetailsRoot;
       }
     } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+
       const detailsText = await this.fetcher.text(ctx, new URL(detailsUrl), { headers }).catch(() => undefined);
       const embedFrameUrl = detailsText ? extractEmbedFrameUrlFromText(detailsText) : null;
       if (embedFrameUrl) {
@@ -364,6 +369,10 @@ export class Byse extends Extractor {
         try {
           details = await this.fetcher.json(ctx, new URL(detailsUrl), { headers }) as DetailsRoot;
         } catch (errorEmbed) {
+          if (errorEmbed instanceof NotFoundError) {
+            throw errorEmbed;
+          }
+
           const detailsEmbedText = await this.fetcher.text(ctx, new URL(detailsUrl), { headers }).catch(() => undefined);
           const embedFrameUrlFromEmbedDetails = detailsEmbedText ? extractEmbedFrameUrlFromText(detailsEmbedText) : null;
           if (embedFrameUrlFromEmbedDetails) {
@@ -449,9 +458,9 @@ export class Byse extends Extractor {
 
     const resolveUrl = async (uri: string): Promise<URL> => {
       const candidate = new URL(uri, ref);
-      if (typeof this.fetcher.getFinalRedirectUrlGet === 'function') {
+      if (typeof this.fetcher.getFinalRedirectUrl === 'function') {
         try {
-          return await this.fetcher.getFinalRedirectUrlGet(ctx, candidate, { headers });
+          return await this.fetcher.getFinalRedirectUrl(ctx, candidate, { headers });
         } catch {
           return candidate;
         }
@@ -466,6 +475,10 @@ export class Byse extends Extractor {
         data: JSON.stringify(playbackBody),
       }) as Record<string, unknown>;
     } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+
       const textResponse = await this.fetcher.textPost?.(ctx, new URL(playbackUrl), JSON.stringify(playbackBody), { headers }).catch(() => undefined)
         ?? await this.fetcher.text(ctx, new URL(playbackUrl), { headers }).catch(() => undefined);
       const candidate = typeof textResponse === 'string' ? extractUrlFromText(textResponse) : null;

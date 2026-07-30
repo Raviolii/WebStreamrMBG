@@ -1,7 +1,7 @@
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Id } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Id } from '../utils';
+import { Source, SourceResult } from './Source';
 
 export class VidSrc extends Source {
   public readonly id = 'vidsrc';

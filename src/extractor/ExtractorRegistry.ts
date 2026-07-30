@@ -1,8 +1,8 @@
 import { Cacheable, CacheableMemory, Keyv } from 'cacheable';
 import winston from 'winston';
-import { Context, Format, Meta, UrlResult } from '../types.js';
-import { createKeyvSqlite, isExtractorDisabled } from '../utils/index.js';
-import { Extractor } from './Extractor.js';
+import { Context, Format, Meta, UrlResult } from '../types';
+import { createKeyvSqlite, isExtractorDisabled } from '../utils';
+import { Extractor } from './Extractor';
 
 export class ExtractorRegistry {
   private readonly logger: winston.Logger;
@@ -63,12 +63,11 @@ export class ExtractorRegistry {
     if (storedDataRaw?.expires) {
       const remainingCacheTtl = storedDataRaw.expires - Date.now();
       // Use the minimum of the per-result TTL and the remaining cache TTL.
-      const results = (storedDataRaw.value as UrlResult[]).map(urlResult => ({
+      return (storedDataRaw.value as UrlResult[]).map(urlResult => ({
         ...urlResult,
         ttl: Math.min(urlResult.ttl, remainingCacheTtl),
         url: new URL(urlResult.url),
       }));
-      return this.sortResults(results);
     }
 
     const lazyUrlResults = await this.lazyUrlResultCache.get<UrlResult[]>(canonicalUrl.href) ?? [];
@@ -77,7 +76,7 @@ export class ExtractorRegistry {
       lazyUrlResults.length && allowLazy && !extractor.viaMediaFlowProxy
       && lazyUrlResults.every(urlResult => urlResult.format !== Format.hls) // related to Android issues, e.g. https://github.com/Stremio/stremio-bugs/issues/1574 or https://github.com/Stremio/stremio-bugs/issues/1579
     ) {
-      return this.sortResults(this.buildExtractUrls(ctx, lazyUrlResults, canonicalUrl));
+      return this.buildExtractUrls(ctx, lazyUrlResults, canonicalUrl);
     }
 
     // Reuse in-flight extraction if already running for this canonical URL
@@ -94,10 +93,10 @@ export class ExtractorRegistry {
 
       // Lazy-extract: transform direct URLs to /extract/ URLs even on first extraction
       if (extractor.lazyExtract && allowLazy && !extractor.viaMediaFlowProxy) {
-        return this.sortResults(this.buildExtractUrls(ctx, urlResults, canonicalUrl));
+        return this.buildExtractUrls(ctx, urlResults, canonicalUrl);
       }
 
-      return this.sortResults(urlResults);
+      return urlResults;
     } finally {
       this.inFlight.delete(cacheKey);
     }
@@ -119,20 +118,22 @@ export class ExtractorRegistry {
       return urlResults;
     }
 
-    // Cache all results (including errors)
-    if (urlResults.length > 0) {
+    // Separate successful results from error results — cache only successes
+    const successResults = urlResults.filter(r => !r.error);
+
+    if (successResults.length > 0) {
       // The server-side cache TTL must respect the shortest per-result TTL
-      const perResultTtl = Math.min(...urlResults.map(r => r.ttl));
+      const perResultTtl = Math.min(...successResults.map(r => r.ttl));
       const ttl = Math.min(extractor.ttl, perResultTtl);
 
-      await this.urlResultCache.set<UrlResult[]>(cacheKey, urlResults, ttl);
+      await this.urlResultCache.set<UrlResult[]>(cacheKey, successResults, ttl);
 
       if (extractor.id !== 'external') {
         const lazyTtl = extractor.lazyExtract ? 604800000 : 86400000; // 7 days for lazy extractors, 24h otherwise
-        await this.lazyUrlResultCache.set<UrlResult[]>(canonicalUrl.href, urlResults, lazyTtl);
+        await this.lazyUrlResultCache.set<UrlResult[]>(canonicalUrl.href, successResults, lazyTtl);
       }
     } else {
-      // No results — don't cache, clear any stale cache
+      // All results are errors — don't cache, clear any stale cache
       await this.urlResultCache.delete(cacheKey);
       await this.lazyUrlResultCache.delete(canonicalUrl.href);
     }
@@ -160,14 +161,5 @@ export class ExtractorRegistry {
     }
 
     return `${extractor.id}_${url}${suffix}`;
-  }
-
-  private sortResults(results: UrlResult[]): UrlResult[] {
-    // Sort results: successful URLs (without errors) first, then error results
-    return results.sort((a, b) => {
-      const aHasError = a.error ? 1 : 0;
-      const bHasError = b.error ? 1 : 0;
-      return aHasError - bHasError;
-    });
   }
 }

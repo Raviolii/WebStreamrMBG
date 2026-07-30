@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
-import { Extractor } from '../extractor/index.js';
-import { landingTemplate } from '../landingTemplate.js';
-import { Source } from '../source/index.js';
-import { Config } from '../types.js';
-import { buildManifest, getDefaultConfig, isElfHostedInstance } from '../utils/index.js';
+import { Extractor } from '../extractor';
+import { landingTemplate } from '../landingTemplate';
+import { Source } from '../source';
+import { Config } from '../types';
+import { buildManifest, getDefaultConfig, isElfHostedInstance } from '../utils';
 
 export class ConfigureController {
   public readonly router: Router;
@@ -21,7 +21,7 @@ export class ConfigureController {
     this.router.get('/:config/configure', this.getConfigure.bind(this));
   }
 
-  private async getConfigure(req: Request, res: Response) {
+  private getConfigure(req: Request, res: Response) {
     let config: Config = getDefaultConfig();
     if (req.params['config']) {
       try {
@@ -37,9 +37,7 @@ export class ConfigureController {
       config.mediaFlowProxyUrl = `${req.protocol}://${req.host.replace('webstreamr-mbg', 'mediaflow-proxy')}`;
     }
 
-    const visibleSources = this.sources;
-
-    const manifest = buildManifest(visibleSources, this.extractors, config);
+    const manifest = buildManifest(this.sources, this.extractors, config);
 
     res.setHeader('content-type', 'text/html');
     res.send(landingTemplate(manifest));

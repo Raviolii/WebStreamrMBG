@@ -1,19 +1,19 @@
 import winston from 'winston';
-import { BlockedReason, Context } from '../types.js';
-import { BlockedError } from './BlockedError.js';
-import { HttpError } from './HttpError.js';
-import { QueueIsFullError } from './QueueIsFullError.js';
-import { TimeoutError } from './TimeoutError.js';
-import { TooManyRequestsError } from './TooManyRequestsError.js';
-import { TooManyTimeoutsError } from './TooManyTimeoutsError.js';
+import { BlockedReason, Context } from '../types';
+import { BlockedError } from './BlockedError';
+import { HttpError } from './HttpError';
+import { QueueIsFullError } from './QueueIsFullError';
+import { TimeoutError } from './TimeoutError';
+import { TooManyRequestsError } from './TooManyRequestsError';
+import { TooManyTimeoutsError } from './TooManyTimeoutsError';
 
-export * from './BlockedError.js';
-export * from './HttpError.js';
-export * from './NotFoundError.js';
-export * from './QueueIsFullError.js';
-export * from './TimeoutError.js';
-export * from './TooManyRequestsError.js';
-export * from './TooManyTimeoutsError.js';
+export * from './BlockedError';
+export * from './HttpError';
+export * from './NotFoundError';
+export * from './QueueIsFullError';
+export * from './TimeoutError';
+export * from './TooManyRequestsError';
+export * from './TooManyTimeoutsError';
 
 export const logErrorAndReturnNiceString = (ctx: Context, logger: winston.Logger, source: string, error: unknown): string => {
   if (error instanceof BlockedError) {
@@ -21,12 +21,9 @@ export const logErrorAndReturnNiceString = (ctx: Context, logger: winston.Logger
       return '⚠️ MediaFlow Proxy authentication failed. Please set the correct password.';
     }
 
-    // Do not warn to avoid noisy UI logs for blocked hosts (Cloudflare, unknown, etc).
-    // Keep debug logs for diagnostics.
-    logger.debug(`${source}: Request to ${error.url} was blocked, reason: ${error.reason}, headers: ${JSON.stringify(error.headers)}.`, ctx);
+    logger.warn(`${source}: Request to ${error.url} was blocked, reason: ${error.reason}, headers: ${JSON.stringify(error.headers)}.`, ctx);
 
-    // Return empty string so callers can decide whether to show anything in the UI.
-    return '';
+    return `⚠️ Request to ${error.url.host} was blocked. Reason: ${error.reason}`;
   }
 
   if (error instanceof TooManyRequestsError) {

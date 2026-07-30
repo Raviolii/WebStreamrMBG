@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
-import { Context, CountryCode } from '../types.js';
-import { Fetcher, getTmdbId, Id, TmdbId } from '../utils/index.js';
-import { Source, SourceResult } from './Source.js';
+import { Context, CountryCode } from '../types';
+import { Fetcher, getTmdbId, Id, TmdbId } from '../utils';
+import { Source, SourceResult } from './Source';
 
 export class HDFilme extends Source {
   public readonly id = 'hdfilme';
@@ -59,12 +59,14 @@ export class HDFilme extends Source {
     const segment$ = cheerio.load(episodeSegment);
     const results: SourceResult[] = [];
 
-    segment$('a').each((_i, el) => {
+    const anchors = segment$('a[href]').toArray();
+    for (const el of anchors) {
       const href = segment$(el).attr('href');
-      if (!href || href.includes('report-error') || href.startsWith('javascript') || href.includes('/engine/player.php')) return;
+      const label = segment$(el).text().trim() || 'Mirror';
+      if (!href || href.includes('report-error') || href.startsWith('javascript') || href.includes('/engine/player.php')) continue;
 
       try {
-        const url = new URL(href, this.baseUrl);
+        const url = new URL(href, seriesPageUrl);
 
         if (!url.host.includes('hdfilme')) {
           results.push({
@@ -72,14 +74,14 @@ export class HDFilme extends Source {
             meta: {
               countryCodes: [CountryCode.de],
               referer: seriesPageUrl.href,
-              title: `${title} (${segment$(el).text().trim() || 'Mirror'})`,
+              title: `${title} (${label})`,
             },
           });
         }
       } catch {
         // Ignore invalid URLs
       }
-    });
+    }
 
     return results;
   }
@@ -90,8 +92,15 @@ export class HDFilme extends Source {
 
     const $ = cheerio.load(html);
 
-    const firstResult = $('.item.relative.mt-3 a[href]').first();
+    const firstResult = $('a[href]').filter((_i, el) => {
+      const href = $(el).attr('href') || '';
+      return href.includes('/serien/') || href.includes('/series/') || href.includes('/film/');
+    }).first();
 
-    return firstResult.attr('href') ? new URL(firstResult.attr('href') as string, this.baseUrl) : undefined;
+    if (!firstResult.attr('href')) {
+      return undefined;
+    }
+
+    return new URL(firstResult.attr('href') as string, this.baseUrl);
   };
 }
