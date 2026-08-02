@@ -88,6 +88,37 @@ describe('HubCloud extended download selectors', () => {
 });
 
 describe('HubCloud', () => {
+  test('resolves generated server links to direct file URLs', async () => {
+    const fetcher = new Fetcher(axios.create(), logger);
+    const hubCloud = new HubCloud(fetcher, logger);
+
+    const hop1Html = `<html><head><title>Test</title></head><body>
+      <script>var url = 'https://hubrouting.site/hubcloud.php?host=hubcloud&id=resolveurl&token=test';</script>
+    </body></html>`;
+
+    const hop2Html = `<html><head><title>Test.Resolve.2024.1080p.mkv</title></head><body>
+      <li class="list-group-item d-flex justify-content-between align-items-center">File Size<i id="size">1.0 GB</i></li>
+      <a href="https://gpdl.hubcloud.cx/?id=abc123" id="fsl">Download [Server : 10Gbps]</a>
+    </body></html>`;
+
+    let callCount = 0;
+    jest.spyOn(fetcher, 'text').mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return hop1Html;
+      return hop2Html;
+    });
+    jest.spyOn(fetcher, 'setCookie').mockImplementation(() => { /* noop */ });
+    jest.spyOn(fetcher, 'getFinalRedirectUrl').mockResolvedValue(new URL('https://gamerxyt.com/dl.php?link=https://video-downloads.googleusercontent.com/test.mkv'));
+
+    const result = await hubCloud.extract(ctx, new URL('https://hubcloud.one/drive/resolveurl'), {});
+
+    expect(result).toHaveLength(1);
+
+    const firstResult = result[0];
+    expect(firstResult).toBeDefined();
+    expect(firstResult?.url.href).toBe('https://video-downloads.googleusercontent.com/test.mkv');
+  });
+
   test('handle dexter original sin 2024 s01e01', async () => {
     expect(await extractorRegistry.handle(ctx, new URL('https://hubcloud.one/drive/idt1evqfuviqiei'))).toMatchSnapshot();
   });

@@ -68,7 +68,7 @@ export class HubCloud extends Extractor {
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 12;
+  public override readonly cacheVersion = 13;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
@@ -161,8 +161,9 @@ export class HubCloud extends Extractor {
               // PixelServer link is dead — skip it
             }
           } else {
+            const resolvedUrl = await this.resolveServerUrl(ctx, href, url.href);
             classified.push({
-              url: new URL(href),
+              url: resolvedUrl,
               format: Format.unknown,
               ttl: HUBCLOUD_CACHE_TTL,
               label: category.label,
@@ -215,6 +216,16 @@ export class HubCloud extends Extractor {
   private extractCookieName(html: string): string | null {
     const cookieMatch = html.match(/stck\(\s*['"](\w+)['"]\s*,/);
     return cookieMatch ? (cookieMatch[1] as string) : null;
+  }
+
+  private async resolveServerUrl(ctx: Context, href: string, referer: string): Promise<URL> {
+    try {
+      const resolvedUrl = await this.fetcher.getFinalRedirectUrl(ctx, new URL(href), { headers: { Referer: referer } });
+      const directLink = resolvedUrl.searchParams.get('link');
+      return directLink ? new URL(directLink) : resolvedUrl;
+    } catch {
+      return new URL(href);
+    }
   }
 
   private hasValidDownloadContent($: cheerio.CheerioAPI): boolean {
