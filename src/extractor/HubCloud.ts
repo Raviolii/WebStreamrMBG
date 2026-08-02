@@ -219,12 +219,30 @@ export class HubCloud extends Extractor {
   }
 
   private async resolveServerUrl(ctx: Context, href: string, referer: string): Promise<URL> {
+    const sourceUrl = new URL(href);
+
     try {
-      const resolvedUrl = await this.fetcher.getFinalRedirectUrl(ctx, new URL(href), { headers: { Referer: referer } });
+      const resolvedUrl = await this.fetcher.getFinalRedirectUrl(ctx, sourceUrl, { headers: { Referer: referer } });
       const directLink = resolvedUrl.searchParams.get('link');
-      return directLink ? new URL(directLink) : resolvedUrl;
+      if (directLink) {
+        return new URL(directLink);
+      }
+
+      if (resolvedUrl.hostname.includes('gpdl') || resolvedUrl.hostname.includes('gamerxyt') || resolvedUrl.hostname.includes('hubcloud')) {
+        try {
+          const html = await this.fetcher.text(ctx, resolvedUrl, { headers: { Referer: referer } });
+          const nestedRedirect = this.extractRedirectUrl(html);
+          if (nestedRedirect) {
+            return await this.resolveServerUrl(ctx, nestedRedirect.startsWith('http') ? nestedRedirect : `${resolvedUrl.origin}${nestedRedirect}`, resolvedUrl.href);
+          }
+        } catch {
+          // fall through to the resolved URL itself
+        }
+      }
+
+      return resolvedUrl;
     } catch {
-      return new URL(href);
+      return sourceUrl;
     }
   }
 
