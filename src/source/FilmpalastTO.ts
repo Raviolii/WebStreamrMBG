@@ -7,7 +7,7 @@ import { Source, SourceResult } from './Source';
 const STREAMING_HOSTS = [
   'voe', 'dood', 'streamtape', 'veev', 'vinovo', 'vidhide', 'dhtpre',
   'mixdrop', 'supervideo', 'uqload', 'filelion', 'lulustream', 'fastream',
-  'dropload', 'savefiles', 'streamembed', 'vidara', 'vidsonic',
+  'dropload', 'savefiles', 'streamembed', 'vidara', 'vidsonic', 'vidmatrixa',
 ];
 
 const isStreamingHost = (hostname: string): boolean =>
