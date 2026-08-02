@@ -86,6 +86,10 @@ export class ExtractController {
         return;
       }
 
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+
       try {
         const finalRedirectUrl = await this.fetcher.getFinalRedirectUrl(ctx, urlResult.url, { headers: { Referer: url.href } });
         res.redirect(finalRedirectUrl.href);
