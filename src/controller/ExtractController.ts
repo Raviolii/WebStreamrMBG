@@ -10,14 +10,16 @@ export class ExtractController {
   public readonly router: Router;
 
   private readonly logger: winston.Logger;
+  private readonly fetcher: Fetcher;
   private readonly extractorRegistry: ExtractorRegistry;
 
   private readonly locks = new Map<string, Mutex>();
 
-  public constructor(logger: winston.Logger, _fetcher: Fetcher, extractorRegistry: ExtractorRegistry) {
+  public constructor(logger: winston.Logger, fetcher: Fetcher, extractorRegistry: ExtractorRegistry) {
     this.router = Router();
 
     this.logger = logger;
+    this.fetcher = fetcher;
     this.extractorRegistry = extractorRegistry;
 
     this.router.get('/extract', this.extract.bind(this));
@@ -84,7 +86,12 @@ export class ExtractController {
         return;
       }
 
-      res.redirect(urlResult.url.href);
+      try {
+        const finalRedirectUrl = await this.fetcher.getFinalRedirectUrl(ctx, urlResult.url, { headers: { Referer: url.href } });
+        res.redirect(finalRedirectUrl.href);
+      } catch {
+        res.redirect(urlResult.url.href);
+      }
     });
 
     const timeout = new Promise<void>((resolve) => {
