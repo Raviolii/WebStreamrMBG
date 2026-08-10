@@ -21,6 +21,7 @@ import { Movix } from './Movix';
 import { OhaTO } from './OhaTo';
 import { Source } from './Source';
 import { STo } from './STo';
+import { Torbox } from './Torbox';
 import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
 import { Vidzee } from './Vidzee';
@@ -39,6 +40,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new VidSrc(),
     new Vidzee(fetcher),
     new MovieBox(fetcher),
+    new Torbox(fetcher),
     // AL
     new Kokoshka(fetcher),
     // ES / MX

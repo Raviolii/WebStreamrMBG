@@ -71,6 +71,13 @@ export const buildManifest = (sources: Source[], extractors: Extractor[], config
   }
 
   manifest.config.push({
+    key: 'torbox',
+    type: 'checkbox',
+    title: 'TorBox provider',
+    ...('torbox' in config && { default: 'checked' }),
+  });
+
+  manifest.config.push({
     key: 'showErrors',
     type: 'checkbox',
     title: 'Show errors',

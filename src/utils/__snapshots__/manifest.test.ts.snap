@@ -11,7 +11,7 @@ exports[`buildManifest default manifest 1`] = `
   "config": [
     {
       "key": "multi",
-      "title": "Multi 🌐 (4KHDHub, HDHub4u, MovieBox, VidSrc, VidZee, VixSrc)",
+      "title": "Multi 🌐 (4KHDHub, HDHub4u, MovieBox, TorBox, VidSrc, VidZee, VixSrc)",
       "type": "checkbox",
     },
     {
@@ -72,6 +72,11 @@ exports[`buildManifest default manifest 1`] = `
     {
       "key": "te",
       "title": "Telugu 🇮🇳 (4KHDHub, HDHub4u)",
+      "type": "checkbox",
+    },
+    {
+      "key": "torbox",
+      "title": "TorBox provider",
       "type": "checkbox",
     },
     {
@@ -151,7 +156,7 @@ exports[`buildManifest default manifest 1`] = `
 
 Supported languages: Albanian, German, Castilian Spanish, French, Gujarati, Hindi, Italian, Malayalam, Latin American Spanish, Punjabi, Tamil, Telugu
 
-Supported sources: 4KHDHub, CineHDPlus, Cuevana, Einschalten, Eurostreaming, Filmpalast, Frembed, FrenchCloud, HDFilme, HDHub4u, HomeCine, KinoGer, Kokoshka, MegaKino, MeineCloud, Moflix, MostraGuarda, MovieBox, Movix, Oha.to, S.to, VerHdLink, VidSrc, VidZee, VixSrc
+Supported sources: 4KHDHub, CineHDPlus, Cuevana, Einschalten, Eurostreaming, Filmpalast, Frembed, FrenchCloud, HDFilme, HDHub4u, HomeCine, KinoGer, Kokoshka, MegaKino, MeineCloud, Moflix, MostraGuarda, MovieBox, Movix, Oha.to, S.to, TorBox, VerHdLink, VidSrc, VidZee, VixSrc
 
 Supported extractors: ",
   "id": "webstreamr-mbg",
@@ -178,6 +183,11 @@ Supported extractors: ",
 
 exports[`buildManifest disable extractors 1`] = `
 [
+  {
+    "key": "torbox",
+    "title": "TorBox provider",
+    "type": "checkbox",
+  },
   {
     "key": "showErrors",
     "title": "Show errors",
@@ -267,6 +277,11 @@ exports[`buildManifest disable extractors 1`] = `
 exports[`buildManifest has checked excludeResolution_2160p 1`] = `
 [
   {
+    "key": "torbox",
+    "title": "TorBox provider",
+    "type": "checkbox",
+  },
+  {
     "key": "showErrors",
     "title": "Show errors",
     "type": "checkbox",
@@ -345,6 +360,11 @@ exports[`buildManifest has checked excludeResolution_2160p 1`] = `
 exports[`buildManifest has checked includeExternalUrls 1`] = `
 [
   {
+    "key": "torbox",
+    "title": "TorBox provider",
+    "type": "checkbox",
+  },
+  {
     "key": "showErrors",
     "title": "Show errors",
     "type": "checkbox",
@@ -422,6 +442,11 @@ exports[`buildManifest has checked includeExternalUrls 1`] = `
 
 exports[`buildManifest has checked showErrors 1`] = `
 [
+  {
+    "key": "torbox",
+    "title": "TorBox provider",
+    "type": "checkbox",
+  },
   {
     "default": "checked",
     "key": "showErrors",
@@ -514,6 +539,11 @@ exports[`buildManifest has checked source with appropriate config 1`] = `
   {
     "key": "mx",
     "title": "Latin American Spanish 🇲🇽 (VerHdLink)",
+    "type": "checkbox",
+  },
+  {
+    "key": "torbox",
+    "title": "TorBox provider",
     "type": "checkbox",
   },
   {
@@ -615,6 +645,11 @@ exports[`buildManifest has unchecked source without a config 1`] = `
     "type": "checkbox",
   },
   {
+    "key": "torbox",
+    "title": "TorBox provider",
+    "type": "checkbox",
+  },
+  {
     "key": "showErrors",
     "title": "Show errors",
     "type": "checkbox",
@@ -691,6 +726,11 @@ exports[`buildManifest has unchecked source without a config 1`] = `
 
 exports[`buildManifest showErrors and includeExternalUrls are unchecked by default 1`] = `
 [
+  {
+    "key": "torbox",
+    "title": "TorBox provider",
+    "type": "checkbox",
+  },
   {
     "key": "showErrors",
     "title": "Show errors",

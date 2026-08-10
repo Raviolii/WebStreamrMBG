@@ -84,3 +84,7 @@ Optional. Proxies which should be used based on domain. Supports minimatch. E.g.
 #### `TMDB_ACCESS_TOKEN`
 
 **Required**. TMDB access token to get information like title and year for content. Use the [API Read Access Token](https://www.themoviedb.org/settings/api).
+
+#### `TORBOX_API_KEY`
+
+Optional. API key for the TorBox provider. When set, WebStreamr will consult the TorBox library API and return the ready download links from the account mylist.
