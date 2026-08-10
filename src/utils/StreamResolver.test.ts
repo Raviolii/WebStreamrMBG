@@ -170,6 +170,40 @@ describe('resolve', () => {
     expect(highIdx).toBeLessThan(lowIdx);
   });
 
+  test('sorts by quality from stream titles when height is missing', async () => {
+    class QualityTitleSource extends Source {
+      public readonly id = 'quality-title';
+      public readonly label = 'QualityTitle';
+      public readonly contentTypes: ContentType[] = ['movie'];
+      public readonly countryCodes: CountryCode[] = [CountryCode.multi];
+      public readonly baseUrl = 'https://quality-title.example';
+      public readonly handleInternal = async (): Promise<SourceResult[]> => {
+        return [
+          { url: new URL('https://quality-title.example/720p'), meta: { countryCodes: [CountryCode.multi], title: 'TorBox · 720p · Example' } },
+          { url: new URL('https://quality-title.example/1080p'), meta: { countryCodes: [CountryCode.multi], title: 'TorBox · 1080p · Example' } },
+        ];
+      };
+    }
+
+    class PassThroughExtractor extends Extractor {
+      public readonly id = 'passthrough-quality';
+      public readonly label = 'PassThroughQuality';
+      public readonly supports = (): boolean => true;
+      protected readonly extractInternal = async (_ctx: unknown, url: URL, meta: Meta): Promise<UrlResult[]> => {
+        return [{ url, format: Format.unknown, label: meta.sourceLabel ?? 'PassThroughQuality', ttl: 300000, meta }];
+      };
+    }
+
+    const streamResolver = new StreamResolver(logger, new ExtractorRegistry(logger, [new PassThroughExtractor(fetcher, logger)]));
+    const result = await streamResolver.resolve(createTestContext(), [new QualityTitleSource()], 'movie', new ImdbId('tt12345678', undefined, undefined));
+
+    const firstTitle = result.streams[0]?.title ?? '';
+    const secondTitle = result.streams[1]?.title ?? '';
+
+    expect(firstTitle).toContain('1080p');
+    expect(secondTitle).toContain('720p');
+  });
+
   test('adds error info', async () => {
     class MockSource extends Source {
       public readonly id = 'mocksource';

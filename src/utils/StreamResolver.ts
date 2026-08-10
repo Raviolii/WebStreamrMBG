@@ -10,7 +10,7 @@ import { isResolutionExcluded, showErrors, showExternalUrls } from './config';
 import { envGetAppName } from './env';
 import { Id } from './id';
 import { flagFromCountryCode } from './language';
-import { getClosestResolution } from './resolution';
+import { findHeight, getClosestResolution } from './resolution';
 
 interface ResolveResponse {
   streams: Stream[];
@@ -125,7 +125,7 @@ export class StreamResolver {
         return a.isExternal ? 1 : -1;
       }
 
-      const heightComparison = (b.meta?.height ?? 0) - (a.meta?.height ?? 0);
+      const heightComparison = this.getComparableResolutionHeight(b) - this.getComparableResolutionHeight(a);
       if (heightComparison !== 0) {
         return heightComparison;
       }
@@ -175,6 +175,24 @@ export class StreamResolver {
       ...(ttl && { ttl }),
     };
   };
+
+  private getComparableResolutionHeight(urlResult: UrlResult): number {
+    if (urlResult.meta?.height) {
+      return urlResult.meta.height;
+    }
+
+    const qualityHint = [urlResult.meta?.title, urlResult.label, urlResult.url.href]
+      .filter((value): value is string => Boolean(value))
+      .join(' ');
+
+    const resolvedHeight = findHeight(qualityHint);
+    if (resolvedHeight != null) {
+      return resolvedHeight;
+    }
+
+    const fallbackHeight = /\b(2160|1440|1080|720|576|480|360|240|144)\s*p\b/i.exec(qualityHint)?.[1];
+    return fallbackHeight ? Number(fallbackHeight) : 0;
+  }
 
   private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
     return arr1.filter(item => arr2.includes(item)).length > 0;
