@@ -115,7 +115,9 @@ export abstract class Source {
         }
       }
 
-      await sourceResultCache.set<SourceResult[]>(cacheKey, sourceResults, this.ttl);
+      if (sourceResults.length > 0) {
+        await sourceResultCache.set<SourceResult[]>(cacheKey, sourceResults, this.ttl);
+      }
     }
 
     if (this.countryCodes.includes(CountryCode.multi)) {
