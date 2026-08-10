@@ -31,6 +31,7 @@ export * from './Source';
 
 export const createSources = (fetcher: Fetcher): Source[] => {
   const disabledSources = envGet('DISABLED_SOURCES')?.split(',') ?? [];
+  const disabledSourceIds = new Set<string>([...disabledSources, 'moflix', 's-to']);
 
   return [
     // multi
@@ -65,5 +66,5 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     // IT
     new Eurostreaming(fetcher),
     new MostraGuarda(fetcher),
-  ].filter(source => !disabledSources.includes(source.id));
+  ].filter(source => !disabledSourceIds.has(source.id));
 };
