@@ -1,6 +1,6 @@
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
-import { envGet, Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
 import { Source, SourceResult } from './Source';
 
 interface TorboxApiFile {
@@ -137,7 +137,7 @@ export class Torbox extends Source {
   }
 
   public async handleInternal(ctx: Context, _type: ContentType, id: Id): Promise<SourceResult[]> {
-    const apiKey = ctx.config.torboxApiKey || envGet('TORBOX_API_KEY');
+    const apiKey = ctx.config.torboxApiKey;
     if (!apiKey) return [];
 
     const tmdbId = await getTmdbId(ctx, this.fetcher, id);
