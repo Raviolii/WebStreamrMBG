@@ -137,11 +137,7 @@ export class Torbox extends Source {
   }
 
   public async handleInternal(ctx: Context, _type: ContentType, id: Id): Promise<SourceResult[]> {
-    if (ctx.config.torbox !== 'on') {
-      return [];
-    }
-
-    const apiKey = envGet('TORBOX_API_KEY');
+    const apiKey = ctx.config.torboxApiKey || envGet('TORBOX_API_KEY');
     if (!apiKey) return [];
 
     const tmdbId = await getTmdbId(ctx, this.fetcher, id);

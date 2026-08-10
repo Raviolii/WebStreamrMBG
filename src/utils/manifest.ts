@@ -71,10 +71,10 @@ export const buildManifest = (sources: Source[], extractors: Extractor[], config
   }
 
   manifest.config.push({
-    key: 'torbox',
-    type: 'checkbox',
-    title: 'TorBox provider',
-    ...('torbox' in config && { default: 'checked' }),
+    key: 'torboxApiKey',
+    type: 'password',
+    title: 'TorBox API key',
+    default: config['torboxApiKey'] ?? '',
   });
 
   manifest.config.push({

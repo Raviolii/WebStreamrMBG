@@ -13,6 +13,7 @@ export function landingTemplate(manifest: CustomManifest) {
   const extractorConfigs = manifest.config.filter(c => c.key.startsWith('disableExtractor_'));
   const optionConfigs = manifest.config.filter(c => ['showErrors', 'includeExternalUrls'].includes(c.key));
   const proxyConfigs = manifest.config.filter(c => ['mediaFlowProxyUrl', 'mediaFlowProxyPassword'].includes(c.key));
+  const torboxConfigs = manifest.config.filter(c => c.key === 'torboxApiKey');
 
   const langChips = languageConfigs.map((c) => {
     const checked = c.default === 'checked' ? ' checked' : '';
@@ -38,6 +39,11 @@ export function landingTemplate(manifest: CustomManifest) {
     const type = c.type === 'password' ? 'password' : 'text';
     const ph = type === 'password' ? '' : 'https://your-mediaflow-proxy/';
     return `<div class="field"><label class="fl">${c.title}</label><input type="${type}" name="${c.key}" class="fi"${val} placeholder="${ph}" autocomplete="off"></div>`;
+  }).join('');
+
+  const torboxFields = torboxConfigs.map((c) => {
+    const val = c.default ? ` value="${c.default}"` : '';
+    return `<div class="field"><label class="fl">${c.title}</label><input type="password" name="${c.key}" class="fi"${val} autocomplete="off"></div>`;
   }).join('');
 
   const optFields = optionConfigs.map((c) => {
@@ -153,6 +159,13 @@ body{position:relative;z-index:1;display:flex;justify-content:center;padding:2re
       <div class="ct">🌐 Languages</div>
       <input type="text" class="ls" id="ls" placeholder="Filter languages…" autocomplete="off">
       <div class="lgrid" id="lgrid">${langChips}</div>
+    </div>`
+      : ''}
+
+    ${torboxConfigs.length
+      ? `<div class="card">
+      <div class="ct">⚡ TorBox</div>
+      ${torboxFields}
     </div>`
       : ''}
 
