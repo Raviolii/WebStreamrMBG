@@ -1,7 +1,7 @@
 import { Mutex } from 'async-mutex';
 import { NotFoundError } from '../error';
 import { Context } from '../types';
-import { envGetRequired } from './env';
+import { envGet, envGetRequired } from './env';
 import { CustomRequestConfig, Fetcher } from './Fetcher';
 import { ImdbId, TmdbId } from './id';
 
@@ -34,13 +34,34 @@ const mutexes = new Map<string, Mutex>();
 const tmdbFetch = async (ctx: Context, fetcher: Fetcher, path: string, searchParams?: Record<string, string | undefined>): Promise<unknown> => {
   const config: CustomRequestConfig = {
     headers: {
-      'Authorization': 'Bearer ' + envGetRequired('TMDB_ACCESS_TOKEN'),
       'Content-Type': 'application/json',
     },
     queueLimit: 50,
   };
 
+  const tmdbBearerToken = envGet('TMDB_ACCESS_TOKEN');
+  const tmdbApiKey = envGet('TMDB_API_KEY') ?? tmdbBearerToken;
+
   const url = new URL(`https://api.themoviedb.org/3${path}`);
+
+  if (tmdbApiKey) {
+    const looksLikeApiKey = /^[a-z0-9]{32}$/i.test(tmdbApiKey);
+    if (looksLikeApiKey) {
+      url.searchParams.set('api_key', tmdbApiKey);
+    } else if (tmdbApiKey === tmdbBearerToken) {
+      config.headers = {
+        ...config.headers,
+        'Authorization': 'Bearer ' + tmdbApiKey,
+      };
+    } else {
+      config.headers = {
+        ...config.headers,
+        'Authorization': 'Bearer ' + tmdbApiKey,
+      };
+    }
+  } else {
+    envGetRequired('TMDB_ACCESS_TOKEN');
+  }
 
   Object.entries(searchParams ?? {}).forEach(([name, value]) => {
     if (value) {
