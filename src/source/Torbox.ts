@@ -30,6 +30,39 @@ interface TorboxListResponse {
 
 const videoExtensions = ['.mp4', '.mkv', '.avi', '.m4v', '.ts', '.mov', '.wmv'];
 
+function extractQuality(title?: string): string {
+  if (!title) return 'Unknown';
+
+  const t = title.toLowerCase();
+  if (t.includes('2160p') || t.includes('4k') || t.includes('uhd')) {
+    return t.includes('remux') ? '2160p Remux' : '2160p';
+  }
+
+  if (t.includes('1080p')) {
+    return t.includes('remux') ? '1080p Remux' : '1080p';
+  }
+
+  if (t.includes('720p')) return '720p';
+  if (t.includes('web-dl') || t.includes('webdl')) return 'WEB-DL';
+  return 'Unknown';
+}
+
+function getQualityScore(title?: string): number {
+  if (!title) return 0;
+
+  const n = title.toLowerCase();
+  if (n.includes('2160p') || n.includes('4k')) return 1000;
+  if (n.includes('remux')) return 980;
+  if (n.includes('uhd')) return 950;
+  if (n.includes('hdr')) return 930;
+  if (n.includes('bluray')) return 920;
+  if (n.includes('1080p')) return 900;
+  if (n.includes('webdl') || n.includes('web-dl')) return 910;
+  if (n.includes('webrip')) return 890;
+  if (n.includes('720p')) return 800;
+  return 0;
+}
+
 function normalize(str?: string): string {
   return (str || '').toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -101,7 +134,10 @@ function getBestVideoFile(files?: TorboxApiFile[] | null): TorboxApiFile | null 
   });
 
   if (videos.length > 0) {
-    videos.sort((a, b) => (b.size || 0) - (a.size || 0));
+    videos.sort((a, b) => {
+      const qualityDelta = getQualityScore((b.name || b.short_name || '').toLowerCase()) - getQualityScore((a.name || a.short_name || '').toLowerCase());
+      return qualityDelta !== 0 ? qualityDelta : (b.size || 0) - (a.size || 0);
+    });
     return videos[0] ?? null;
   }
 
@@ -111,7 +147,10 @@ function getBestVideoFile(files?: TorboxApiFile[] | null): TorboxApiFile | null 
   });
 
   if (nonJunk.length > 0) {
-    nonJunk.sort((a, b) => (b.size || 0) - (a.size || 0));
+    nonJunk.sort((a, b) => {
+      const qualityDelta = getQualityScore((b.name || b.short_name || '').toLowerCase()) - getQualityScore((a.name || a.short_name || '').toLowerCase());
+      return qualityDelta !== 0 ? qualityDelta : (b.size || 0) - (a.size || 0);
+    });
     return nonJunk[0] ?? null;
   }
 
@@ -230,14 +269,28 @@ export class Torbox extends Source {
     targetUrl.searchParams.set('file_id', String(fileId));
     targetUrl.searchParams.set('redirect', 'true');
 
-    const filename = file ? file.short_name || file.name || item.name || item.title : item.name || item.title;
-    const displayTitle = filename || titleHint || 'TorBox item';
+    const fileName = file ? file.short_name || file.name || '' : '';
+    const itemTitle = item.title || '';
+    const itemName = item.name || '';
+    const displayName = fileName || itemTitle || itemName || titleHint || 'TorBox item';
+
+    let quality = extractQuality(itemTitle);
+    if (quality === 'Unknown') {
+      quality = extractQuality(itemName);
+    }
+    if (quality === 'Unknown') {
+      quality = extractQuality(fileName);
+    }
+
+    const displayTitle = quality !== 'Unknown'
+      ? `TorBox · ${quality} · ${displayName}`
+      : `TorBox · ${displayName}`;
 
     return {
       url: targetUrl,
       meta: {
         countryCodes: [CountryCode.multi],
-        title: `TorBox · ${displayTitle}`,
+        title: displayTitle,
       },
     };
   }
