@@ -6,14 +6,15 @@ export function landingTemplate(manifest: CustomManifest) {
   const logo = manifest.logo || 'https://dl.strem.io/addon-logo.png';
   const shortDesc = manifest.description.split('\n\n')[0];
 
-  const MISC_KEYS = ['showErrors', 'includeExternalUrls', 'mediaFlowProxyUrl', 'mediaFlowProxyPassword'];
+  const MISC_KEYS = ['showErrors', 'includeExternalUrls', 'mediaFlowProxyUrl', 'mediaFlowProxyPassword', 'torbox', 'torboxApiKey'];
   const languageConfigs = manifest.config.filter(c =>
     !c.key.startsWith('excludeResolution_') && !c.key.startsWith('disableExtractor_') && !MISC_KEYS.includes(c.key));
   const resolutionConfigs = manifest.config.filter(c => c.key.startsWith('excludeResolution_'));
   const extractorConfigs = manifest.config.filter(c => c.key.startsWith('disableExtractor_'));
   const optionConfigs = manifest.config.filter(c => ['showErrors', 'includeExternalUrls'].includes(c.key));
   const proxyConfigs = manifest.config.filter(c => ['mediaFlowProxyUrl', 'mediaFlowProxyPassword'].includes(c.key));
-  const torboxConfigs = manifest.config.filter(c => c.key === 'torboxApiKey');
+  const torboxCheckboxConfigs = manifest.config.filter(c => c.key === 'torbox');
+  const torboxApiKeyConfigs = manifest.config.filter(c => c.key === 'torboxApiKey');
 
   const langChips = languageConfigs.map((c) => {
     const checked = c.default === 'checked' ? ' checked' : '';
@@ -41,7 +42,12 @@ export function landingTemplate(manifest: CustomManifest) {
     return `<div class="field"><label class="fl">${c.title}</label><input type="${type}" name="${c.key}" class="fi"${val} placeholder="${ph}" autocomplete="off"></div>`;
   }).join('');
 
-  const torboxFields = torboxConfigs.map((c) => {
+  const torboxCheckboxFields = torboxCheckboxConfigs.map((c) => {
+    const checked = c.default === 'checked' ? ' checked' : '';
+    return `<label class="or"><input type="checkbox" name="${c.key}"${checked}><span>${c.title}</span></label>`;
+  }).join('');
+
+  const torboxApiKeyFields = torboxApiKeyConfigs.map((c) => {
     const val = c.default ? ` value="${c.default}"` : '';
     return `<div class="field"><label class="fl">${c.title}</label><input type="password" name="${c.key}" class="fi"${val} autocomplete="off"></div>`;
   }).join('');
@@ -162,10 +168,11 @@ body{position:relative;z-index:1;display:flex;justify-content:center;padding:2re
     </div>`
       : ''}
 
-    ${torboxConfigs.length
+    ${torboxCheckboxFields.length || torboxApiKeyFields.length
       ? `<div class="card">
       <div class="ct">⚡ TorBox</div>
-      ${torboxFields}
+      ${torboxCheckboxFields}
+      ${torboxApiKeyFields}
     </div>`
       : ''}
 

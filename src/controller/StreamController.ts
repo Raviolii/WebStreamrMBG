@@ -50,7 +50,13 @@ export class StreamController {
 
     this.logger.info(`Search stream for type "${type}" and id "${rawId}" for ip ${ctx.ip}`, ctx);
 
-    const sources = this.sources.filter(source => source.countryCodes.filter(countryCode => countryCode in ctx.config).length);
+    const sources = this.sources.filter(source => {
+      if (source.id === 'torbox') {
+        return 'torbox' in ctx.config || source.countryCodes.some(countryCode => countryCode in ctx.config);
+      }
+
+      return source.countryCodes.some(countryCode => countryCode in ctx.config);
+    });
 
     let mutex = this.locks.get(rawId);
     if (!mutex) {

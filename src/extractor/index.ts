@@ -30,6 +30,7 @@ import { Vidzee } from './Vidzee';
 import { VixSrc } from './VixSrc';
 import { Voe } from './Voe';
 import { YouTube } from './YouTube';
+import { Torbox } from './Torbox';
 
 export * from './Extractor';
 export * from './ExtractorRegistry';
@@ -76,6 +77,7 @@ export const createExtractors = (fetcher: Fetcher, logger: winston.Logger): Extr
     new VixSrc(fetcher, logger),
     new Voe(fetcher, logger),
     new YouTube(fetcher, logger),
+    new Torbox(fetcher, logger),
     new ExternalUrl(fetcher, logger), // fallback extractor which must come last
   ].filter(extractor => !disabledExtractors.includes(extractor.id));
 };

@@ -75,6 +75,11 @@ exports[`buildManifest default manifest 1`] = `
       "type": "checkbox",
     },
     {
+      "key": "torbox",
+      "title": "Enable TorBox",
+      "type": "checkbox",
+    },
+    {
       "default": "",
       "key": "torboxApiKey",
       "title": "TorBox API key",
@@ -185,6 +190,11 @@ Supported extractors: ",
 exports[`buildManifest disable extractors 1`] = `
 [
   {
+    "key": "torbox",
+    "title": "Enable TorBox",
+    "type": "checkbox",
+  },
+  {
     "default": "",
     "key": "torboxApiKey",
     "title": "TorBox API key",
@@ -279,6 +289,11 @@ exports[`buildManifest disable extractors 1`] = `
 exports[`buildManifest has checked excludeResolution_2160p 1`] = `
 [
   {
+    "key": "torbox",
+    "title": "Enable TorBox",
+    "type": "checkbox",
+  },
+  {
     "default": "",
     "key": "torboxApiKey",
     "title": "TorBox API key",
@@ -363,6 +378,11 @@ exports[`buildManifest has checked excludeResolution_2160p 1`] = `
 exports[`buildManifest has checked includeExternalUrls 1`] = `
 [
   {
+    "key": "torbox",
+    "title": "Enable TorBox",
+    "type": "checkbox",
+  },
+  {
     "default": "",
     "key": "torboxApiKey",
     "title": "TorBox API key",
@@ -446,6 +466,11 @@ exports[`buildManifest has checked includeExternalUrls 1`] = `
 
 exports[`buildManifest has checked showErrors 1`] = `
 [
+  {
+    "key": "torbox",
+    "title": "Enable TorBox",
+    "type": "checkbox",
+  },
   {
     "default": "",
     "key": "torboxApiKey",
@@ -544,6 +569,11 @@ exports[`buildManifest has checked source with appropriate config 1`] = `
   {
     "key": "mx",
     "title": "Latin American Spanish 🇲🇽 (VerHdLink)",
+    "type": "checkbox",
+  },
+  {
+    "key": "torbox",
+    "title": "Enable TorBox",
     "type": "checkbox",
   },
   {
@@ -651,6 +681,11 @@ exports[`buildManifest has unchecked source without a config 1`] = `
     "type": "checkbox",
   },
   {
+    "key": "torbox",
+    "title": "Enable TorBox",
+    "type": "checkbox",
+  },
+  {
     "default": "",
     "key": "torboxApiKey",
     "title": "TorBox API key",
@@ -733,6 +768,11 @@ exports[`buildManifest has unchecked source without a config 1`] = `
 
 exports[`buildManifest showErrors and includeExternalUrls are unchecked by default 1`] = `
 [
+  {
+    "key": "torbox",
+    "title": "Enable TorBox",
+    "type": "checkbox",
+  },
   {
     "default": "",
     "key": "torboxApiKey",
