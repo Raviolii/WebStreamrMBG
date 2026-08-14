@@ -115,11 +115,30 @@ function scoreAgainstName(name: string, titleTokens: string[], season?: number, 
 }
 
 function isReady(item: TorboxApiItem): boolean {
-  return item.download_finished === true
-    || item.download_present === true
-    || item.cached === true
-    || (typeof item.progress === 'number' && item.progress >= 1)
-    || ['completed', 'complete', 'cached', 'ready', 'finished'].some(s => (item.download_state || '').toLowerCase().includes(s));
+  const anyItem = item as any;
+
+  // explicit boolean flags
+  if (item.download_finished === true || item.download_present === true || item.cached === true) return true;
+
+  // alternative or legacy flag names Torbox might use for "cached on server"
+  if (anyItem.cached_on_server === true || anyItem.cached_on_their_server === true || anyItem.cache === true || anyItem.is_cached === true) return true;
+
+  // progress reaching 1 or more indicates completion
+  if (typeof item.progress === 'number' && item.progress >= 1) return true;
+
+  // check state strings (include some extra common terms)
+  const state = String(item.download_state || anyItem.state || '').toLowerCase();
+  if (['completed', 'complete', 'cached', 'ready', 'finished', 'available', 'stored'].some(s => state.includes(s))) return true;
+
+  return false;
+}
+
+function isProcessing(item: TorboxApiItem): boolean {
+  const anyItem = item as any;
+  const state = String(item.download_state || anyItem.state || '').toLowerCase();
+  if (state.includes('processing') || state.includes('postprocessing') || state.includes('transcoding') || state.includes('encoding') || state.includes('muxing')) return true;
+  if (anyItem.processing === true || anyItem.is_processing === true) return true;
+  return false;
 }
 
 function getBestVideoFile(files?: TorboxApiFile[] | null): TorboxApiFile | null {
@@ -210,6 +229,12 @@ export class Torbox extends Source {
             results.push({ score: 10, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name) });
             return;
           }
+
+          // if the item is currently processing on TorBox, include it but mark as Processing
+          if (isProcessing(item)) {
+            results.push({ score: 5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing') });
+            return;
+          }
         }
       }
 
@@ -232,6 +257,9 @@ export class Torbox extends Source {
           const bestFile = getBestVideoFile(item.files);
           if (isReady(item)) {
             results.push({ score: best, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name) });
+          } else if (isProcessing(item)) {
+            // include processing matches with a reduced score
+            results.push({ score: best * 0.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing') });
           }
         }
       }
@@ -260,7 +288,7 @@ export class Torbox extends Source {
     }
   }
 
-  private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiKey: string, file: TorboxApiFile | null, titleHint: string): SourceResult {
+  private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiKey: string, file: TorboxApiFile | null, titleHint: string, status?: string): SourceResult {
     const idParam = type === 'usenet' ? 'usenet_id' : 'torrent_id';
     const fileId = file && file.id != null ? file.id : 0;
     const targetUrl = new URL(`https://api.torbox.app/v1/api/${type}/requestdl`);
@@ -282,16 +310,27 @@ export class Torbox extends Source {
       quality = extractQuality(fileName);
     }
 
-    const displayTitle = quality !== 'Unknown'
-      ? `TorBox · ${quality} · ${displayName}`
-      : `TorBox · ${displayName}`;
+    let displayTitle: string;
+    if (status) {
+      displayTitle = quality !== 'Unknown'
+        ? `TorBox · ${status} · ${quality} · ${displayName}`
+        : `TorBox · ${status} · ${displayName}`;
+    } else {
+      displayTitle = quality !== 'Unknown'
+        ? `TorBox · ${quality} · ${displayName}`
+        : `TorBox · ${displayName}`;
+    }
+
+    const meta: any = {
+      countryCodes: [CountryCode.multi],
+      title: displayTitle,
+    };
+
+    if (status) meta.status = status;
 
     return {
       url: targetUrl,
-      meta: {
-        countryCodes: [CountryCode.multi],
-        title: displayTitle,
-      },
+      meta,
     };
   }
 }
