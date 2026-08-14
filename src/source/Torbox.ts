@@ -68,9 +68,20 @@ function normalize(str?: string): string {
 }
 
 function extractSeasonEpisode(str?: string): { season: number; episode: number } | null {
-  const m = (str || '').match(/[sS](\d{1,2})[eE](\d{1,2})/);
-  if (!m || !m[1] || !m[2]) return null;
-  return { season: parseInt(m[1], 10), episode: parseInt(m[2], 10) };
+  const patterns = [
+    /[sS](\d{1,2})[eE](\d{1,2})/,
+    /(\d{1,2})[xX](\d{1,2})/,
+    /season\s*(\d{1,2})\s*episode\s*(\d{1,2})/i,
+  ];
+
+  for (const pattern of patterns) {
+    const m = (str || '').match(pattern);
+    if (m && m[1] && m[2]) {
+      return { season: parseInt(m[1], 10), episode: parseInt(m[2], 10) };
+    }
+  }
+
+  return null;
 }
 
 function significantTokens(str: string): string[] {
