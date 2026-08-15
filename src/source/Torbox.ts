@@ -299,7 +299,7 @@ export class Torbox extends Source {
     }
   }
 
-  private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiKey: string, file: TorboxApiFile | null, titleHint: string, status?: string): SourceResult {
+private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiKey: string, file: TorboxApiFile | null, titleHint: string, status?: string): SourceResult {
     const idParam = type === 'usenet' ? 'usenet_id' : 'torrent_id';
     const fileId = file && file.id != null ? file.id : 0;
     const targetUrl = new URL(`https://api.torbox.app/v1/api/${type}/requestdl`);
