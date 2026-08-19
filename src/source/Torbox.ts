@@ -152,6 +152,20 @@ function isProcessing(item: TorboxApiItem): boolean {
   return false;
 }
 
+function isDownloading(item: TorboxApiItem): boolean {
+  if (isReady(item) || isProcessing(item)) return false;
+
+  const anyItem = item as any;
+  const state = String(item.download_state || anyItem.state || '').toLowerCase();
+  if (['download', 'downloading', 'grab', 'queue', 'queued', 'meta', 'fetch', 'staging', 'extract', 'extracting'].some((s) => state.includes(s))) {
+    return true;
+  }
+
+  if (typeof item.progress === 'number' && item.progress >= 0 && item.progress < 1) return true;
+  if (item.active === true) return true;
+  return false;
+}
+
 function getBestVideoFile(files?: TorboxApiFile[] | null): TorboxApiFile | null {
   if (!files || !files.length) return null;
 
@@ -241,9 +255,13 @@ export class Torbox extends Source {
             return;
           }
 
-          // if the item is currently processing on TorBox, include it but mark as Processing
           if (isProcessing(item)) {
             results.push({ score: 5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing') });
+            return;
+          }
+
+          if (isDownloading(item)) {
+            results.push({ score: 4.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Downloading') });
             return;
           }
         }
@@ -269,8 +287,9 @@ export class Torbox extends Source {
           if (isReady(item)) {
             results.push({ score: best, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name) });
           } else if (isProcessing(item)) {
-            // include processing matches with a reduced score
             results.push({ score: best * 0.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing') });
+          } else if (isDownloading(item)) {
+            results.push({ score: best * 0.45, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Downloading') });
           }
         }
       }
