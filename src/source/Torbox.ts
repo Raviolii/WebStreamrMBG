@@ -268,11 +268,30 @@ export class Torbox extends Source {
           if (!haystack.includes(tmdbToken)) return false;
 
           if (mediaType === 'tv' && seasonToken && episodeToken) {
-            // Accept s01e01, s01 e01, 1x01, or separate season/episode tokens anywhere
-            if (/(s\d{1,2}e\d{1,2})/.test(haystack)) return haystack.includes(`${seasonToken}${episodeToken}`) || /s\d{1,2}e\d{1,2}/.test(haystack);
-            if (/(\d{1,2}x\d{1,2})/.test(haystack)) return true;
-            // fallback: ensure both season and episode digits appear
-            return haystack.includes(seasonToken) && haystack.includes(episodeToken);
+            // Strict checks for season/episode proximity and exactness
+            // Direct concatenation s01e01 (allow optional separators)
+            const seExact = new RegExp(`s0*${Number(season)}\s*e0*${Number(episode)}`, 'i');
+            if (seExact.test(haystack)) return true;
+
+            // 1x01 style (allow leading zeros)
+            const xStyle = new RegExp(`\\b0*${Number(season)}x0*${Number(episode)}\\b`, 'i');
+            if (xStyle.test(haystack)) return true;
+
+            // Adjacent tokens like 's01 e01' (covered by seExact), otherwise require season and episode tokens to be close to the tmdb token
+            const idxTmdb = haystack.indexOf(tmdbToken);
+            const idxSeason = haystack.indexOf(seasonToken);
+            const idxEpisode = haystack.indexOf(episodeToken);
+            if (idxSeason !== -1 && idxEpisode !== -1) {
+              const span = Math.max(idxSeason, idxEpisode) - Math.min(idxSeason, idxEpisode);
+              // require tokens to be near each other (< 40 chars) to avoid cross-match across unrelated entries
+              if (span < 40) {
+                // also ensure at least one of them is close to the tmdb token
+                const spanToTmdb = Math.min(Math.abs(idxSeason - idxTmdb), Math.abs(idxEpisode - idxTmdb));
+                if (spanToTmdb < 80) return true;
+              }
+            }
+
+            return false;
           }
 
           return true;
