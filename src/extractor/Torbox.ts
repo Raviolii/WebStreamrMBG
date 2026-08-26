@@ -6,6 +6,9 @@ export class Torbox extends Extractor {
 
   public readonly label = 'TorBox';
 
+  // Keep extractor cache short so TorBox final-URL resolution and metadata refresh promptly
+  public override readonly ttl: number = 60 * 1000; // 1 minute
+
   public supports(_ctx: Context, url: URL): boolean {
     return url.hostname === 'api.torbox.app' && /\/v1\/api\/(usenet|torrents)\/requestdl$/.test(url.pathname);
   }
