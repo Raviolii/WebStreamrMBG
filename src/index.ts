@@ -82,7 +82,16 @@ if (envIsProd()) {
   addon.use(rateLimit({ windowMs: 60 * 1000, limit: 30 }));
 }
 
-addon.use((_req: Request, res: Response, next: NextFunction) => {
+addon.use(async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Clear persistent cache before processing each request so newly downloaded TorBox items
+    // become visible immediately instead of serving stale results.
+    await clearCache(logger);
+    Source.resetCache();
+  } catch (error) {
+    logger.warn(`Failed to clear cache before request: ${error}`);
+  }
+
   res.setHeader('X-Request-ID', randomUUID());
 
   res.setHeader('Access-Control-Allow-Origin', '*');
