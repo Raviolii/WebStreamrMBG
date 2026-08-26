@@ -1,6 +1,7 @@
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode } from '../types';
 import { Fetcher, getTmdbId, getTmdbNameAndYear, Id } from '../utils';
+import { Semaphore } from 'async-mutex';
 import { Source, SourceResult } from './Source';
 
 interface TorboxApiFile {
@@ -213,6 +214,7 @@ export class Torbox extends Source {
   public readonly baseUrl = 'https://api.torbox.app';
 
   private readonly fetcher: Fetcher;
+  private static readonly finalUrlSemaphore = new Semaphore(8);
 
   public constructor(fetcher: Fetcher) {
     super();
@@ -233,10 +235,10 @@ export class Torbox extends Source {
 
     const titleTokens = significantTokens(name || '');
     const mediaType = _type === 'series' ? 'tv' : 'movie';
-    const results: Array<{ score: number; stream: SourceResult }> = [];
+    const results: Array<{ score: number; stream: Promise<SourceResult> }> = [];
 
     const consider = (item: TorboxApiItem, streamType: 'usenet' | 'torrents') => {
-      const itemName = String(item.name || item.title || '').toLowerCase();
+      const itemName = String(item.title || item.name || '').toLowerCase();
 
       if (tmdbId?.id) {
         const season = tmdbId.season;
@@ -251,24 +253,24 @@ export class Torbox extends Source {
         if (itemName.includes(exactQuery)) {
           const bestFile = getBestVideoFile(item.files);
           if (isReady(item)) {
-            results.push({ score: 10, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name) });
+            results.push({ score: 10, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, undefined, ctx) });
             return;
           }
 
           if (isProcessing(item)) {
-            results.push({ score: 5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing') });
+            results.push({ score: 5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing', ctx) });
             return;
           }
 
           if (isDownloading(item)) {
-            results.push({ score: 4.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Downloading') });
+            results.push({ score: 4.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Downloading', ctx) });
             return;
           }
         }
       }
 
       if (titleTokens.length > 0) {
-        const names = [item.name || ''];
+        const names = [item.title || item.name || ''];
         if (Array.isArray(item.files)) {
           for (const f of item.files) {
             if (f.name) names.push(f.name);
@@ -285,11 +287,11 @@ export class Torbox extends Source {
         if (best >= 0.75) {
           const bestFile = getBestVideoFile(item.files);
           if (isReady(item)) {
-            results.push({ score: best, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name) });
+            results.push({ score: best, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, undefined, ctx) });
           } else if (isProcessing(item)) {
-            results.push({ score: best * 0.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing') });
+            results.push({ score: best * 0.5, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Processing', ctx) });
           } else if (isDownloading(item)) {
-            results.push({ score: best * 0.45, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Downloading') });
+            results.push({ score: best * 0.45, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, 'Downloading', ctx) });
           }
         }
       }
@@ -299,10 +301,12 @@ export class Torbox extends Source {
     for (const item of torrentList) consider(item, 'torrents');
 
     results.sort((a, b) => b.score - a.score);
-    return results.map((r) => r.stream);
+    // Resolve stream promises in order (parallel resolution but preserve ordering)
+    const streams = await Promise.all(results.map((r) => r.stream));
+    return streams;
   }
 
-  private async fetchMyList(ctx: Context, type: 'usenet' | 'torrents', apiKey: string): Promise<TorboxApiItem[]> {
+    private async fetchMyList(ctx: Context, type: 'usenet' | 'torrents', apiKey: string): Promise<TorboxApiItem[]> {
     const url = new URL(`https://api.torbox.app/v1/api/${type}/mylist`);
 
     try {
@@ -311,14 +315,14 @@ export class Torbox extends Source {
           Authorization: `Bearer ${apiKey}`,
           Accept: 'application/json',
         },
+        timeout: 10000,
       }) as TorboxListResponse;
       return (json?.data as TorboxApiItem[]) ?? [];
     } catch {
       return [];
     }
   }
-
-private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiKey: string, file: TorboxApiFile | null, titleHint: string, status?: string): SourceResult {
+private async buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiKey: string, file: TorboxApiFile | null, titleHint: string, status?: string, ctx?: Context): Promise<SourceResult> {
     const idParam = type === 'usenet' ? 'usenet_id' : 'torrent_id';
     const fileId = file && file.id != null ? file.id : 0;
     const targetUrl = new URL(`https://api.torbox.app/v1/api/${type}/requestdl`);
@@ -326,6 +330,22 @@ private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiK
     targetUrl.searchParams.set(idParam, String(item.id));
     targetUrl.searchParams.set('file_id', String(fileId));
     targetUrl.searchParams.set('redirect', 'true');
+
+    // Fast, non-blocking resolution of the final redirected URL using the Fetcher helper
+    let finalUrl = targetUrl;
+    try {
+      if (this.fetcher && ctx) {
+        const [, release] = await Torbox.finalUrlSemaphore.acquire();
+        try {
+          finalUrl = await this.fetcher.getFinalRedirectUrl(ctx, targetUrl, { timeout: 20000 });
+        } finally {
+          release();
+        }
+      }
+    } catch (e) {
+      // fall back to the API request URL (targetUrl)
+      finalUrl = targetUrl;
+    }
 
     const fileName = file ? file.short_name || file.name || '' : '';
     const itemTitle = item.title || '';
@@ -359,7 +379,7 @@ private buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents', apiK
     if (status) meta.status = status;
 
     return {
-      url: targetUrl,
+      url: finalUrl,
       meta,
     };
   }
