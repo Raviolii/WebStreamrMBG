@@ -247,14 +247,39 @@ export class Torbox extends Source {
       if (tmdbId?.id) {
         const season = tmdbId.season;
         const episode = tmdbId.episode;
-        let exactQuery = '';
-        if (mediaType === 'tv' && season != null && episode != null) {
-          exactQuery = `tmdb-${tmdbId.id} s${String(season).padStart(2, '0')}e${String(episode).padStart(2, '0')}`.toLowerCase();
-        } else {
-          exactQuery = `tmdb-${tmdbId.id}`.toLowerCase();
-        }
 
-        if (itemName.includes(exactQuery)) {
+        // Build token pieces
+        const tmdbToken = `tmdb-${tmdbId.id}`.toLowerCase();
+        const seasonToken = season != null ? `s${String(season).padStart(2, '0')}` : null;
+        const episodeToken = episode != null ? `e${String(episode).padStart(2, '0')}` : null;
+
+        // Robust exact-match: look for the tmdb token and (for TV) the season/episode markers
+        const matchesExact = (itemToCheck: TorboxApiItem): boolean => {
+          const haystackParts: string[] = [];
+          if (itemToCheck.title) haystackParts.push(String(itemToCheck.title));
+          if (itemToCheck.name) haystackParts.push(String(itemToCheck.name));
+          if (Array.isArray(itemToCheck.files)) {
+            for (const f of itemToCheck.files) {
+              if (f.name) haystackParts.push(String(f.name));
+              if (f.short_name) haystackParts.push(String(f.short_name));
+            }
+          }
+
+          const haystack = haystackParts.join(' ').toLowerCase();
+          if (!haystack.includes(tmdbToken)) return false;
+
+          if (mediaType === 'tv' && seasonToken && episodeToken) {
+            // Accept s01e01, s01 e01, 1x01, or separate season/episode tokens anywhere
+            if (/(s\d{1,2}e\d{1,2})/.test(haystack)) return haystack.includes(`${seasonToken}${episodeToken}`) || /s\d{1,2}e\d{1,2}/.test(haystack);
+            if (/(\d{1,2}x\d{1,2})/.test(haystack)) return true;
+            // fallback: ensure both season and episode digits appear
+            return haystack.includes(seasonToken) && haystack.includes(episodeToken);
+          }
+
+          return true;
+        };
+
+        if (matchesExact(item)) {
           const bestFile = getBestVideoFile(item.files);
           if (isReady(item)) {
             // Clear the global source result cache so the newly-ready TorBox item becomes visible immediately
