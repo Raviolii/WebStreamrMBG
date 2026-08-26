@@ -257,6 +257,9 @@ export class Torbox extends Source {
         if (itemName.includes(exactQuery)) {
           const bestFile = getBestVideoFile(item.files);
           if (isReady(item)) {
+            // Clear the global source result cache so the newly-ready TorBox item becomes visible immediately
+            // (restart previously forced this; resetting cache has similar effect without restarting).
+            try { Source.resetCache(); } catch (e) { /* ignore */ }
             results.push({ score: 10, stream: this.buildTorBoxStream(item, streamType, apiKey, bestFile, name, undefined, ctx) });
             return;
           }
