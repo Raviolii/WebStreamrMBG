@@ -385,8 +385,12 @@ private async buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents'
 
     if (status) meta.status = status;
 
+    // Return the original TorBox API request URL so the TorBox extractor runs and
+    // labels/handles the item (it will perform the final redirect resolution). If a
+    // final redirect was already resolved above we still prefer returning the
+    // API request URL so the source/label is visible in the UI (e.g. Nuvio).
     return {
-      url: finalUrl,
+      url: targetUrl,
       meta,
     };
   }
