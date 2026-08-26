@@ -58,6 +58,15 @@ export class StreamResolver {
         for (const sr of sourceResults) {
           this.logger.info(`Source ${source.id} URL: ${sr.url}`, ctx);
         }
+        // If this is the torbox source then purge any stale extractor cache for the
+        // returned URLs before extracting. This addresses the case where an extractor
+        // previously cached an error for a CDN/canonical URL and prevents stale cached
+        // error responses from hiding newly-available Torbox downloads.
+        if (source.id === 'torbox' && sourceResults.length) {
+          this.logger.info(`Purging extractor cache for ${sourceResults.length} torbox URL(s)`, ctx);
+          await Promise.all(sourceResults.map(sr => this.extractorRegistry.purgeCachesForUrl(ctx, sr.url)));
+        }
+
         const sourceUrlResults = await Promise.all(
           sourceResults.map(({ url, meta }) => this.extractorRegistry.handle(ctx, url, { sourceLabel: source.label, sourceId: source.id, priority: source.priority, ...meta }, true)),
         );

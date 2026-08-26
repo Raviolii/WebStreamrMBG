@@ -162,4 +162,33 @@ export class ExtractorRegistry {
 
     return `${extractor.id}_${url}${suffix}`;
   }
+
+  // Purge cached extraction results for a specific URL across all extractors that would
+  // be used for that URL. Useful when an upstream source became available and the
+  // extractor previously cached an error result — clearing the extractor cache forces
+  // a fresh extraction on the next request.
+  public async purgeCachesForUrl(ctx: Context, url: URL): Promise<void> {
+    for (const extractor of this.extractors) {
+      try {
+        // Normalize and compute canonical URL the same way extraction would
+        const normalized = extractor.normalize(url);
+        const canonical = await extractor.normalizeAsync(ctx, normalized);
+
+        let suffix = '';
+        if (extractor.viaMediaFlowProxy) {
+          suffix += `_${ctx.config.mediaFlowProxyUrl}`;
+        }
+        if (extractor.cacheVersion) {
+          suffix += `_${extractor.cacheVersion}`;
+        }
+
+        const cacheKey = `${extractor.id}_${canonical}${suffix}`;
+        await this.urlResultCache.delete(cacheKey);
+        await this.lazyUrlResultCache.delete(canonical.href);
+      } catch (err) {
+        // Non-fatal — log and continue. Avoid throwing during purge so callers can proceed.
+        this.logger.debug(`Failed to purge extractor cache for ${url} using extractor ${extractor.id}: ${String(err)}`);
+      }
+    }
+  }
 }
