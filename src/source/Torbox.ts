@@ -213,6 +213,10 @@ export class Torbox extends Source {
 
   public readonly baseUrl = 'https://api.torbox.app';
 
+  // Keep TTL short so newly cached/ready items on TorBox become visible quickly
+  // (original default is 12h in Source). Set to 60 seconds to avoid long delays.
+  public override readonly ttl: number = 60 * 1000; // 1 minute
+
   private readonly fetcher: Fetcher;
   private static readonly finalUrlSemaphore = new Semaphore(8);
 
