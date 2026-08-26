@@ -338,20 +338,21 @@ private async buildTorBoxStream(item: TorboxApiItem, type: 'usenet' | 'torrents'
     targetUrl.searchParams.set('file_id', String(fileId));
     targetUrl.searchParams.set('redirect', 'true');
 
-    // Fast, non-blocking resolution of the final redirected URL using the Fetcher helper
-    let finalUrl = targetUrl;
+    // Best-effort prefetch of the final redirected URL using the Fetcher helper.
+    // Don't use the result for the returned URL — return the API request URL so the
+    // TorBox extractor handles/labels the item. Prefetching may warm caches and
+    // speed up later extraction.
     try {
       if (this.fetcher && ctx) {
         const [, release] = await Torbox.finalUrlSemaphore.acquire();
         try {
-          finalUrl = await this.fetcher.getFinalRedirectUrl(ctx, targetUrl, { timeout: 20000 });
+          await this.fetcher.getFinalRedirectUrl(ctx, targetUrl, { timeout: 20000 });
         } finally {
           release();
         }
       }
     } catch (e) {
-      // fall back to the API request URL (targetUrl)
-      finalUrl = targetUrl;
+      // ignore prefetch failures and fall back to using the API request URL
     }
 
     const fileName = file ? file.short_name || file.name || '' : '';
