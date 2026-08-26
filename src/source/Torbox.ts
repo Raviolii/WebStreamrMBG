@@ -242,7 +242,6 @@ export class Torbox extends Source {
     const results: Array<{ score: number; stream: Promise<SourceResult> }> = [];
 
     const consider = (item: TorboxApiItem, streamType: 'usenet' | 'torrents') => {
-      const itemName = String(item.title || item.name || '').toLowerCase();
 
       if (tmdbId?.id) {
         const season = tmdbId.season;
