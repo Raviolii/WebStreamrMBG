@@ -40,6 +40,12 @@ export class ExtractorRegistry {
     };
   };
 
+  public async clearCache(): Promise<void> {
+    await this.urlResultCache.clear();
+    await this.lazyUrlResultCache.clear();
+    this.inFlight.clear();
+  }
+
   public async handle(ctx: Context, url: URL, meta?: Meta, allowLazy?: boolean): Promise<UrlResult[]> {
     const extractor = this.extractors.find(extractor => !isExtractorDisabled(ctx.config, extractor) && extractor.supports(ctx, url));
     if (!extractor) {

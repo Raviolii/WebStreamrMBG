@@ -84,10 +84,11 @@ if (envIsProd()) {
 
 addon.use(async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    // Clear persistent cache before processing each request so newly downloaded TorBox items
-    // become visible immediately instead of serving stale results.
+    // Clear persistent and in-memory caches before processing each request so newly downloaded
+    // TorBox items are visible immediately instead of serving stale results.
     await clearCache(logger);
     Source.resetCache();
+    await extractorRegistry.clearCache();
   } catch (error) {
     logger.warn(`Failed to clear cache before request: ${error}`);
   }
